@@ -1,17 +1,16 @@
 <template>
 	<v-container>
 		<!-- BIG FOOTER THING -->
-		<v-footer class="primary" height="128px" inset app>
+		<v-footer class="background darken-1 pa-3" height="auto" inset app>
 			<v-layout row wrap>
 				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-md-and-up"
 									 app></v-toolbar-side-icon>
-
 				<v-layout class="hidden-sm-and-down">
 					<v-layout v-for="item in menu" justify-center>
-						<router-link large tag="v-btn" v-bind="{to: item.url}">
-							<v-icon medium>{{item.icon}}</v-icon>
+						<v-btn large v-bind="{to: item.url}" active-class="primary">
+							<v-icon medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
 							{{item.text}}
-						</router-link>
+						</v-btn>
 					</v-layout>
 				</v-layout>
 
@@ -60,12 +59,13 @@
 	export default {
 		data() {
 			return {
+				bottomNav: null,
 				drawer: false,
 				menu: [
 					{
 						text: "Home",
 						icon: "widgets",
-						url: "/widgets",
+						url: "/",
 						sub_items: []
 					},
 					{
