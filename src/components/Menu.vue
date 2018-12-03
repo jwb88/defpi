@@ -24,14 +24,14 @@
 				<v-list-group v-if="(item.sub_items.length > 0)">
 					<v-list-tile slot="activator" ripple>
 						<v-list-tile-action>
-							<v-icon>{{ item.icon }}</v-icon>
+							<v-icon large>{{ item.icon }}</v-icon>
 						</v-list-tile-action>
 						<v-list-tile-content>
-							<v-list-tile-title>{{ item.text }}</v-list-tile-title>
+							<v-list-tile-title class="title">{{ item.text }}</v-list-tile-title>
 						</v-list-tile-content>
 					</v-list-tile>
 
-					<v-list-tile v-for="subItem in item.sub_items" ripple v-bind="{to: subItem.url}">
+					<v-list-tile v-for="subItem in item.sub_items" ripple v-bind="{to: subItem.url}" class="ml-4">
 						<v-list-tile-action>
 							<v-icon>{{ subItem.icon }}</v-icon>
 						</v-list-tile-action>
@@ -43,10 +43,10 @@
 
 				<v-list-tile v-else ripple v-bind="{to: item.url}">
 					<v-list-tile-action>
-						<v-icon>{{ item.icon }}</v-icon>
+						<v-icon large>{{ item.icon }}</v-icon>
 					</v-list-tile-action>
 					<v-list-tile-content>
-						<v-list-tile-title>{{ item.text }}</v-list-tile-title>
+						<v-list-tile-title class="title">{{ item.text }}</v-list-tile-title>
 					</v-list-tile-content>
 				</v-list-tile>
 			</v-list>

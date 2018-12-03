@@ -16,11 +16,11 @@
 			<v-content>
 				<v-container grid-list-xs fluid>
 					<v-layout row wrap>
-						<v-flex v-for="widget in widgets" xs12 sm6 md4 lg3 style="min-width: 256px;">
+						<v-flex v-for="widget in widgets" xs12 sm6 md4 lg3>
 							<v-layout align-center justify-center>
-								<v-card class="elevation-4 ma-4">
-									<v-card-title class="primary title"><v-icon large>battery_charging_full</v-icon>{{widget.title}}</v-card-title>
-									<v-card-media v-html="widget.iframe"></v-card-media>
+								<v-card class="elevation-4 ma-4" style="min-width: 300px;">
+									<v-card-title class="primary title pa-1"><v-icon large>battery_charging_full</v-icon>{{widget.title}}</v-card-title>
+									<v-card-media v-html="widget.iframe" style="width:300px; height: 170px;"></v-card-media>
 								</v-card>
 							</v-layout>
 						</v-flex>
@@ -66,35 +66,51 @@
 				widgets: [
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 					{
 						title: "Battery",
-						iframe: '<iframe width="256px" height="256px" src="/src/widgets/battery.html"></iframe>'
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
+					},
+					{
+						title: "Battery",
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
+					},
+					{
+						title: "Battery",
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
+					},
+					{
+						title: "Battery",
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
+					},
+					{
+						title: "Battery",
+						iframe: '<iframe src="/src/widgets/battery.html"></iframe>'
 					},
 				]
 			}
