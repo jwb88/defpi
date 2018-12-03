@@ -5,7 +5,7 @@
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
 
-            <v-card class="elevation-1">
+            <v-card flat>
 
               <v-img src="https://picsum.photos/350/165?random" height="250" class="grey darken-4" ></v-img>
 
@@ -35,6 +35,10 @@
                   </v-flex>
                 </v-layout>
               </v-card-actions>
+
+				<v-layout align-center justify-center mt-5>
+					<v-label>Forgot password?</v-label>
+				</v-layout>
 
             </v-card>
 
