@@ -4,13 +4,14 @@
 			<h1>AppStore</h1>
 		</v-content>
 
-		<Menu></Menu>
+		<Menu :menu="menu"></Menu>
 	</v-app>
 </template>
 
 <script>
 	import Menu from './Menu'
     export default {
+		props: ["menu"],
 		components: {
 			Menu
 		}

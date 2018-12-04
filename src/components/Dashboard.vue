@@ -1,34 +1,34 @@
 <template>
 	<v-app class="background">
-			<v-container>
-				<v-toolbar class="primary pa-2" app height="128px">
-					<v-layout v-for="fullscreenWidget in fullscreenWidgets" justify-center wrap>
-						<v-layout row xs12 md6>
-							<v-flex class="text-xs-center">
-								<v-btn large ripple fab v-bind:style="{backgroundImage: 'url(' + fullscreenWidget.icon_url + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-btn>
-								<h4 class="hidden-sm-and-down">{{ fullscreenWidget.title }}</h4>
-							</v-flex>
-						</v-layout>
-					</v-layout>
-				</v-toolbar>
-			</v-container>
-
-			<v-content>
-				<v-container grid-list-xs fluid>
-					<v-layout row wrap>
-						<v-flex v-for="widget in widgets" xs12 sm6 md4 lg3>
-							<v-layout align-center justify-center>
-								<v-card class="elevation-4 ma-4" style="min-width: 300px;">
-									<v-card-title class="primary title pa-1"><v-icon large>battery_charging_full</v-icon>{{widget.title}}</v-card-title>
-									<v-card-media v-html="widget.iframe" style="width:300px; height: 170px;"></v-card-media>
-								</v-card>
-							</v-layout>
+		<v-container>
+			<v-toolbar class="primary pa-2" app height="128px">
+				<v-layout v-for="fullscreenWidget in fullscreenWidgets" justify-center wrap>
+					<v-layout row xs12 md6>
+						<v-flex class="text-xs-center">
+							<v-btn large ripple fab v-bind:style="{backgroundImage: 'url(' + fullscreenWidget.icon_url + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-btn>
+							<h4 class="hidden-sm-and-down">{{ fullscreenWidget.title }}</h4>
 						</v-flex>
 					</v-layout>
-				</v-container>
+				</v-layout>
+			</v-toolbar>
+		</v-container>
+
+		<v-content>
+			<v-container grid-list-xs fluid>
+				<v-layout row wrap>
+					<v-flex v-for="widget in widgets" xs12 sm6 md4 lg3>
+						<v-layout align-center justify-center>
+							<v-card class="elevation-4 ma-4" style="min-width: 300px;">
+								<v-card-title class="primary darken-1 title pa-1"><v-icon large>battery_charging_full</v-icon>{{widget.title}}</v-card-title>
+								<v-card-media v-html="widget.iframe" style="width:300px; height: 170px;"></v-card-media>
+							</v-card>
+						</v-layout>
+					</v-flex>
+				</v-layout>
+			</v-container>
 		</v-content>
 
-		<Menu></Menu>
+		<Menu :menu="menu"></Menu>
 	</v-app>
 </template>
 
@@ -36,6 +36,7 @@
 	import Menu from './Menu'
 
 	export default {
+		props: ["menu"],
 		components: {
 			Menu
 		},

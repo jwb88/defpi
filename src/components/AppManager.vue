@@ -4,14 +4,14 @@
 			<h1>App Manager</h1>
 		</v-content>
 
-		<Menu></Menu>
+		<Menu :menu="menu"></Menu>
 	</v-app>
 </template>
 
 <script>
 	import Menu from './Menu';
     export default {
-        name: "AppManager",
+		props: ["menu"],
 		components: {
         	Menu
 		}
