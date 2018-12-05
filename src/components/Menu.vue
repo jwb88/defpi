@@ -7,7 +7,7 @@
 									 app></v-toolbar-side-icon>
 				<v-layout class="hidden-sm-and-down">
 					<v-layout v-for="item in menu" justify-center>
-						<v-btn class="pa-4 title" v-bind="{to: item.url}" active-class="primary">
+						<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
 							<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
 							{{item.text}}
 						</v-btn>
@@ -66,3 +66,9 @@
 		}
 	}
 </script>
+
+<style scoped>
+	.pa-4\.5 {
+		padding: 40px;
+	}
+</style>

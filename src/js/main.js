@@ -5,10 +5,10 @@ import App 					from "../App";
 import Login    			from '../components/LoginForm';
 import Dashboard      		from "../components/Dashboard";
 import Settings     		from "../components/Settings";
-import UserSettings     	from "../components/UserSettings";
-import MyDevices     		from "../components/MyDevices";
-import ConnectionManager    from "../components/ConnectionManager";
-import MyApps     			from "../components/MyApps";
+import UserSettings     	from "../components/settings/UserSettings";
+import MyDevices     		from "../components/settings/MyDevices";
+import ConnectionManager    from "../components/settings/ConnectionManager";
+import MyApps     			from "../components/settings/MyApps";
 import AppStore     		from "../components/AppStore";
 import PageNotFound     	from "../components/404";
 
@@ -36,7 +36,7 @@ const menu = [
 	{
 		text: "Settings",
 		icon: "settings",
-		url: "/settings/user_settings",
+		url: "/settings",
 		sub_items: [
 			{
 				text: "User Config",
@@ -83,13 +83,14 @@ const router = new VueRouter({
     mode: 'history',
     routes: [
         // dynamic segments start with a colon
-		{ path: '*',					component: PageNotFound 	},
-		{ path: '/login',             	component: Login,			},
+		{ path: '*',						component: PageNotFound 	},
+		{ path: '/login',             		component: Login,			},
 
-        { path: '/',             		component: Dashboard,		props: { menu }		},
-		{ path: '/app_store',            component: AppStore,		props: { menu } 	},
+        { path: '/',             			component: Dashboard,		props: { menu }		},
+		{ path: '/fullscreen_widget/:id',   component: Dashboard,		props: { menu }		},
+		{ path: '/app_store',           	component: AppStore,		props: { menu } 	},
 
-        { path: '/settings',      		component: Settings,		props: { menu }, 	children: [
+        { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings,		props: { menu }, 	children: [
         	{path:"user_settings", 			component: UserSettings, 		props: {menu}},
         	{path:"my_devices", 			component: MyDevices, 			props: {menu}},
         	{path:"connection_manager", 	component: ConnectionManager, 	props: {menu}},
