@@ -6,7 +6,7 @@
 				<v-layout v-for="fullscreenWidget in fullscreenWidgets" justify-center wrap>
 					<v-layout row xs12 md6>
 						<v-flex class="text-xs-center">
-							<v-btn large ripple fab v-bind:style="{backgroundImage: 'url(' + fullscreenWidget.icon_url + ')', backgroundSize: 'contain', backgroundPosition: 'center'}" v-bind="{to: '/fullscreen_widget/' + fullscreenWidget.id}"></v-btn>
+							<v-btn large ripple fab class="fullscreenBtn" active-class="fullscreenActive" v-bind:style="{backgroundImage: 'url(' + fullscreenWidget.icon_url + ')', backgroundSize: 'contain', backgroundPosition: 'center'}" v-bind="{to: '/fullscreen_widget/' + fullscreenWidget.id}"></v-btn>
 							<h4 class="hidden-sm-and-down">{{ fullscreenWidget.title }}</h4>
 						</v-flex>
 					</v-layout>
@@ -30,11 +30,9 @@
 			</v-container>
 
 			<v-container v-else>
-				<v-card class="fill-height" v-if="fullscreenWidgets[$route.params.id] != null">
-					<v-card-text>
-						<v-card-title class="title">{{ fullscreenWidgets[$route.params.id].title }}</v-card-title>
-						<v-card-media v-html="fullscreenWidgets[$route.params.id].iframe"></v-card-media>
-					</v-card-text>
+				<v-card v-if="fullscreenWidgets[$route.params.id] != null">
+					<v-card-title class="title">{{ fullscreenWidgets[$route.params.id].title }}</v-card-title>
+					<v-card-media width="auto" height="1200px" v-html="fullscreenWidgets[$route.params.id].iframe"></v-card-media>
 				</v-card>
 				<v-card v-else>
 					<v-card-title class="title">[404] Deze App is niet aanwezig... :(</v-card-title>
@@ -138,3 +136,14 @@
 		}
 	}
 </script>
+
+
+<style scoped>
+	.fullscreenBtn {
+		box-shadow: none !important;
+	}
+	.fullscreenActive {
+		box-shadow: 0px 6px 1px rgba(0,0,0, 0.4) !important;
+		margin-bottom: 6px;
+	}
+</style>
