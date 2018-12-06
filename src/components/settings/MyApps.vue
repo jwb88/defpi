@@ -93,7 +93,7 @@
 						<v-divider>divider</v-divider>
 						<v-subheader>Location</v-subheader>
 					</v-layout>
-					<v-card v-for="app in apps">
+					<v-card v-for="app in apps" :key="app.id">
 						<v-layout align-center justify-center wrap row pa-4 ma-3>
 							<v-img max-width="100px" max-height="100px" v-bind:src="app.icon_url" ></v-img>
 							<h2>{{ app.title }}</h2>
@@ -124,16 +124,19 @@
 				icon_url: "https://www.davehewer.com/wp-content/uploads/2018/02/greenleaf-logo-branding03.png",
 				apps: [
 					{
+						id:	0,
 						title: "Miele",
 						icon_url: "http://www.bruggink-bv.nl/wp-content/uploads/2015/09/miele-logo-1.png",
 						locations: "Cloud"
 					},
 					{
+						id:	1,
 						title: "Smart Energy",
 						icon_url: "https://www.davehewer.com/wp-content/uploads/2018/02/greenleaf-logo-branding03.png",
 						locations: "Raspberry Pi - 1"
 					},
 					{
+						id:	2,
 						title: "Vue Power",
 						icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Vue.js_Logo.svg/400px-Vue.js_Logo.svg.png",
 						locations: "Cloud"

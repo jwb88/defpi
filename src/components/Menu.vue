@@ -6,7 +6,7 @@
 				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-md-and-up"
 									 app></v-toolbar-side-icon>
 				<v-layout class="hidden-sm-and-down">
-					<v-layout v-for="item in menu" justify-center>
+					<v-layout v-for="item in menu"  :key="item.url" justify-center>
 						<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
 							<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
 							{{item.text}}
@@ -20,7 +20,7 @@
 
 		<!-- SIDE MENU -->
 		<v-navigation-drawer class="hidden-md-and-up" v-model="drawer" temporary app>
-			<v-list v-for="item in menu">
+			<v-list v-for="item in menu" :key="item.url">
 				<v-list-group v-if="(item.sub_items.length > 0)">
 					<v-list-tile slot="activator" ripple class="v-list--three-line">
 						<v-list-tile-action>
@@ -31,7 +31,7 @@
 						</v-list-tile-content>
 					</v-list-tile>
 
-					<v-list-tile v-for="subItem in item.sub_items" ripple v-bind="{to: subItem.url}" class="v-list--two-line">
+					<v-list-tile v-for="subItem in item.sub_items" :key="subItem.url"  ripple v-bind="{to: subItem.url}" class="v-list--two-line">
 						<v-list-tile-action>
 							<v-icon medium class="ml-3">{{ subItem.icon }}</v-icon>
 						</v-list-tile-action>
