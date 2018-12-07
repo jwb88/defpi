@@ -1,11 +1,23 @@
 <template>
-	<v-app class="background">
+	<v-app id="Appstore" class="background">
 		<v-toolbar height="100px" class="v-toolbar--fixed primary" app>
 			<v-text-field class="fill-height align-end" placeholder="Search.."></v-text-field>
 		</v-toolbar>
 
 		<v-content>
-			<v-container v-if="$route.params.id == null" grid-list-xs fluid>
+			<v-layout row wrap>
+				<v-flex class="hidden-md-and-down">
+					<v-container>
+
+					</v-container>
+				</v-flex>
+				<v-flex>
+					<v-container>
+
+					</v-container>
+				</v-flex>
+			</v-layout>
+			<!--<v-container v-if="$route.params.id == null" grid-list-xs fluid>
 				<v-layout row wrap>
 					<v-flex v-for="widget in widgets" :key="widget.id" xs12 sm6 md4 lg4>
 						<v-layout align-center justify-center>
@@ -16,7 +28,7 @@
 						</v-layout>
 					</v-flex>
 				</v-layout>
-			</v-container>
+			</v-container>-->
 		</v-content>
 
 		<Menu :menu="menu"></Menu>
@@ -26,6 +38,7 @@
 <script>
 	import Menu from './Menu'
     export default {
+		name: 'Appstore',
 		props: ["menu"],
 		components: {
 			Menu
@@ -93,7 +106,8 @@
 						title: "Battery",
 						doc: "Install this beautiful battery app!"
 					},
-				]
+				],
+				categories: getAppstoreCategories()
 			}
 		}
     }

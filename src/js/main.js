@@ -67,8 +67,8 @@ const menu = [
 	{
 		text: "App Store",
 		icon: "shop",
-		url: "/app_store",
-		sub_items: []
+		url: "/appstore",
+		sub_items: buildSubItems(getAppstoreCategories()),
 	},
 	{
 		text: "Logout",
@@ -88,7 +88,9 @@ const router = new VueRouter({
 
         { path: '/',             			component: Dashboard,		props: { menu }		},
 		{ path: '/fullscreen_widget/:id',   component: Dashboard,		props: { menu }		},
-		{ path: '/app_store',           	component: AppStore,		props: { menu } 	},
+		{ path: '/appstore',   				component: AppStore,		props: { menu }		},
+		{ path: '/appstore/category/:cat', 	component: AppStore,		props: { menu } 	},
+		{ path: '/appstore/app/:id',       	component: AppStore,		props: { menu } 	},
 
         { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings,		props: { menu }, 	children: [
         	{path:"user_settings", 			component: UserSettings, 		props: {menu}},
@@ -99,8 +101,33 @@ const router = new VueRouter({
     ]
 });
 
-
 new Vue({
     router,
     render: (h) => h(App),
 }).$mount('#app');
+
+function getAppstoreCategories() {
+	return ['test', 'voertuigen', 'appels', 'test2'];
+}
+
+function buildSubItems(subList) {
+	let subItems = [];
+	// Make sure we only create the list if there's actually any subItems
+	if( subList.length < 1 )
+		return subItems;
+
+	subList.forEach(function (value, key) {
+		let subItem = [];
+		// Add all necessary data
+		subItem.text = value;
+		subItem.icon = '';
+		subItem.url = '/appstore/category/' + value;
+		subItem.sub_items = [];
+
+		// Add item to list
+		subItems.push(subItem)
+	});
+
+	// Return our created subItem list
+	return subItems;
+}
