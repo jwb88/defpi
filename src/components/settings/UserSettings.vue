@@ -81,8 +81,8 @@
 											required
 											type="password"
 										></v-text-field>
-										<v-btn @click="submit">submit</v-btn>
-										<v-btn @click="clear">clear</v-btn>
+										<v-btn @click="dialog = false">submit</v-btn>
+										<v-btn @click="dialog = false">clear</v-btn>
 									</v-form>
 									</v-card>
 								</v-dialog>
