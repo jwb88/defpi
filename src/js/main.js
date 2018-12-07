@@ -1,5 +1,8 @@
 import Vue          		from 'vue';
 import VueRouter    		from 'vue-router';
+import VueAxios 			from 'vue-axios'
+import axios 				from 'axios'
+import API					from './api'
 
 import App 					from "../App";
 import Login    			from '../components/LoginForm';
@@ -22,9 +25,10 @@ Vue.use(Vuetify, {
         background: "#CECECE",
     }
 });
-
-
 Vue.use(VueRouter);
+Vue.use(VueAxios, axios);
+/*console.log(API.get);
+Vue.use(API);*/
 
 const menu = [
 	{
@@ -93,10 +97,10 @@ const router = new VueRouter({
 		{ path: '/appstore/app/:id',       	component: AppStore,		props: { menu } 	},
 
         { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings,		props: { menu }, 	children: [
-        	{path:"user_settings", 			component: UserSettings, 		props: {menu}},
-        	{path:"my_devices", 			component: MyDevices, 			props: {menu}},
-        	{path:"connection_manager", 	component: ConnectionManager, 	props: {menu}},
-        	{path:"my_apps", 				component: MyApps, 				props: {menu}},
+        	{path:"user_settings", 			component: UserSettings, 		props: { menu }		},
+        	{path:"my_devices", 			component: MyDevices, 			props: { menu }		},
+        	{path:"connection_manager", 	component: ConnectionManager, 	props: { menu }		},
+        	{path:"my_apps", 				component: MyApps, 				props: { menu }		},
 		]},
     ]
 });

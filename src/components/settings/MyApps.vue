@@ -82,6 +82,7 @@
 						</v-layout>
 					</v-toolbar>
 				</v-container>
+
 				<v-container>
 					<v-layout pa-4 ma-3>
 						<v-subheader>Applicationname</v-subheader>

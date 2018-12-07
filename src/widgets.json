@@ -1,0 +1,44 @@
+{
+	"widgets": [
+		{
+			"id": 0,
+			"title": "Miele",
+			"icon_url": "https://pbs.twimg.com/profile_images/959009047977582592/Yrzj3piC_400x400.jpg",
+			"iframe_src": "/src/widgets/miele.html",
+			"has_fullscreen_widget": true,
+			"has_widget": false
+		},
+		{
+			"id": 1,
+			"title": "Smart Energy",
+			"icon_url": "https://www.davehewer.com/wp-content/uploads/2018/02/greenleaf-logo-branding03.png",
+			"iframe_src": "/src/widgets/battery.html",
+			"has_fullscreen_widget": true,
+			"has_widget": false
+		},
+		{
+			"id": 2,
+			"title": "Vue Power",
+			"icon_url": "https://pbs.twimg.com/profile_images/875996174305472512/upM71pVR_400x400.jpg",
+			"iframe_src": "/src/widgets/battery.html",
+			"has_fullscreen_widget": true,
+			"has_widget": true
+		},
+		{
+			"id": 3,
+			"title": "Battery",
+			"icon_url": "https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/BTrHt7uCiu335hjs/battery-icon-charging-hd-animation-pixel-art-style-on-white-background_syetkwefsx_thumbnail-full01.png",
+			"iframe_src": "/src/widgets/battery.html",
+			"has_fullscreen_widget": false,
+			"has_widget": true
+		},
+		{
+			"id": 4,
+			"title": "GridConnect",
+			"icon_url": "https://azure.microsoft.com/svghandler/event-grid/?width=600&height=315",
+			"iframe_src": "/src/widgets/battery.html",
+			"has_fullscreen_widget": true,
+			"has_widget": true
+		}
+	]
+}
