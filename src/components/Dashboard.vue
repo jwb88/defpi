@@ -22,7 +22,7 @@
 					<v-flex v-for="widget in widgets" v-if="widget.has_widget" :key="widget.id" xs12 sm6 md4 lg3>
 						<v-layout align-center justify-center>
 							<v-card class="elevation-4 ma-4" style="min-width: 300px;">
-								<v-card-title class="primary darken-1 title primary--text text--lighten-1 pa-1" color="primary"><v-icon color="primary lighten-1" large>battery_charging_full</v-icon>{{widget.title}}</v-card-title>
+								<v-card-title class="primary darken-1 title primary--text text--lighten-1 pa-1" color="primary"><v-avatar v-bind:style="{backgroundImage: 'url(' + widget.icon_url + ')', backgroundSize: 'contain', backgroundPosition: 'center', marginRight: '20px'}"></v-avatar>{{widget.title}}</v-card-title>
 								<v-responsive style="width:300px; height: 170px;"><iframe width="100%" height="100%" v-bind:src="widget.iframe_src"></iframe></v-responsive>
 							</v-card>
 						</v-layout>

@@ -1,7 +1,7 @@
 <template>
 	<v-app class="background">
 		<v-container fluid>
-			<v-navigation-drawer class="primary darken-1 hidden-sm-and-down" permanent dark app>
+			<v-navigation-drawer class="primary darken-1 hidden-sm-and-down" fixed dark app>
 				<v-list>
 					<v-list-tile v-for="settings in menu[1].sub_items" :key="settings.url" ripple v-bind="{to: settings.url}" active-class="primary" class="v-list--three-line">
 						<v-list-tile-action>
