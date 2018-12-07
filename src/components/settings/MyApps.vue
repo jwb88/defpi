@@ -3,22 +3,17 @@
 		<v-layout>
 			<v-flex xs12>
 				<v-container>
-					<v-toolbar class="primary pa-2" app height="70px">
+					<v-toolbar color="primary" class="v-toolbar--fixed" app height="70px">
 						<h1>My Apps</h1>
 						<v-layout>
 							<v-flex class="text-xs-right">
-								<v-dialog v-model="dialog" width="800">
+								<v-dialog v-model="dialog" width="800" lazy>
 									<v-btn fab slot="activator"  v-on:click="dialog = true" v-bind:style="{backgroundImage:'url(' + alarm_bell + ')', backgroundSize: 'contain', backgroundPosition: 'center'}">
 									</v-btn>
-									<!--<v-btn slot="activator" icon v-on:click="dialog = true">
-										<v-avatar>
-											<img src="https://www.onsolve.com/wp-content/uploads/2015/08/Alarm-bell.png">
-										</v-avatar>
-									</v-btn>
-									-->
-									<v-tabs grow>
-										<v-tab>Settings</v-tab>
-										<v-tab>Notifications</v-tab>
+									<v-tabs v-model="active_tab" show arrows grow>
+										<v-tab v-for="tab of tabs" :key="tab.id">
+											{{ tab.name }}
+										</v-tab>
 										<v-tab-item>
 											<v-layout justify-center>
 												<v-flex xs12 sm6>
@@ -164,7 +159,8 @@
 						message: 'De batterij is kapot.'
 					}
 				],
-				alarm_bell: "https://www.onsolve.com/wp-content/uploads/2015/08/Alarm-bell.png"
+				alarm_bell: "https://www.onsolve.com/wp-content/uploads/2015/08/Alarm-bell.png",
+				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}]
 			}
 		}
 //<v-btn fab large ripple v-bind:style="{backgroundImage:'url(' + icon_url + ')'}"></v-btn>
