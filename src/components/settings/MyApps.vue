@@ -10,73 +10,30 @@
 								<v-dialog v-model="dialog" width="800" lazy>
 									<v-btn fab slot="activator"  v-on:click="dialog = true" v-bind:style="{backgroundImage:'url(' + alarm_bell + ')', backgroundSize: 'contain', backgroundPosition: 'center'}">
 									</v-btn>
-									<v-tabs v-model="active_tab" show arrows grow>
-										<v-tab v-for="tab of tabs" :key="tab.id">
-											{{ tab.name }}
-										</v-tab>
-										<v-tab-item>
-											<v-layout justify-center>
-												<v-flex xs12 sm6>
-													<v-card height="500px">
-														<v-container fluid grid-list-md>
-															<h2>Miele Wasmachine P039</h2>
-															<br>
-															<v-card-text center><h4>IP-address</h4></v-card-text>
-															<v-text-field align-center label="192.168.1.15"></v-text-field>
-															<v-card-actions>
-																<v-spacer></v-spacer>
-																<v-btn class="primary" @click="dialog = false">Save</v-btn>
-															</v-card-actions>
-														</v-container>
-													</v-card>
-												</v-flex>
-												<v-divider vertical></v-divider>
-												<v-flex xs12 sm6>
-													<v-card row wrap xs12 sm6 height="500px">
-														<v-container fluid grid-list-md>
-															<h4>Location</h4>
-															<v-overflow-btn label="Location" :items="installed_locations"></v-overflow-btn>
-															<v-card-actions>
-																<v-spacer></v-spacer>
-																<v-btn class="primary" @click="dialog = false">Uninstall <v-icon>delete</v-icon></v-btn>
-																<v-btn class="primary" @click="dialog = false">Update <v-icon>play_for_work</v-icon></v-btn>
-															</v-card-actions>
-														</v-container>
-													</v-card>
-												</v-flex>
-											</v-layout>
-										</v-tab-item>
-										<v-tab-item>
 											<v-card>
 												<v-card-title class="headline grey lighten-2" primary-title>
 													Notifications
 												</v-card-title>
-												<v-card-text>
-													<v-data-table
-														:headers="headers"
-														:items="applications"
-														class="elevation-1"
-														hide-actions
-													>
-														<template slot="items" slot-scope="props">
-															<td>{{ props.item.name }}</td>
-															<td class="text-xs-right">{{ props.item.message }}</td>
-															<v-btn small class="mr-2">Update</v-btn>
-															<v-btn small class="mr-2">Dismiss</v-btn>
-														</template>
-													</v-data-table>
+												<v-card-text v-for="app in apps" :key="app.id">
+													<v-list two-line>
+														<v-list-tile @click="app.dialog = true ; dialog = false">
+															<v-list-tile-avatar>
+																<img :src="app.icon_url" alt="">
+															</v-list-tile-avatar>
+															<v-list-tile-content>
+																<v-list-tile-title>{{ app.title }}</v-list-tile-title>
+																<v-list-tile-sub-title>{{ app.notifications }}</v-list-tile-sub-title>
+															</v-list-tile-content>
+														</v-list-tile>
+													</v-list>
 												</v-card-text>
-
 												<v-divider></v-divider>
-
 												<v-card-actions>
 													<v-spacer></v-spacer>
 													<v-btn class="primary" @click="dialog = false">Mark as read</v-btn>
-													<v-btn color="primary"  @click="dialog = false">Ok</v-btn>
+													<v-btn color="primary" @click="dialog = false">Ok</v-btn>
 												</v-card-actions>
 											</v-card>
-										</v-tab-item>
-									</v-tabs>
 								</v-dialog>
 							</v-flex>
 						</v-layout>
@@ -84,20 +41,89 @@
 				</v-container>
 
 				<v-container>
-					<v-layout pa-4 ma-3>
-						<v-subheader>Applicationname</v-subheader>
-						<v-divider>divider</v-divider>
-						<v-subheader>Location</v-subheader>
-					</v-layout>
-					<v-card v-for="app in apps" :key="app.id">
+					<v-toolbar color="primary" pa-4 ma-3>
+						Application
+						<v-divider></v-divider>
+						Location
+					</v-toolbar>
+					<v-card v-for="(app,index) in apps" :key="app.id">
 						<v-layout align-center justify-center wrap row pa-4 ma-3>
-							<v-img max-width="100px" max-height="100px" v-bind:src="app.icon_url" ></v-img>
+							<v-img max-width="5%" max-height="5%" v-bind:src="app.icon_url" ></v-img>
 							<h2>{{ app.title }}</h2>
-							<v-flex wrap row ma-5 class="text-lg-right">
+							<v-flex app class="text-xs-right">
 								<h2>{{ app.locations }}</h2>
-								<!--<v-btn large xs12 sm6 md4 >Configureren</v-btn>
-								<v-btn large xs12 sm6 md4 >Verwijderen</v-btn>-->
 							</v-flex>
+							<v-dialog v-model="app.dialog" width="800" lazy>
+								<v-btn slot="activator" @click="(app.dialog=true)" ma-5 small fab><v-icon large>settings</v-icon></v-btn>
+								<v-tabs v-model="active_tab" show arrows grow>
+									<v-tab v-for="tab of tabs" :key="tab.id">
+										{{ tab.name }}
+									</v-tab>
+									<v-tab-item>
+										<v-layout justify-center>
+											<v-flex xs12 sm6>
+												<v-card height="500px">
+													<v-container fluid grid-list-md>
+														<h2>{{ app.title }}</h2>
+														<br>
+														<v-card-text center><h4>IP-address</h4></v-card-text>
+														<v-text-field align-center v-bind:label="app.ip_address"> </v-text-field>
+														<v-card-actions>
+															<v-spacer></v-spacer>
+															<v-btn class="primary" @click="app.dialog = false">Save</v-btn>
+														</v-card-actions>
+													</v-container>
+												</v-card>
+											</v-flex>
+											<v-divider vertical></v-divider>
+											<v-flex xs12 sm6>
+												<v-card row wrap xs12 sm6 height="500px">
+													<v-container fluid grid-list-md>
+														<h4>Location</h4>
+														<v-overflow-btn label="Location" :items="installed_locations"></v-overflow-btn>
+														<v-card-actions>
+															<v-spacer></v-spacer>
+															<v-btn class="primary" v-bind:onclick="app.dialog = false">Uninstall <v-icon>delete</v-icon></v-btn>
+															<v-btn class="primary" v-bind:onclick="app.dialog = false">Update <v-icon>play_for_work</v-icon></v-btn>
+														</v-card-actions>
+													</v-container>
+												</v-card>
+											</v-flex>
+										</v-layout>
+									</v-tab-item>
+									<v-tab-item>
+										<v-card>
+											<v-card-title class="headline grey lighten-2" primary-title>
+												Notifications
+											</v-card-title>
+											<v-card-text>
+												<td>{{ app.notifications }}</td>
+												<!--<v-data-table
+													:headers="headers"
+													:items="apps"
+													class="elevation-1"
+													hide-actions
+												>
+													<template slot="items" slot-scope="props">
+														<td>{{ apps.title }}</td>
+														<td class="text-xs-right">{{ apps.notifications }}</td>
+													</template>
+												</v-data-table>-->
+											</v-card-text>
+
+											<v-divider></v-divider>
+
+											<v-card-actions>
+												<v-spacer></v-spacer>
+												<v-btn class="primary" @click="app.dialog = false">Mark as read</v-btn>
+												{{ app.id }}
+												{{ app.dialog }}
+												<v-btn color="primary" @click="app.dialog = false">Ok</v-btn>
+											</v-card-actions>
+										</v-card>
+									</v-tab-item>
+								</v-tabs>
+							</v-dialog>
 						</v-layout>
 					</v-card>
 				</v-container>
@@ -117,25 +143,34 @@
 			return {
 				dialog: false,
 				installed_locations: ["Cloud","Pi meterkast","Thuis PC", "Homeserver"],
-				icon_url: "https://www.davehewer.com/wp-content/uploads/2018/02/greenleaf-logo-branding03.png",
+				active_tab: 0,
 				apps: [
 					{
 						id:	0,
-						title: "Miele",
+						title: "Miele wasmachine P039",
 						icon_url: "http://www.bruggink-bv.nl/wp-content/uploads/2015/09/miele-logo-1.png",
-						locations: "Cloud"
+						locations: "Cloud",
+						ip_address: "192.168.1.15",
+						notifications: ["Er is een update beschikbaar.","Dit is een update"],
+						dialog: false
 					},
 					{
 						id:	1,
 						title: "Smart Energy",
 						icon_url: "https://www.davehewer.com/wp-content/uploads/2018/02/greenleaf-logo-branding03.png",
-						locations: "Raspberry Pi - 1"
+						locations: "Raspberry Pi - 1",
+						ip_address: "192.168.1.16",
+						notifications: "Dit is een notificatie.",
+						dialog: false
 					},
 					{
 						id:	2,
 						title: "Vue Power",
 						icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Vue.js_Logo.svg/400px-Vue.js_Logo.svg.png",
-						locations: "Cloud"
+						locations: "Cloud",
+						ip_address: "192.168.1.17",
+						notifications: "Geen notificaties.",
+						dialog: false
 					},
 				],
 				headers: [
@@ -163,7 +198,7 @@
 				alarm_bell: "https://www.onsolve.com/wp-content/uploads/2015/08/Alarm-bell.png",
 				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}]
 			}
-		}
+		},
 //<v-btn fab large ripple v-bind:style="{backgroundImage:'url(' + icon_url + ')'}"></v-btn>
 	}
 </script>
