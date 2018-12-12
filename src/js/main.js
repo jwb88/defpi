@@ -111,7 +111,7 @@ new Vue({
 }).$mount('#app');
 
 function getAppstoreCategories() {
-	return ['test', 'voertuigen', 'appels', 'test2'];
+	return ['All', 'Category_One', 'Category_Two', 'Category_Three', 'Category_Four'];
 }
 
 function buildSubItems(subList) {
