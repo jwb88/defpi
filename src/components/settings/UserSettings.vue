@@ -4,7 +4,7 @@
 			<v-layout>
 				<v-flex xs12>
 					<v-toolbar class="primary pa-2" app height="70px">
-						<h1>My Apps</h1>
+						<h1>User Config</h1>
 					</v-toolbar>
 					<v-card>
 						<v-toolbar class="primary"><h1>User Settings</h1></v-toolbar>
@@ -122,7 +122,7 @@
 											class="headline primary"
 											primary-title
 										>
-											Change password
+											Change email
 										</v-card-title>
 										<v-form v-model="valid" class="pa-3">
 											<v-text-field
