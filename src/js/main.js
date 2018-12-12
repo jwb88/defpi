@@ -1,7 +1,5 @@
 import Vue          		from 'vue';
 import VueRouter    		from 'vue-router';
-import VueAxios 			from 'vue-axios'
-import axios 				from 'axios'
 import API					from './api'
 
 import App 					from "../App";
@@ -18,7 +16,6 @@ import PageNotFound     	from "../components/404";
 import Vuetify      		from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 
-
 Vue.use(Vuetify, {
     theme: {
         primary: "#7DB530",
@@ -26,9 +23,6 @@ Vue.use(Vuetify, {
     }
 });
 Vue.use(VueRouter);
-Vue.use(VueAxios, axios);
-/*console.log(API.get);
-Vue.use(API);*/
 
 const menu = [
 	{
@@ -90,7 +84,7 @@ const router = new VueRouter({
 		{ path: '*',						component: PageNotFound 	},
 		{ path: '/login',             		component: Login,			},
 
-        { path: '/',             			component: Dashboard,		props: { menu }		},
+        { path: '/',             			component: Dashboard,		props: { menu, API }		},
 		{ path: '/fullscreen_widget/:id',   component: Dashboard,		props: { menu }		},
 		{ path: '/appstore',   				component: AppStore,		props: { menu }		},
 		{ path: '/appstore/category/:cat', 	component: AppStore,		props: { menu } 	},
