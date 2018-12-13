@@ -23,7 +23,7 @@ export default Object.freeze({
 			.then(response => {
 				if(response.headers["content-type"] === "application/javascript" ||
 					response.headers["content-type"] === "application/json"){
-					//console.log(response.data);
+					console.log(response.data);
 					callback(response);
 				} else {
 					console.log(response);
@@ -33,13 +33,13 @@ export default Object.freeze({
 			.catch(error => console.error(error) );
 
 	},
-	post: function (port, uri, callback) {
+	post: function (port, uri, postData, callback) {
 		console.log('[POST] ' + this.api_url_base + port + uri);
-		axios.post(this.api_url_base + port + uri, this.data)
+		axios.post(this.api_url_base + port + uri, postData, this.data)
 			.then(response => {
 				if(response.headers["content-type"] === "application/javascript" ||
 					response.headers["content-type"] === "application/json"){
-					//console.log(response.data);
+					console.log(response.data);
 					callback(response);
 				} else {
 					console.log(response);

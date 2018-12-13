@@ -62,28 +62,79 @@
 
 			<!-- Dialog -->
 			<v-layout row justify-center>
-				<v-dialog v-model="appModal" persistent max-width="600px">
+				<v-dialog v-model="appModal" persistent max-width="800px">
 					<v-card>
 						<v-card-title>
 							<span v-if="appDetails" class="headline">{{ appDetails.name }}</span>
+							<v-btn class="primary" absolute dark small fab right v-on:click="closeAppModal()">
+								<v-icon> close </v-icon>
+							</v-btn>
 						</v-card-title>
-						<v-card-text>
-							<v-container grid-list-md>
-								<v-layout wrap>
-									<v-label v-if="appDetails" >{{ appDetails.description }}</v-label>
+						<v-divider></v-divider>
+						<v-layout>
+							<v-flex xs8>
+								<v-card-text>
+									<v-container grid-list-md>
+											<v-layout wrap>
+												<v-img src="https://picsum.photos/350/165?random" class="grey darken-4" ></v-img>
+												<v-spacer></v-spacer>
+												<v-label v-if="appDetails" >{{ appDetails.description }}</v-label>
+											</v-layout>
+									</v-container>
+								</v-card-text>
+							</v-flex>
+							<v-flex xs4>
+								<v-layout class="fill-height text-xs-center align-end justify-end pb-5">
+									<v-flex xs12>
+										<v-card-actions>
+											<v-list>
+												<v-list-tile>
+													<v-btn :loading="isInstalling" block class="primary" v-on:click="installApp()" :disabled="hasSelectedLocation()">Install</v-btn>
+												</v-list-tile>
+												<v-list-tile>
+													<v-select
+													:items="locationPicker"
+													v-model="selectedLocation"
+													item-text="name"
+													placeholder="Select a device..."
+													single-line
+													return-object
+													></v-select>
+												</v-list-tile>
+											</v-list>
+										</v-card-actions>
+									</v-flex>
 								</v-layout>
-							</v-container>
-						</v-card-text>
-						<v-card-actions>
-							<v-spacer></v-spacer>
-							<v-btn color="blue darken-1" flat @click="appModal = false">Close</v-btn>
-							<v-btn color="blue darken-1" flat @click="appModal = false">Save</v-btn>
-						</v-card-actions>
+							</v-flex>
+						</v-layout>
 					</v-card>
 				</v-dialog>
 			</v-layout>
-		</v-content>
 
+			<!-- Load bar -->
+			<div class="text-xs-center">
+				<v-dialog v-model="modalLoading" hide-overlay persistent width="300" >
+					<v-card class="primary" dark >
+						<v-card-text>
+							Loading app data...
+							<v-progress-linear indeterminate color="white" class="mb-0" ></v-progress-linear>
+						</v-card-text>
+					</v-card>
+				</v-dialog>
+			</div>
+
+			<!-- Successful install-->
+			<div class="text-xs-center">
+				<v-dialog v-model="appInstalled" persistent width="300" >
+					<v-card dark >
+						<v-card-text>
+							The app has been installed, and will be started momentarily.
+							<v-btn class="primary" v-on:click="appInstalled = false; closeAppModal();">Ok</v-btn>
+						</v-card-text>
+					</v-card>
+				</v-dialog>
+			</div>
+		</v-content>
 		<Menu :menu="menu"></Menu>
 	</v-app>
 </template>
@@ -97,25 +148,29 @@
 		components: {
 			Menu
 		},
-		data () {
+		data: function() {
 			return {
 				appModal: false,
+				modalLoading: false,
+				isInstalling: false,
+				appInstalled: false,
+				selectedLocation: "",
 				appList: [],
 				displayableApps: [],
-				searchFilter: '',
+				searchFilter: "",
 				publicNodes: [],
 				privateNodes: [],
 				nodePools: [],
 				locationPicker: [],
 				appDetails: null,
 				categories: [
-					{ name: 'All' },
-					{ name: 'Category_One' },
-					{ name: 'Category_Two' },
-					{ name: 'Category_Three' },
-					{ name: 'Category_Four' }
-				],
-			}
+					{ name: "All" },
+					{ name: "Category_One" },
+					{ name: "Category_Two" },
+					{ name: "Category_Three" },
+					{ name: "Category_Four" }
+				]
+			};
 		},
 		methods: {
 			updateAppList: function () {
@@ -148,32 +203,93 @@
 				this.API.get("8484", "/nodepool", response => { this.nodePools = response.data; });
 			},
 			createNodeList: function() {
-				this.locationPicker = [];
-				if( this.nodePools.length > 0 )
-					this.locationPicker.push( this.nodePools );
-				if( this.privateNodes.length > 0 )
-					this.locationPicker.push( this.privateNodes );
-				if( this.publicNodes.length > 0 )
-					this.locationPicker.push( this.publicNodes );
-
-				console.log("---Nodes---");
-				console.log(this.nodePools.length );
-				console.log(this.privateNodes.length );
-				console.log(this.publicNodes.length );
-				console.log(this.locationPicker);
-				this.locationPicker.forEach(function (value, key) {
-					console.log(key + "|" + value[0].name)
-				});
-				console.log("-----------")
-
+				let tempLocationPicker = [];
+				if( this.nodePools.length > 0 ) {
+					this.nodePools.forEach(function (value, key) {
+						value.isNodePool = true;
+						tempLocationPicker.push(value);
+					});
+				}
+				if( this.privateNodes.length > 0 ) {
+					this.privateNodes.forEach(function (value, key) {
+						value.isPrivateNode = true;
+						tempLocationPicker.push(value);
+					});
+				}
+				if( this.publicNodes.length > 0 ) {
+					this.publicNodes.forEach(function (value, key) {
+						value.isPublicNode = true;
+						tempLocationPicker.push(value);
+					});
+				}
+				this.locationPicker = tempLocationPicker;
 			},
 			openAppModal: function(appId) {
 				console.log("App id:\t" + appId);
-				this.appModal = true;
-				this.appDetails = {
-					name: appId,
-					description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-				};
+				this.modalLoading = true;
+				this.API.get("8484", "/service/" + appId, response => {
+					let data = response.data;
+					this.appDetails = {
+						id: data.id,
+						name: data.name,
+						description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+					};
+					this.modalLoading = false;
+					this.appModal = true;
+				});
+			},
+			closeAppModal: function() {
+				this.appModal = false;
+				this.selectedLocation = '';
+				this.appDetails = null;
+			},
+			hasSelectedLocation: function() {
+				return this.selectedLocation == null || this.selectedLocation === '';
+			},
+			installApp: function() {
+				console.log("window.localStorage .getItem('efpi_orchestrator_username') \t" + window.localStorage .getItem('efpi_orchestrator_username'));
+				if ( this.selectedLocation !== null &&
+					this.selectedLocation !== '' &&
+					this.appDetails !== null /*&&
+					window.localStorage.getItem('efpi_orchestrator_username') !== null &&
+					window.localStorage.getItem('efpi_orchestrator_username') !== ''*/ ) {
+
+					this.isInstalling = true;
+					let username = window.localStorage.getItem('efpi_orchestrator_username');
+					username = 'admin'; // TODO: REMOVE THIS ABOMINATION
+					// Fetch user Id
+					this.API.get("8484", "/user/by_username/" + username, response => {
+						let data = response.data;
+
+						// Build payload
+						let payLoad = {};
+						payLoad.configuration = null;
+						payLoad.debuggingPort =  0;
+						payLoad.exposePorts = null;
+						payLoad.maxMemoryBytes = 0;
+						payLoad.maxNanoCPUs = 0;
+						payLoad.mountPoints = null;
+						payLoad.name = null;
+						if( this.selectedLocation.isNodePool ) {
+							payLoad.nodePoolId = this.selectedLocation.id;
+							payLoad.privateNodeId = null;
+						}else {
+							payLoad.nodePoolId = null;
+							payLoad.privateNodeId = this.selectedLocation.id;
+						}
+						payLoad.serviceId = this.appDetails.id;
+						payLoad.userId = data.id;
+
+						console.log(payLoad);
+						this.API.post("8484", "/process", payLoad, response => {
+							let data = response.data;
+							console.log(data);
+
+							this.isInstalling = false;
+							this.appInstalled = true;
+						});
+					});
+				}
 			}
 		},
 		mounted () {
