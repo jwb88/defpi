@@ -60,7 +60,7 @@
 		},
 		methods: {
 			getWidgets: function () {
-				this.API.post("/dashboard/getWidgets", response => this.widgets = response.data);
+				this.API.post("8080", "/dashboard/getWidgets", response => this.widgets = response.data);
 			}
 		},
 		mounted () {

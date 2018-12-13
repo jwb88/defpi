@@ -84,11 +84,11 @@ const router = new VueRouter({
 		{ path: '*',						component: PageNotFound 	},
 		{ path: '/login',             		component: Login,			},
 
-        { path: '/',             			component: Dashboard,		props: { menu, API }		},
-		{ path: '/fullscreen_widget/:id',   component: Dashboard,		props: { menu }		},
-		{ path: '/appstore',   				component: AppStore,		props: { menu }		},
-		{ path: '/appstore/category/:cat', 	component: AppStore,		props: { menu } 	},
-		{ path: '/appstore/app/:id',       	component: AppStore,		props: { menu } 	},
+        { path: '/',             			component: Dashboard,		props: { menu, API }	},
+		{ path: '/fullscreen_widget/:id',   component: Dashboard,		props: { menu }			},
+		{ path: '/appstore',   				component: AppStore,		props: { menu, API }	},
+		{ path: '/appstore/category/:cat', 	component: AppStore,		props: { menu, API } 	},
+		{ path: '/appstore/app/:id',       	component: AppStore,		props: { menu, API } 	},
 
         { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings,		props: { menu }, 	children: [
         	{path:"user_settings", 			component: UserSettings, 		props: { menu }		},
