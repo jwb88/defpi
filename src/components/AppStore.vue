@@ -183,8 +183,8 @@
 				// TODO: Add filtering
 				if( this.appList.length > 0 ){
 					this.appList.forEach(function (value, key) {
-						if(	1/*value.name !== "Dashboard" &&
-							value.name !== "Dashboard Gateway"*/ ) {
+						if(	value.name !== "Dashboard" &&
+							value.name !== "Dashboard Gateway") {
 							if( searchTerm.length > 0 ) {
 								if( value.name.toLowerCase().includes( searchTerm ) ) {
 									tempAppList.push(value);
@@ -225,7 +225,6 @@
 				this.locationPicker = tempLocationPicker;
 			},
 			openAppModal: function(appId) {
-				console.log("App id:\t" + appId);
 				this.modalLoading = true;
 				this.API.get("8484", "/service/" + appId, response => {
 					let data = response.data;
@@ -247,7 +246,6 @@
 				return this.selectedLocation == null || this.selectedLocation === '';
 			},
 			installApp: function() {
-				console.log("window.localStorage .getItem('efpi_orchestrator_username') \t" + window.localStorage .getItem('efpi_orchestrator_username'));
 				if ( this.selectedLocation !== null &&
 					this.selectedLocation !== '' &&
 					this.appDetails !== null /*&&
@@ -280,10 +278,8 @@
 						payLoad.serviceId = this.appDetails.id;
 						payLoad.userId = data.id;
 
-						console.log(payLoad);
 						this.API.post("8484", "/process", payLoad, response => {
 							let data = response.data;
-							console.log(data);
 
 							this.isInstalling = false;
 							this.appInstalled = true;
