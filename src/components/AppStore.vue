@@ -62,17 +62,25 @@
 
 			<!-- Dialog -->
 			<v-layout row justify-center>
-				<v-dialog v-model="appModal" persistent max-width="800px">
+				<!--<v-dialog v-model="appModal" persistent max-width="800px">-->
+				<v-dialog lazy v-model="appModal" persistent :fullscreen="$vuetify.breakpoint.smAndDown" max-width="800px">
 					<v-card>
-						<v-card-title>
+						<v-card-title class="hidden-md-and-down">
 							<span v-if="appDetails" class="headline">{{ appDetails.name }}</span>
 							<v-btn class="primary" absolute dark small fab right v-on:click="closeAppModal()">
 								<v-icon> close </v-icon>
 							</v-btn>
 						</v-card-title>
+						<v-card-title class="hidden-lg-and-up text-xs-center justify-center">
+							<span v-if="appDetails" class="headline">{{ appDetails.name }}</span>
+							<v-btn absolute large flat icon fab left v-on:click="closeAppModal()">
+								<v-icon> arrow_back </v-icon>
+							</v-btn>
+						</v-card-title>
+
 						<v-divider></v-divider>
-						<v-layout>
-							<v-flex xs8>
+						<v-layout wrap>
+							<v-flex sm12 md12 lg8>
 								<v-card-text>
 									<v-container grid-list-md>
 											<v-layout wrap>
@@ -83,26 +91,28 @@
 									</v-container>
 								</v-card-text>
 							</v-flex>
-							<v-flex xs4>
-								<v-layout class="fill-height text-xs-center align-end justify-end pb-5">
+							<v-flex sm12 md12 lg4>
+								<v-layout class="fill-height row wrap fill-height text-xs-center align-end justify-end pb-5">
 									<v-flex xs12>
-										<v-card-actions>
-											<v-list>
-												<v-list-tile>
-													<v-btn :loading="isInstalling" block class="primary" v-on:click="installApp()" :disabled="hasSelectedLocation()">Install</v-btn>
-												</v-list-tile>
-												<v-list-tile>
-													<v-select
-													:items="locationPicker"
-													v-model="selectedLocation"
-													item-text="name"
-													placeholder="Select a device..."
-													single-line
-													return-object
-													></v-select>
-												</v-list-tile>
-											</v-list>
-										</v-card-actions>
+										<v-layout justify-center>
+											<v-card-actions style="max-width:280px;">
+												<v-list>
+													<v-list-tile>
+														<v-btn :loading="isInstalling" block class="primary" v-on:click="installApp()" :disabled="hasSelectedLocation()">Install</v-btn>
+													</v-list-tile>
+													<v-list-tile>
+														<v-select
+														:items="locationPicker"
+														v-model="selectedLocation"
+														item-text="name"
+														placeholder="Select a device..."
+														single-line
+														return-object
+														></v-select>
+													</v-list-tile>
+												</v-list>
+											</v-card-actions>
+										</v-layout>
 									</v-flex>
 								</v-layout>
 							</v-flex>
@@ -174,7 +184,7 @@
 		},
 		methods: {
 			updateAppList: function () {
-				this.API.get("8484", "/service", response => { this.appList = response.data; this.updateFilteredList()});
+				this.API.get("8484", "/service", response => { this.appList = response.data; this.updateFilteredList(); this.modalLoading = false; });
 			},
 			updateFilteredList: function() {
 				let tempAppList = [];
@@ -289,6 +299,7 @@
 			}
 		},
 		mounted () {
+			this.modalLoading = true;
 			this.updateAppList();
 			this.fetchNodes();
 			setInterval(function () {
