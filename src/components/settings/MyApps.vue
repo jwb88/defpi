@@ -21,7 +21,7 @@
 																<img :src="app.icon_url" alt="">
 															</v-list-tile-avatar>
 															<v-list-tile-content>
-																<v-list-tile-title>{{ app.title }}</v-list-tile-title>
+																<v-list-tile-title>{{ app.serviceId }}</v-list-tile-title>
 																<v-list-tile-sub-title>{{ app.notifications }}</v-list-tile-sub-title>
 															</v-list-tile-content>
 														</v-list-tile>
@@ -49,9 +49,9 @@
 					<v-card v-for="(app) in apps" :key="app.id">
 						<v-layout align-center justify-center wrap row pa-4 ma-3>
 							<v-img max-width="5%" max-height="5%" v-bind:src="app.icon_url" ></v-img>
-							<h2>{{ app.title }}</h2>
+							<h2>{{ app.serviceId }}</h2>
 							<v-flex app class="text-xs-right">
-								<h2>{{ app.locations }}</h2>
+								<h2>{{ app.location }}</h2>
 							</v-flex>
 							<v-dialog v-model="appdialog" width="800" lazy>
 								<v-btn slot="activator" @click= "active_tab = 0" v-on:click="open_dialog(app.id)" ma-5 small fab><v-icon large>settings</v-icon></v-btn>
@@ -125,7 +125,6 @@
 						</v-layout>
 					</v-card>
 					<v-btn fab @click="updateAppList()">Click me</v-btn>
-					{{ app_list }}
 				</v-container>
 			</v-flex>
 		</v-layout>
@@ -147,11 +146,11 @@
 				dialog: false,
 				installed_locations: ["Cloud","Pi meterkast","Thuis PC", "Homeserver"],
 				active_tab: 0,
-				app_list: [],
+				app_list: {},
 				apps: [
 					{
 						id:	0,
-						title: "Miele wasmachine P039",
+						serviceId: "Miele wasmachine P039",
 						icon_url: "http://www.bruggink-bv.nl/wp-content/uploads/2015/09/miele-logo-1.png",
 						locations: "Cloud",
 						ip_address: "192.168.1.15",
@@ -160,7 +159,7 @@
 					},
 					{
 						id:	1,
-						title: "Smart Energy",
+						serviceId: "Smart Energy",
 						icon_url: "https://www.davehewer.com/wp-content/uploads/2018/02/greenleaf-logo-branding03.png",
 						locations: "Raspberry Pi - 1",
 						ip_address: "192.168.1.16",
@@ -169,7 +168,7 @@
 					},
 					{
 						id:	2,
-						title: "Vue Power",
+						serviceId: "Vue Power",
 						icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Vue.js_Logo.svg/400px-Vue.js_Logo.svg.png",
 						locations: "Cloud",
 						ip_address: "192.168.1.17",
@@ -183,7 +182,17 @@
 		},
 		methods: {
 			updateAppList: function () {
-				this.API.get("8484", "/process", response => { this.app_list = response.data;});
+				let appies = this.apps;
+				this.API.get("8484", "/process", response => {
+					this.app_list = response.data;
+
+					this.app_list.forEach(function(value,key) {
+						appies.push(value);
+					});
+					console.log(appies);
+					this.apps = appies;
+				});
+
 
 			},
 			open_dialog: function(appid) {
