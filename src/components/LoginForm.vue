@@ -13,10 +13,10 @@
                 <v-form>
 
                   <v-layout align-center justify-center>
-                    <v-text-field id="username" prepend-inner-icon="person" name="username" label="Username" type="text" style="max-width: 300px" ></v-text-field>
+                    <v-text-field prepend-inner-icon="person" v-model="username" label="Username" type="text" style="max-width: 300px" ></v-text-field>
                   </v-layout>
                     <v-layout align-center justify-center>
-                      <v-text-field id="password" prepend-inner-icon="lock" name="password" label="Password" type="password" style="max-width: 300px"></v-text-field>
+                      <v-text-field prepend-inner-icon="lock" v-model="password" label="Password" type="password" style="max-width: 300px"></v-text-field>
                     </v-layout>
 
                     </v-form>
@@ -31,7 +31,7 @@
                     </v-layout>
 
                     <v-spacer></v-spacer>
-					  <router-link to="/"><v-btn ripple color="primary">Login</v-btn></router-link>
+					  <v-btn ripple color="primary" @click="login">Login</v-btn>
                   </v-flex>
                 </v-layout>
               </v-card-actions>
@@ -68,9 +68,24 @@
 </template>
 
 <script>
-export default {
-  name: 'LoginForm',
-}
+	import API from '../js/api';
+
+	export default {
+		data() {
+			return {
+				username: "",
+				password: "",
+			}
+		},
+		methods: {
+			login: function () {
+				let formData = new FormData();
+				formData.append("username", this.username);
+				formData.append("password", this.password);
+				API.post("8080", "/", formData, response => { console.log(response.data); });
+			}
+		}
+	}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
