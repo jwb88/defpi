@@ -16,7 +16,7 @@
 												</v-card-title>
 												<v-card-text v-for="app in apps" :key="app.id">
 													<v-list two-line>
-														<v-list-tile @click="app.dialog = true ; dialog = false">
+														<v-list-tile v-on:click="open_dialog(app.id)" @click="dialog = false ; active_tab = 1">
 															<v-list-tile-avatar>
 																<img :src="app.icon_url" alt="">
 															</v-list-tile-avatar>
@@ -46,15 +46,15 @@
 						<v-divider></v-divider>
 						Location
 					</v-toolbar>
-					<v-card v-for="(app,index) in apps" :key="app.id">
+					<v-card v-for="(app) in apps" :key="app.id">
 						<v-layout align-center justify-center wrap row pa-4 ma-3>
 							<v-img max-width="5%" max-height="5%" v-bind:src="app.icon_url" ></v-img>
 							<h2>{{ app.title }}</h2>
 							<v-flex app class="text-xs-right">
 								<h2>{{ app.locations }}</h2>
 							</v-flex>
-							<v-dialog v-model="app.dialog" width="800" lazy>
-								<v-btn slot="activator" @click="(app.dialog=true)" ma-5 small fab><v-icon large>settings</v-icon></v-btn>
+							<v-dialog v-model="appdialog" width="800" lazy>
+								<v-btn slot="activator" @click= "active_tab = 0" v-on:click="open_dialog(app.id)" ma-5 small fab><v-icon large>settings</v-icon></v-btn>
 								<v-tabs v-model="active_tab" show arrows grow>
 									<v-tab v-for="tab of tabs" :key="tab.id">
 										{{ tab.name }}
@@ -64,13 +64,13 @@
 											<v-flex xs12 sm6>
 												<v-card height="500px">
 													<v-container fluid grid-list-md>
-														<h2>{{ app.title }}</h2>
+														<h2>{{ appinfo.title }}</h2>
 														<br>
 														<v-card-text center><h4>IP-address</h4></v-card-text>
-														<v-text-field align-center v-bind:label="app.ip_address"> </v-text-field>
+														<v-text-field align-center v-bind:label="appinfo.ip_address"> </v-text-field>
 														<v-card-actions>
 															<v-spacer></v-spacer>
-															<v-btn class="primary" @click="app.dialog = false">Save</v-btn>
+															<v-btn class="primary" @click="appinfo.dialog = false">Save</v-btn>
 														</v-card-actions>
 													</v-container>
 												</v-card>
@@ -83,8 +83,8 @@
 														<v-overflow-btn label="Location" :items="installed_locations"></v-overflow-btn>
 														<v-card-actions>
 															<v-spacer></v-spacer>
-															<v-btn class="primary" v-bind:onclick="app.dialog = false">Uninstall <v-icon>delete</v-icon></v-btn>
-															<v-btn class="primary" v-bind:onclick="app.dialog = false">Update <v-icon>play_for_work</v-icon></v-btn>
+															<v-btn class="primary" @click="close_dialog(app.id)">Uninstall <v-icon>delete</v-icon></v-btn>
+															<v-btn class="primary" @click="close_dialog(app.id)">Update <v-icon>play_for_work</v-icon></v-btn>
 														</v-card-actions>
 													</v-container>
 												</v-card>
@@ -97,7 +97,7 @@
 												Notifications
 											</v-card-title>
 											<v-card-text>
-												<td>{{ app.notifications }}</td>
+												<td>{{ appinfo.notifications }}</td>
 												<!--<v-data-table
 													:headers="headers"
 													:items="apps"
@@ -115,10 +115,8 @@
 
 											<v-card-actions>
 												<v-spacer></v-spacer>
-												<v-btn class="primary" @click="app.dialog = false">Mark as read</v-btn>
-												{{ app.id }}
-												{{ app.dialog }}
-												<v-btn color="primary" @click="app.dialog = false">Ok</v-btn>
+												<v-btn class="primary" @click="close_dialog(app.id)">Mark as read</v-btn>
+												<v-btn color="primary" @click="close_dialog(app.id)">Ok</v-btn>
 											</v-card-actions>
 										</v-card>
 									</v-tab-item>
@@ -141,6 +139,8 @@
 		},
 		data() {
 			return {
+				appinfo: {},
+				appdialog: false,
 				dialog: false,
 				installed_locations: ["Cloud","Pi meterkast","Thuis PC", "Homeserver"],
 				active_tab: 0,
@@ -173,32 +173,28 @@
 						dialog: false
 					},
 				],
-				headers: [
-					{
-						text: 'Application',
-						align: 'left',
-						sortable: false,
-						value: 'name'
-					},
-					{ text: 'Message', value: 'message', sortable: false },
-					{text: '', value: 'action',sortable: false}
-				],
-				applications: [
-					{
-						value: false,
-						name: 'Miele wasmachine P039',
-						message: 'Er is een update beschikbaar'
-					},
-					{
-						value: false,
-						name: 'Batterij',
-						message: 'De batterij is kapot.'
-					}
-				],
 				alarm_bell: "https://www.onsolve.com/wp-content/uploads/2015/08/Alarm-bell.png",
 				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}]
 			}
 		},
+		methods: {
+			open_dialog: function(appid) {
+				this.appinfo = {
+					id: this.apps[appid].id,
+					title: this.apps[appid].title,
+					location: this.apps[appid].locations,
+					ip_address: this.apps[appid].ip_address,
+					notifications: this.apps[appid].notifications
+				};
+				this.appdialog = true;
+			},
+			close_dialog: function(appid) {
+				this.appinfo = {}
+				;
+				this.appdialog = false;
+			}
+
+		}
 //<v-btn fab large ripple v-bind:style="{backgroundImage:'url(' + icon_url + ')'}"></v-btn>
 	}
 </script>
