@@ -124,6 +124,8 @@
 							</v-dialog>
 						</v-layout>
 					</v-card>
+					<v-btn fab @click="updateAppList()">Click me</v-btn>
+					{{ app_list }}
 				</v-container>
 			</v-flex>
 		</v-layout>
@@ -135,6 +137,7 @@
 <script>
 	export default {
 		name: "AppManager",
+		props: ["menu", "API"],
 		components: {
 		},
 		data() {
@@ -144,6 +147,7 @@
 				dialog: false,
 				installed_locations: ["Cloud","Pi meterkast","Thuis PC", "Homeserver"],
 				active_tab: 0,
+				app_list: [],
 				apps: [
 					{
 						id:	0,
@@ -178,6 +182,10 @@
 			}
 		},
 		methods: {
+			updateAppList: function () {
+				this.API.get("8484", "/process", response => { this.app_list = response.data;});
+
+			},
 			open_dialog: function(appid) {
 				this.appinfo = {
 					id: this.apps[appid].id,
