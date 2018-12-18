@@ -4,7 +4,11 @@
 			<v-flex xs12>
 				<v-container>
 					<v-toolbar color="primary" class="v-toolbar--fixed" app height="70px">
-						<h1>My Apps</h1>
+						<v-layout class="text-xs-right">
+							<v-flex>
+								<h1 class="primary title primary--text text--lighten-1 pa-1">My apps</h1>
+							</v-flex>
+						</v-layout>
 						<v-layout>
 							<v-flex class="text-xs-right">
 								<v-dialog v-model="dialog" width="800" lazy>
@@ -22,7 +26,7 @@
 															</v-list-tile-avatar>
 															<v-list-tile-content>
 																<v-list-tile-title>{{ app.serviceId }}</v-list-tile-title>
-																<v-list-tile-sub-title>{{ app.notifications }}</v-list-tile-sub-title>
+																<v-list-tile-sub-title>{{ app.id }}</v-list-tile-sub-title>
 															</v-list-tile-content>
 														</v-list-tile>
 													</v-list>
@@ -51,10 +55,17 @@
 							<v-img max-width="5%" max-height="5%" v-bind:src="app.icon_url" ></v-img>
 							<h2>{{ app.serviceId }}</h2>
 							<v-flex app class="text-xs-right">
-								<h2>{{ app.location }}</h2>
+								<h2>{{ app.locations }}</h2>
 							</v-flex>
 							<v-dialog v-model="appdialog" width="800" lazy>
 								<v-btn slot="activator" @click= "active_tab = 0" v-on:click="open_dialog(app.id)" ma-5 small fab><v-icon large>settings</v-icon></v-btn>
+								<v-toolbar color="primary">
+									<v-layout class="text-xs-center">
+										<v-flex>
+											<h1 class="primary title primary--text text--lighten-1 pa-1">{{ appinfo.title }}</h1>
+										</v-flex>
+									</v-layout>
+								</v-toolbar>
 								<v-tabs v-model="active_tab" show arrows grow>
 									<v-tab v-for="tab of tabs" :key="tab.id">
 										{{ tab.name }}
@@ -191,18 +202,21 @@
 					});
 					console.log(appies);
 					this.apps = appies;
+					console.log(this.apps);
 				});
 
 
 			},
 			open_dialog: function(appid) {
+				this.appinfo = {};
 				this.appinfo = {
 					id: this.apps[appid].id,
-					title: this.apps[appid].title,
+					title: this.apps[appid].serviceId,
 					location: this.apps[appid].locations,
 					ip_address: this.apps[appid].ip_address,
 					notifications: this.apps[appid].notifications
 				};
+				console.log(this.appinfo);
 				this.appdialog = true;
 			},
 			close_dialog: function(appid) {
@@ -212,7 +226,6 @@
 			}
 
 		}
-//<v-btn fab large ripple v-bind:style="{backgroundImage:'url(' + icon_url + ')'}"></v-btn>
 	}
 </script>
 
