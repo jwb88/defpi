@@ -1,51 +1,69 @@
-import axios from 'axios'
+export default function() {
+	this.api_url_base = "http://localhost:";
 
-export default Object.freeze({
-	api_url_base: 'http://localhost:',
-	data: {
-		headers: {
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-			'Content-Type': 'application/json',
-		},
-		auth: {
-			username: "admin",
-			password: "admin",
-		},
-	},
-	wrong_response: function() {
-		// user not logged in?
-		console.error("[API] USER IS NOT LOGGED IN EVERYBODY!");
-	},
-	get: function (port, uri, callback) {
-		console.log('[GET] ' + this.api_url_base + port + uri);
-		axios.get(this.api_url_base + port + uri, this.data)
-			.then(response => {
-				if(response.headers["content-type"] === "application/javascript" ||
-					response.headers["content-type"] === "application/json"){
-					console.log(response.data);
-					callback(response);
-				} else {
-					console.log(response);
-					this.wrong_response();
-				}
-			})
-			.catch(error => console.error(error) );
+	this.PORT = {
+		GATEWAY: "8080",
+		ORCHESTRATOR: "8484",
+	};
 
-	},
-	post: function (port, uri, postData, callback) {
-		console.log('[POST] ' + this.api_url_base + port + uri);
-		axios.post(this.api_url_base + port + uri, postData, this.data)
-			.then(response => {
-				if(response.headers["content-type"] === "application/javascript" ||
-					response.headers["content-type"] === "application/json"){
-					console.log(response.data);
-					callback(response);
+	this.CONTENT_TYPE = {
+		WWW_FORM: "application/x-www-form-urlencoded",
+		JSON: "application/json",
+		JAVASCRIPT: "application/javascript",
+		NONE: "",
+	};
+
+	this.METHOD = {
+		GET: "GET",
+		POST: "POST",
+	};
+
+	this.default_config = {
+		port: 			this.PORT.ORCHESTRATOR,
+		contentType: 	this.CONTENT_TYPE.NONE,
+		method: 		this.METHOD.GET,
+	};
+
+	this.open_request = function(api_config, uri) {
+		let url = this.api_url_base + api_config.port + uri;
+		console.log("[API] [" + api_config.method + "] " + url);
+
+		let http = new XMLHttpRequest();
+		http.open(api_config.method, url, true);
+		http.setRequestHeader("Access-Control-Allow-Origin", "*");
+		http.setRequestHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+		if(api_config.contentType !== this.CONTENT_TYPE.NONE) {
+			http.setRequestHeader("Content-Type", api_config.contentType);
+		}
+		http.setRequestHeader("Authorization", "Basic " + btoa("admin:admin"));
+		return http;
+	};
+
+	this.send = function(api_config, uri, data, callback, error) {
+		//localStorage.setItem("username", "admin");
+
+		if(api_config === null) {
+			api_config = this.default_config;
+		}
+
+		let http = this.open_request(api_config, uri);
+		http.onreadystatechange = function() {
+			if(http.readyState === http.DONE ) {
+				if (http.status === 200) {
+					if (this.getResponseHeader("Content-Type") === "application/javascript" || this.getResponseHeader("Content-Type") === "application/json") {
+						let response = JSON.parse(http.response);
+						callback(response);
+					}
 				} else {
-					console.log(response);
-					this.wrong_response();
+					console.error("[Api] HTTP CODE: " + http.status);
 				}
-			})
-			.catch(error => console.error(error) );
-	},
-})
+			} else {
+				if(error != null) {
+					error();
+				}
+			}
+		};
+		http.send(data);
+	};
+
+};

@@ -147,7 +147,7 @@
 <script>
 	export default {
 		name: "AppManager",
-		props: ["menu", "API"],
+		props: ["menu"],
 		components: {
 		},
 		data() {

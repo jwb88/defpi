@@ -68,22 +68,20 @@
 </template>
 
 <script>
-	import API from '../js/api';
-
 	export default {
 		data() {
 			return {
 				username: "",
 				password: "",
+				api_config: {
+					port: 			this.$API.PORT.GATEWAY,
+					contentType: 	this.$API.CONTENT_TYPE.WWW_FORM,
+					method: 		this.$API.METHOD.POST,
+				}
 			}
 		},
 		methods: {
-			login: function () {
-				let formData = new FormData();
-				formData.append("username", this.username);
-				formData.append("password", this.password);
-				API.post("8080", "/", formData, response => { console.log(response.data); });
-			}
+			login: function() { this.$API.send(this.api_config, "/", "username=" + this.username + "&password=" + this.password, () => {}, () => {document.location = "/"}) }
 		}
 	}
 </script>

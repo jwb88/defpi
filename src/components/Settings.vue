@@ -18,7 +18,7 @@
 			</v-content>
 		</v-container>
 
-		<Menu :menu="menu"></Menu>
+		<Menu></Menu>
 	</v-app>
 </template>
 
@@ -26,12 +26,12 @@
 	import Menu from './Menu'
 
     export default {
-		props: ["menu"],
 		components: {
 			Menu
 		},
 		data() {
 			return {
+				menu: this.$MENU
 			}
 		}
     }

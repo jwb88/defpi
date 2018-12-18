@@ -10,7 +10,7 @@
 							</v-flex>
 						</v-layout>
 					</v-toolbar>
-					<v-card v-for="device in devices">
+					<v-card v-for="device in devices" :key="device.id">
 						<v-layout align-center justify-center wrap row pa-4 ma-3>
 							<h2>{{device.deviceName}}</h2>
 							<v-flex app class="text-xs-right">
@@ -90,7 +90,7 @@
 							<v-btn
 								activator
 								color="primary"
-								@click="pushNewDevice(Math.random(), 'Test') ; dialogConnect = false"
+								@click="pushNewDevice(Math.random(), 'Test'); dialogConnect = false"
 							>
 								<v-icon>check</v-icon>Confirm
 							</v-btn>

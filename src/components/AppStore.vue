@@ -25,7 +25,7 @@
 						</v-toolbar>
 
 						<v-list>
-							<v-list-tile v-for="cat in categories" :to="'/appstore/category/' + cat.name">
+							<v-list-tile v-for="cat in categories" :key="cat.name" :to="'/appstore/category/' + cat.name">
 								<v-list-tile-content>
 									<v-list-tile-title v-text="cat.name" ripple></v-list-tile-title>
 								</v-list-tile-content>
@@ -145,7 +145,7 @@
 				</v-dialog>
 			</div>
 		</v-content>
-		<Menu :menu="menu"></Menu>
+		<Menu></Menu>
 	</v-app>
 </template>
 
@@ -154,7 +154,7 @@
 	import Menu from './Menu'
     export default {
 		name: 'Appstore',
-		props: ["menu", "API"],
+		props: ["menu"],
 		components: {
 			Menu
 		},
@@ -179,12 +179,22 @@
 					{ name: "Category_Two" },
 					{ name: "Category_Three" },
 					{ name: "Category_Four" }
-				]
+				],
+				getRequestConfig: {
+					port: 			this.$API.PORT.ORCHESTRATOR,
+					contentType: 	this.$API.CONTENT_TYPE.NONE,
+					method: 		this.$API.METHOD.GET,
+				},
+				postRequestConfig: {
+					port: 			this.$API.PORT.ORCHESTRATOR,
+					contentType: 	this.$API.CONTENT_TYPE.JSON,
+					method: 		this.$API.METHOD.POST,
+				}
 			};
 		},
 		methods: {
 			updateAppList: function () {
-				this.API.get("8484", "/service", response => { this.appList = response.data; this.updateFilteredList(); this.modalLoading = false; });
+				this.$API.send(this.getRequestConfig, "/service", null, response => { this.appList = response; this.updateFilteredList(); this.modalLoading = false; });
 			},
 			updateFilteredList: function() {
 				let tempAppList = [];
@@ -208,9 +218,9 @@
 				this.displayableApps = tempAppList;
 			},
 			fetchNodes: function() {
-				this.API.get("8484", "/privatenode", response => { this.privateNodes = response.data; });
-				this.API.get("8484", "/publicnode", response => { this.publicNodes = response.data; });
-				this.API.get("8484", "/nodepool", response => { this.nodePools = response.data; });
+				this.$API.send(this.getRequestConfig, "/privatenode", null, response => { this.privateNodes = response; });
+				this.$API.send(this.getRequestConfig, "/publicnode", null, response => { this.publicNodes = response; });
+				this.$API.send(this.getRequestConfig, "/nodepool", null, response => { this.nodePools = response; });
 			},
 			createNodeList: function() {
 				let tempLocationPicker = [];
@@ -236,8 +246,8 @@
 			},
 			openAppModal: function(appId) {
 				this.modalLoading = true;
-				this.API.get("8484", "/service/" + appId, response => {
-					let data = response.data;
+				this.$API.send(this.getRequestConfig, "/service/" + appId, null, response => {
+					let data = response;
 					this.appDetails = {
 						id: data.id,
 						name: data.name,
@@ -259,15 +269,15 @@
 				if ( this.selectedLocation !== null &&
 					this.selectedLocation !== '' &&
 					this.appDetails !== null /*&&
-					window.localStorage.getItem('efpi_orchestrator_username') !== null &&
-					window.localStorage.getItem('efpi_orchestrator_username') !== ''*/ ) {
+					window.localStorage.sendItem('efpi_orchestrator_username') !== null &&
+					window.localStorage.sendItem('efpi_orchestrator_username') !== ''*/ ) {
 
 					this.isInstalling = true;
-					let username = window.localStorage.getItem('efpi_orchestrator_username');
+					let username = window.localStorage.sendItem('efpi_orchestrator_username');
 					username = 'admin'; // TODO: REMOVE THIS ABOMINATION
 					// Fetch user Id
-					this.API.get("8484", "/user/by_username/" + username, response => {
-						let data = response.data;
+					this.$API.send(this.getRequestConfig, "/user/by_username/" + username, null, response => {
+						let data = response;
 
 						// Build payload
 						let payLoad = {};
@@ -288,8 +298,8 @@
 						payLoad.serviceId = this.appDetails.id;
 						payLoad.userId = data.id;
 
-						this.API.post("8484", "/process", payLoad, response => {
-							let data = response.data;
+						this.$API.send(this.postRequestConfig, "/process", payLoad, response => {
+							let data = response;
 
 							this.isInstalling = false;
 							this.appInstalled = true;
