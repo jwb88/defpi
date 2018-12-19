@@ -8,8 +8,8 @@
 					<v-container class="column fill-height">
 						<v-flex>
 							<v-avatar v-if="v.icon_url != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + '' + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
-							<v-avatar v-else class="primary lighten-3">PV</v-avatar>
-							<h4 class="hidden-sm-and-down" style="margin-top: 12px;">{{ v }}</h4>
+							<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(v) }}</v-avatar>
+							<h4 class="hidden-sm-and-down white--text" style="margin-top: 12px;">{{ v }}</h4>
 						</v-flex>
 					</v-container>
 				</v-tab>
@@ -23,7 +23,11 @@
 					<v-flex v-for="(v, k) in widgets" :key="k" xs12 sm6 md4 lg3> <!--v-if="widget.has_widget"-->
 						<v-layout align-center justify-center>
 							<v-card class="elevation-2 ma-4">
-								<v-card-title class="primary darken-1 title primary--text text--lighten-1 pa-1" color="primary"><v-avatar v-bind:style="{backgroundImage: 'url(' + '' + ')', backgroundSize: 'contain', backgroundPosition: 'center', marginRight: '20px'}"></v-avatar>{{v}}</v-card-title>
+								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
+									<v-avatar v-if="v.icon_url != null" class="primary lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + '' + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+									<v-avatar v-else class="primary lighten-1 mr-3 black--text">{{ getInitials(v) }}</v-avatar>
+									{{v}}
+								</v-card-title>
 								<v-responsive class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="'http://localhost:8080/dashboard/'+k+'/index.html'"></iframe></v-responsive>
 							</v-card>
 						</v-layout>
@@ -69,6 +73,10 @@
 					this.widgets = response;
 					//this.widgets["7"].icon_url = "https://image.freepik.com/free-vector/cool-smiling-hop-brewing-mascot-with-sunglasses-vector-illustration-logo-icon_7688-11.jpg";
 				});
+			},
+			getInitials: function(name) {
+				let initials = name.match(/\b(\w)/g);
+				return initials.join('');
 			}
 		},
 		mounted () {

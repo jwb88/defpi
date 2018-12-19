@@ -4,7 +4,6 @@ import VueResource 			from 'vue-resource';
 import API					from '../js/api.js';
 
 import App 					from "../App";
-import Login    			from '../components/LoginForm';
 import Dashboard      		from "../components/Dashboard";
 import Settings     		from "../components/Settings";
 import UserSettings     	from "../components/settings/UserSettings";
@@ -79,7 +78,6 @@ const router = new VueRouter({
     routes: [
         // dynamic segments start with a colon
 		{ path: '*',						component: PageNotFound 	},
-		{ path: '/login',             		component: Login,			},
 
         { path: '/',             			component: Dashboard,		},
 		{ path: '/fullscreen_widget/:id',   component: Dashboard,		},
