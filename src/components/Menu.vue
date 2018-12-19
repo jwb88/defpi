@@ -6,10 +6,20 @@
 				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-md-and-up"
 									 app></v-toolbar-side-icon>
 				<v-layout class="hidden-sm-and-down">
-					<v-layout v-for="item in menu"  :key="item.url" justify-center>
+					<v-layout v-for="item in menu"  :key="item.url">
 						<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
 							<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
 							{{item.text}}
+						</v-btn>
+					</v-layout>
+				</v-layout>
+
+
+				<v-layout class="hidden-sm-and-down">
+					<v-layout class="justify-end">
+						<v-btn class="pa-4.5 title" @click="logout">
+							<v-icon class="pr-1" medium>logout</v-icon>
+							Logout
 						</v-btn>
 					</v-layout>
 				</v-layout>
@@ -57,18 +67,31 @@
 
 <script>
 	export default {
-		props: ["menu"],
 		data() {
 			return {
+				menu: this.$MENU,
 				bottomNav: null,
 				drawer: false,
+				api_config: {
+					port: 			this.$API.PORT.GATEWAY,
+					contentType: 	this.$API.CONTENT_TYPE.WWW_FORM,
+					method: 		this.$API.METHOD.POST,
+				}
+			}
+		},
+		methods: {
+			logout: function() {
+				this.$API.send(this.api_config, "/logout", null, () => { document.location = "/login" });
 			}
 		}
 	}
 </script>
 
 <style scoped>
+	.v-footer {
+		box-shadow: 0 -3px 2px rgba(0,0,0,0.2);
+	}
 	.pa-4\.5 {
-		padding: 40px;
+		padding: 34px;
 	}
 </style>

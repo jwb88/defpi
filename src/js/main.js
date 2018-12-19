@@ -1,8 +1,7 @@
 import Vue          		from 'vue';
 import VueRouter    		from 'vue-router';
-import VueAxios 			from 'vue-axios'
-import axios 				from 'axios'
-import API					from './api'
+import VueResource 			from 'vue-resource';
+import API					from '../js/api.js';
 
 import App 					from "../App";
 import Login    			from '../components/LoginForm';
@@ -18,7 +17,6 @@ import PageNotFound     	from "../components/404";
 import Vuetify      		from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 
-
 Vue.use(Vuetify, {
     theme: {
         primary: "#7DB530",
@@ -26,11 +24,10 @@ Vue.use(Vuetify, {
     }
 });
 Vue.use(VueRouter);
-Vue.use(VueAxios, axios);
-/*console.log(API.get);
-Vue.use(API);*/
+Vue.use(VueResource);
+Vue.prototype.$API = new API();
 
-const menu = [
+Vue.prototype.$MENU = [
 	{
 		text: "Home",
 		icon: "widgets",
@@ -74,12 +71,6 @@ const menu = [
 		url: "/appstore",
 		sub_items: buildSubItems(getAppstoreCategories()),
 	},
-	{
-		text: "Logout",
-		icon: "logout",
-		url: "/login",
-		sub_items: []
-	},
 ];
 
 
@@ -90,17 +81,17 @@ const router = new VueRouter({
 		{ path: '*',						component: PageNotFound 	},
 		{ path: '/login',             		component: Login,			},
 
-        { path: '/',             			component: Dashboard,		props: { menu }		},
-		{ path: '/fullscreen_widget/:id',   component: Dashboard,		props: { menu }		},
-		{ path: '/appstore',   				component: AppStore,		props: { menu }		},
-		{ path: '/appstore/category/:cat', 	component: AppStore,		props: { menu } 	},
-		{ path: '/appstore/app/:id',       	component: AppStore,		props: { menu } 	},
+        { path: '/',             			component: Dashboard,		},
+		{ path: '/fullscreen_widget/:id',   component: Dashboard,		},
+		{ path: '/appstore',   				component: AppStore,		},
+		{ path: '/appstore/category/:cat', 	component: AppStore, 		},
+		{ path: '/appstore/app/:id',       	component: AppStore,		},
 
-        { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings,		props: { menu }, 	children: [
-        	{path:"user_settings", 			component: UserSettings, 		props: { menu }		},
-        	{path:"my_devices", 			component: MyDevices, 			props: { menu }		},
-        	{path:"connection_manager", 	component: ConnectionManager, 	props: { menu }		},
-        	{path:"my_apps", 				component: MyApps, 				props: { menu }		},
+        { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings, 	children: [
+        	{path:"user_settings", 			component: UserSettings 		},
+        	{path:"my_devices", 			component: MyDevices			},
+        	{path:"connection_manager", 	component: ConnectionManager	},
+        	{path:"my_apps", 				component: MyApps				},
 		]},
     ]
 });
@@ -111,7 +102,7 @@ new Vue({
 }).$mount('#app');
 
 function getAppstoreCategories() {
-	return ['test', 'voertuigen', 'appels', 'test2'];
+	return ['All', 'Category_One', 'Category_Two', 'Category_Three', 'Category_Four'];
 }
 
 function buildSubItems(subList) {
