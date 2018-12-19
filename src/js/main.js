@@ -1,10 +1,9 @@
 import Vue          		from 'vue';
 import VueRouter    		from 'vue-router';
-import VueResource 			from 'vue-resource';
-import API					from '../js/api.js';
+import API 					from './apiv2';
 
 import App 					from "../App";
-import Login    			from '../components/LoginForm';
+import Login    			from '../../../../xampp/defpi_login/src/components/LoginForm';
 import Dashboard      		from "../components/Dashboard";
 import Settings     		from "../components/Settings";
 import UserSettings     	from "../components/settings/UserSettings";
@@ -24,10 +23,8 @@ Vue.use(Vuetify, {
     }
 });
 Vue.use(VueRouter);
-Vue.use(VueResource);
-Vue.prototype.$API = new API();
 
-Vue.prototype.$MENU = [
+const menu = [
 	{
 		text: "Home",
 		icon: "widgets",
@@ -70,7 +67,7 @@ Vue.prototype.$MENU = [
 		icon: "shop",
 		url: "/appstore",
 		sub_items: buildSubItems(getAppstoreCategories()),
-	},
+	}
 ];
 
 
@@ -81,17 +78,17 @@ const router = new VueRouter({
 		{ path: '*',						component: PageNotFound 	},
 		{ path: '/login',             		component: Login,			},
 
-        { path: '/',             			component: Dashboard,		},
-		{ path: '/fullscreen_widget/:id',   component: Dashboard,		},
-		{ path: '/appstore',   				component: AppStore,		},
-		{ path: '/appstore/category/:cat', 	component: AppStore, 		},
-		{ path: '/appstore/app/:id',       	component: AppStore,		},
+        { path: '/',             			component: Dashboard,		props: { menu, API }		},
+		{ path: '/fullscreen_widget/:id',   component: Dashboard,		props: { menu }		},
+		{ path: '/appstore',   				component: AppStore,		props: { menu }		},
+		{ path: '/appstore/category/:cat', 	component: AppStore,		props: { menu } 	},
+		{ path: '/appstore/app/:id',       	component: AppStore,		props: { menu } 	},
 
-        { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings, 	children: [
-        	{path:"user_settings", 			component: UserSettings 		},
-        	{path:"my_devices", 			component: MyDevices			},
-        	{path:"connection_manager", 	component: ConnectionManager	},
-        	{path:"my_apps", 				component: MyApps				},
+        { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings,		props: { menu }, 	children: [
+        	{path:"user_settings", 			component: UserSettings, 		props: { menu }		},
+        	{path:"my_devices", 			component: MyDevices, 			props: { menu }		},
+        	{path:"connection_manager", 	component: ConnectionManager, 	props: { menu }		},
+        	{path:"my_apps", 				component: MyApps, 				props: { menu }		},
 		]},
     ]
 });

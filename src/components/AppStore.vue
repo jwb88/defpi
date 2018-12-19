@@ -25,7 +25,7 @@
 						</v-toolbar>
 
 						<v-list>
-							<v-list-tile v-for="cat in categories" :key="cat.name" :to="'/appstore/category/' + cat.name">
+							<v-list-tile v-for="cat in categories" :to="'/appstore/category/' + cat.name">
 								<v-list-tile-content>
 									<v-list-tile-title v-text="cat.name" ripple></v-list-tile-title>
 								</v-list-tile-content>
@@ -145,18 +145,21 @@
 				</v-dialog>
 			</div>
 		</v-content>
-		<Menu></Menu>
+		<API ref="api"></API>
+		<Menu :menu="menu"></Menu>
 	</v-app>
 </template>
 
 <script>
 	// Temporary
 	import Menu from './Menu'
+	import API from '../js/apiv2'
+
     export default {
 		name: 'Appstore',
 		props: ["menu"],
 		components: {
-			Menu
+			Menu, API
 		},
 		data: function() {
 			return {
@@ -179,22 +182,12 @@
 					{ name: "Category_Two" },
 					{ name: "Category_Three" },
 					{ name: "Category_Four" }
-				],
-				getRequestConfig: {
-					port: 			this.$API.PORT.ORCHESTRATOR,
-					contentType: 	this.$API.CONTENT_TYPE.NONE,
-					method: 		this.$API.METHOD.GET,
-				},
-				postRequestConfig: {
-					port: 			this.$API.PORT.ORCHESTRATOR,
-					contentType: 	this.$API.CONTENT_TYPE.JSON,
-					method: 		this.$API.METHOD.POST,
-				}
+				]
 			};
 		},
 		methods: {
 			updateAppList: function () {
-				this.$API.send(this.getRequestConfig, "/service", null, response => { this.appList = response; this.updateFilteredList(); this.modalLoading = false; });
+				this.$refs.api.get("8484", "/service", response => { this.appList = response; this.updateFilteredList(); this.modalLoading = false; });
 			},
 			updateFilteredList: function() {
 				let tempAppList = [];
@@ -218,9 +211,9 @@
 				this.displayableApps = tempAppList;
 			},
 			fetchNodes: function() {
-				this.$API.send(this.getRequestConfig, "/privatenode", null, response => { this.privateNodes = response; });
-				this.$API.send(this.getRequestConfig, "/publicnode", null, response => { this.publicNodes = response; });
-				this.$API.send(this.getRequestConfig, "/nodepool", null, response => { this.nodePools = response; });
+				this.$refs.api.get("8484", "/privatenode", response => { this.privateNodes = response; });
+				this.$refs.api.get("8484", "/publicnode", response => { this.publicNodes = response; });
+				this.$refs.api.get("8484", "/nodepool", response => { this.nodePools = response; });
 			},
 			createNodeList: function() {
 				let tempLocationPicker = [];
@@ -246,7 +239,7 @@
 			},
 			openAppModal: function(appId) {
 				this.modalLoading = true;
-				this.$API.send(this.getRequestConfig, "/service/" + appId, null, response => {
+				this.$refs.api.get("8484", "/service/" + appId, response => {
 					let data = response;
 					this.appDetails = {
 						id: data.id,
@@ -269,14 +262,14 @@
 				if ( this.selectedLocation !== null &&
 					this.selectedLocation !== '' &&
 					this.appDetails !== null /*&&
-					window.localStorage.sendItem('efpi_orchestrator_username') !== null &&
-					window.localStorage.sendItem('efpi_orchestrator_username') !== ''*/ ) {
+					window.localStorage.getItem('efpi_orchestrator_username') !== null &&
+					window.localStorage.getItem('efpi_orchestrator_username') !== ''*/ ) {
 
 					this.isInstalling = true;
-					let username = window.localStorage.sendItem('efpi_orchestrator_username');
+					let username = window.localStorage.getItem('efpi_orchestrator_username');
 					username = 'admin'; // TODO: REMOVE THIS ABOMINATION
 					// Fetch user Id
-					this.$API.send(this.getRequestConfig, "/user/by_username/" + username, null, response => {
+					this.$refs.api.get("8484", "/user/by_username/" + username, response => {
 						let data = response;
 
 						// Build payload
@@ -298,7 +291,7 @@
 						payLoad.serviceId = this.appDetails.id;
 						payLoad.userId = data.id;
 
-						this.$API.send(this.postRequestConfig, "/process", payLoad, response => {
+						this.$refs.api.post("8484", "/process", payLoad, response => {
 							let data = response;
 
 							this.isInstalling = false;

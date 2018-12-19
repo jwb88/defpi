@@ -1,23 +1,20 @@
 <template>
 	<v-container>
+		<API ref="api"></API>
 		<!-- BIG FOOTER THING -->
 		<v-footer class="background darken-1 pa-3" height="auto" app>
 			<v-layout row wrap>
 				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-md-and-up"
 									 app></v-toolbar-side-icon>
 				<v-layout class="hidden-sm-and-down">
-					<v-layout v-for="item in menu"  :key="item.url">
+					<v-layout v-for="item in menu"  :key="item.url" justify-center>
 						<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
 							<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
 							{{item.text}}
 						</v-btn>
 					</v-layout>
-				</v-layout>
-
-
-				<v-layout class="hidden-sm-and-down">
-					<v-layout class="justify-end">
-						<v-btn class="pa-4.5 title" @click="logout">
+					<v-layout justify-center>
+						<v-btn class="pa-4.5 title" @click="logout" active-class="primary">
 							<v-icon class="pr-1" medium>logout</v-icon>
 							Logout
 						</v-btn>
@@ -66,32 +63,29 @@
 
 
 <script>
+	import API from '../js/apiv2';
+
 	export default {
+		props: ["menu"],
+		components: {
+			API
+		},
 		data() {
 			return {
-				menu: this.$MENU,
 				bottomNav: null,
 				drawer: false,
-				api_config: {
-					port: 			this.$API.PORT.GATEWAY,
-					contentType: 	this.$API.CONTENT_TYPE.WWW_FORM,
-					method: 		this.$API.METHOD.POST,
-				}
 			}
 		},
 		methods: {
-			logout: function() {
-				this.$API.send(this.api_config, "/logout", null, () => { document.location = "/login" });
+			logout: function () {
+				this.$refs.api.post("8080", "/logout", {}, () => this.$router.push("/login"));
 			}
-		}
+		},
 	}
 </script>
 
 <style scoped>
-	.v-footer {
-		box-shadow: 0 -3px 2px rgba(0,0,0,0.2);
-	}
 	.pa-4\.5 {
-		padding: 34px;
+		padding: 40px;
 	}
 </style>
