@@ -1,5 +1,5 @@
 export default function() {
-	this.api_url_base = "http://localhost:";
+	this.api_url_base = "http://" + window.location.hostname + ":";
 
 	this.PORT = {
 		GATEWAY: "8080",
@@ -8,7 +8,7 @@ export default function() {
 
 	this.CONTENT_TYPE = {
 		WWW_FORM: "application/x-www-form-urlencoded",
-		JSON: "application/json",
+		JSON: "application/jsonp",
 		JAVASCRIPT: "application/javascript",
 		NONE: "",
 	};
@@ -30,8 +30,8 @@ export default function() {
 
 		let http = new XMLHttpRequest();
 		http.open(api_config.method, url, true);
-		http.setRequestHeader("Access-Control-Allow-Origin", "*");
-		http.setRequestHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+		//http.setRequestHeader("Access-Control-Allow-Origin", "*");
+		//http.setRequestHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
 		if(api_config.contentType !== this.CONTENT_TYPE.NONE) {
 			http.setRequestHeader("Content-Type", api_config.contentType);
 		}

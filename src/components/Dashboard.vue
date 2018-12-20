@@ -28,7 +28,7 @@
 									<v-avatar v-else class="primary lighten-1 mr-3 black--text">{{ getInitials(v) }}</v-avatar>
 									{{v}}
 								</v-card-title>
-								<v-responsive class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="'http://localhost:8080/dashboard/'+k+'/index.html'"></iframe></v-responsive>
+								<v-responsive class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="iframe_url + k + '/index.html'"></iframe></v-responsive>
 							</v-card>
 						</v-layout>
 					</v-flex>
@@ -38,13 +38,25 @@
 			<v-container v-else>
 				<v-card v-if="widgets[$route.params.id] != null">
 					<v-card-title class="title">{{ widgets[$route.params.id] }}</v-card-title>
-					<v-responsive height="1200px"><iframe width="100%" height="100%" :src="'http://localhost:8080/dashboard/' + $route.params.id + '/index.html'"></iframe></v-responsive>
+					<v-responsive height="1200px"><iframe width="100%" height="100%" :src="iframe_url + $route.params.id + '/index.html'"></iframe></v-responsive>
 				</v-card>
 				<v-card v-else>
 					<v-card-title class="title">[404] Deze App is niet aanwezig... :(</v-card-title>
 				</v-card>
 			</v-container>
 		</v-content>
+
+		<!-- Load bar -->
+		<div class="text-xs-center">
+			<v-dialog v-model="widgetLoading" hide-overlay persistent width="300" >
+				<v-card class="primary" dark >
+					<v-card-text>
+						Loading widgets..
+						<v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+					</v-card-text>
+				</v-card>
+			</v-dialog>
+		</div>
 
 		<Menu></Menu>
 	</v-app>
@@ -59,18 +71,21 @@
 		},
 		data() {
 			return {
+				widgetLoading: true,
 				widgets: {},
 				api_config: {
 					port: 			this.$API.PORT.GATEWAY,
 					contentType: 	this.$API.CONTENT_TYPE.WWW_FORM,
 					method: 		this.$API.METHOD.POST,
-				}
+				},
+				iframe_url: this.$API.api_url_base + "8080/dashboard/"
 			}
 		},
 		methods: {
 			getWidgets: function () {
 				this.$API.send(this.api_config, "/dashboard/getWidgets", {username: "admin", password: "admin"}, response => {
 					this.widgets = response;
+					this.widgetLoading = false;
 					//this.widgets["7"].icon_url = "https://image.freepik.com/free-vector/cool-smiling-hop-brewing-mascot-with-sunglasses-vector-illustration-logo-icon_7688-11.jpg";
 				});
 			},

@@ -153,7 +153,7 @@
 	// Temporary
 	import Menu from './Menu'
     export default {
-		name: 'Appstore',
+		name: 'AppStore',
 		props: ["menu"],
 		components: {
 			Menu
@@ -309,6 +309,9 @@
 			}
 		},
 		mounted () {
+			console.log("IS AppStore:");
+			console.log(this.$route.matched[0].components["default"].name === this.name);
+
 			this.modalLoading = true;
 			this.updateAppList();
 			this.fetchNodes();

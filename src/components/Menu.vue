@@ -81,7 +81,7 @@
 		},
 		methods: {
 			logout: function() {
-				this.$API.send(this.api_config, "/logout", null, () => { document.location = "/login" });
+				this.$API.send(this.api_config, "/logout", null, () => { document.location = "/" });
 			}
 		}
 	}

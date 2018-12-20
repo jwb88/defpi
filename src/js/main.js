@@ -19,7 +19,7 @@ import 'vuetify/dist/vuetify.min.css';
 Vue.use(Vuetify, {
     theme: {
         primary: "#7DB530",
-        background: "#CECECE",
+        background: "#bdbdbd",
     }
 });
 Vue.use(VueRouter);
