@@ -188,14 +188,19 @@
 					},
 				],
 				alarm_bell: "https://www.onsolve.com/wp-content/uploads/2015/08/Alarm-bell.png",
-				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}]
+				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}],
+				api_config: {
+					port: 			this.$API.PORT.ORCHESTRATOR,
+					contentType: 	this.$API.CONTENT_TYPE.JSON,
+					method: 		this.$API.METHOD.GET,
+				},
 			}
 		},
 		methods: {
 			updateAppList: function () {
 				let appies = this.apps;
-				this.API.get("8484", "/process", response => {
-					this.app_list = response.data;
+				this.$API.send(this.api_config, "/process", response => {
+					this.app_list = response;
 
 					this.app_list.forEach(function(value,key) {
 						appies.push(value);
@@ -220,8 +225,7 @@
 				this.appdialog = true;
 			},
 			close_dialog: function(appid) {
-				this.appinfo = {}
-				;
+				this.appinfo = {};
 				this.appdialog = false;
 			}
 
