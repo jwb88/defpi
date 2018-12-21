@@ -8,7 +8,7 @@ export default function() {
 
 	this.CONTENT_TYPE = {
 		WWW_FORM: "application/x-www-form-urlencoded",
-		JSON: "application/jsonp",
+		JSON: "application/json",
 		JAVASCRIPT: "application/javascript",
 		NONE: "",
 	};
