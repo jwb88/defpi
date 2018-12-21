@@ -156,7 +156,7 @@
 	import API from '../js/apiv2'
 
     export default {
-		name: 'Appstore',
+		name: 'AppStore',
 		props: ["menu"],
 		components: {
 			Menu, API
@@ -302,6 +302,9 @@
 			}
 		},
 		mounted () {
+			console.log("IS AppStore:");
+			console.log(this.$route.matched[0].components["default"].name === this.name);
+
 			this.modalLoading = true;
 			this.updateAppList();
 			this.fetchNodes();
