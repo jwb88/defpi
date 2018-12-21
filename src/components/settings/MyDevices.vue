@@ -6,7 +6,7 @@
 					<v-toolbar color="primary" app height="70px">
 						<v-layout class="text-xs-center">
 							<v-flex>
-								<h1>My Devices</h1>
+								<h1 class="primary--text text--lighten-1 pa-1">My Devices</h1>
 							</v-flex>
 						</v-layout>
 					</v-toolbar>
