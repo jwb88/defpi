@@ -74,12 +74,13 @@ Vue.prototype.$MENU = [
 
 
 const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     routes: [
         // dynamic segments start with a colon
 		{ path: '*',						component: PageNotFound 	},
 
-        { path: '/',             			component: Dashboard,		},
+		{ path: '/',             	component: Dashboard,		},
+        { path: '/dashboard/',             	component: Dashboard,		},
 		{ path: '/fullscreen_widget/:id',   component: Dashboard,		},
 		{ path: '/appstore',   				component: AppStore,		},
 		{ path: '/appstore/category/:cat', 	component: AppStore, 		},
