@@ -2,7 +2,7 @@
 	<v-app class="background">
 		<!-- Fullscreen Widgets -->
 		<v-toolbar height="100px" class="v-toolbar--fixed elevation-4" app>
-			<v-tabs height="100%" color="primary" class="" show-arrows app fixed-tabs grow>
+			<v-tabs height="100%" color="primary" class="" show-arrows app fixed-tabs grow :hide-slider="($route.params.id == null)">
 				<v-tabs-slider type="arrow_drop_up" color="black"></v-tabs-slider>
 				<v-tab v-for="(v, k) in widgets" :key="k" justify-center v-bind="{to: '/fullscreen_widget/' + k}" class="fullscreenBtn" active-class="fullscreenActive"> <!--v-if="widget.has_fullscreen_widget"-->
 					<v-container class="column fill-height">
@@ -28,7 +28,7 @@
 									<v-avatar v-else class="primary lighten-1 mr-3 black--text">{{ getInitials(v) }}</v-avatar>
 									{{v}}
 								</v-card-title>
-								<v-responsive class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="iframe_url + k + '/index.html'"></iframe></v-responsive>
+								<v-responsive class="pa-4 d-inline-flex" resolution><iframe width="300px" height="170px" v-bind:src="iframe_url + k + '/index.html'"></iframe></v-responsive>
 							</v-card>
 						</v-layout>
 					</v-flex>
@@ -48,7 +48,7 @@
 
 		<!-- Load bar -->
 		<div class="text-xs-center">
-			<v-dialog v-model="widgetLoading" hide-overlay persistent width="300" >
+			<v-dialog v-model="widgetLoading" hide-overlay persistent width="300">
 				<v-card class="primary" dark >
 					<v-card-text>
 						Loading widgets..
