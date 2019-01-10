@@ -7,15 +7,16 @@
 									 app></v-toolbar-side-icon>
 				<v-layout class="hidden-sm-and-down">
 					<v-layout v-for="item in menu"  :key="item.url">
-						<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
-							<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
-							{{item.text}}
-						</v-btn>
+							<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
+								<v-icon class="btn_arrow">arrow_drop_down</v-icon>
+								<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
+								{{item.text}}
+							</v-btn>
 					</v-layout>
 				</v-layout>
 
 
-				<v-layout class="hidden-sm-and-down">
+				<v-layout class="hidden-sm-and-down justify-end">
 					<v-layout class="justify-end">
 						<v-btn class="pa-4.5 title" @click="logout">
 							<v-icon class="pr-1" medium>logout</v-icon>
@@ -93,5 +94,17 @@
 	}
 	.pa-4\.5 {
 		padding: 34px;
+	}
+
+	.btn_arrow {
+		display: none;
+	}
+
+	.v-btn.primary .btn_arrow {
+		color: rgba(0,0,0,0.4);
+		font-size: 60px;
+		display: inline-block !important;
+		position: absolute;
+		margin-top: -50px;
 	}
 </style>

@@ -54,7 +54,7 @@
 
 			<v-dialog v-model="appdialog" width="800" lazy>
 				<v-toolbar color="primary">
-					<v-toolbar-side-icon @click="close_dialog()"><v-icon>arrow_left</v-icon></v-toolbar-side-icon>
+					<v-toolbar-side-icon @click="close_dialog()"><v-icon>navigate_before</v-icon></v-toolbar-side-icon>
 					<v-layout class="text-xs-center">
 						<v-flex>
 							<h1 class="primary title primary--text text--lighten-3 pa-1">{{ appinfo.title }}</h1>
