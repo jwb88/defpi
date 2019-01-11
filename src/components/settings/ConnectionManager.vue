@@ -25,7 +25,7 @@
 							<v-card >
 								<v-card v-for="text in info" xs12 sm6 wrap row>
 									{{ text }}
-									<v-switch v-model="switch1"></v-switch>
+									<v-switch align-right v-model="switch1"></v-switch>
 								</v-card>
 							</v-card>
 						</v-flex>
@@ -50,19 +50,19 @@
 						id: 0,
 						serviceId: "Miele wasmachine",
 						selected: false,
-						notifications: ["Er is een update beschikbaar.", "Dit is een update"]
+						notifications: ["Rachio Smart Sprinkler", "Tesla Model S","Tesla Model X"]
 					},
 					{
 						id: 1,
-						serviceId: "Smart Energy",
+						serviceId: "Samsung koelkast",
 						selected: false,
-						notifications: ["Er is een update .", "Dit is een "]
+						notifications: ["Miele droger", "Roomba 671"]
 					},
 					{
 						id: 2,
-						serviceId: "Vue Power",
+						serviceId: "Google Home",
 						selected: false,
-						notifications: ["Er is een .", "Dit is ate"],
+						notifications: ["Miele washmachine", "Miele droger Z42","Roomba 671","Rachio Smart Sprinkler"],
 					},
 				]
 			}
