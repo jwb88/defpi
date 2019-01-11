@@ -13,20 +13,15 @@
 								{{item.text}}
 							</v-btn>
 					</v-layout>
-				</v-layout>
-
-
-				<v-layout class="hidden-sm-and-down justify-end">
 					<v-layout class="justify-end">
-						<v-btn class="pa-4.5 title" @click="logout">
-							<v-icon class="pr-1" medium>logout</v-icon>
-							Logout
+						<v-btn class="pa-4.5 title" v-bind="{to: '/logout'}" @click="logout">
+							<v-icon class="pr-1" medium>logout</v-icon>Logout
 						</v-btn>
 					</v-layout>
 				</v-layout>
 
 				<!--<v-flex primary lighten-1 py-3 text-xs-center xs12> &copy;{{ new Date().getFullYear() }} — <strong>dEF-PI</strong> </v-flex>-->
-			</v-layout>
+			</v-layout row wrap>
 		</v-footer>
 
 		<!-- SIDE MENU -->
