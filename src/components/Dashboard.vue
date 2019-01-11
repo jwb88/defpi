@@ -20,7 +20,22 @@
 		<v-content>
 			<v-container v-if="$route.params.id == null" grid-list-xs fluid>
 				<v-layout row wrap>
-					<v-flex v-for="(v, k) in widgets" :key="k" xs12 sm6 md4 lg3> <!--v-if="widget.has_widget"-->
+					<v-flex v-if="widgets[0] == null">
+						<v-layout align-center justify-center>
+							<v-card class="elevation-2 ma-4" style="width: 400px; height: 200px;">
+								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
+									Info
+								</v-card-title>
+								<v-card-text style="font-weight: 600;">
+									It seems you do not have any apps with widgets installed yet!
+									You can install apps using the button below.
+									<v-divider class="mt-4"></v-divider>
+									<v-btn class="primary" to="/appstore">Appstore</v-btn>
+								</v-card-text>
+							</v-card>
+						</v-layout>
+					</v-flex>
+					<v-flex v-else v-for="(v, k) in widgets" :key="k" xs12 sm6 md4 lg3> <!--v-if="widget.has_widget"-->
 						<v-layout align-center justify-center>
 							<v-card class="elevation-2 ma-4">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
