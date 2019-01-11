@@ -20,7 +20,7 @@
 		<v-content>
 			<v-container v-if="$route.params.id == null" grid-list-xs fluid>
 				<v-layout row wrap>
-					<v-flex v-if="widgets[0] == null">
+					<v-flex v-if="widgets[0] == null && !widgetLoading">
 						<v-layout align-center justify-center>
 							<v-card class="elevation-2 ma-4" style="width: 400px; height: 200px;">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
@@ -98,7 +98,7 @@
 		},
 		methods: {
 			getWidgets: function () {
-				this.$API.send(this.api_config, "/dashboard/getWidgets", {username: "admin", password: "admin"}, response => {
+				this.$API.send(this.api_config, "/dashboard/getWidgets", {}, response => {
 					this.widgets = response;
 					this.widgetLoading = false;
 					//this.widgets["7"].icon_url = "https://image.freepik.com/free-vector/cool-smiling-hop-brewing-mascot-with-sunglasses-vector-illustration-logo-icon_7688-11.jpg";

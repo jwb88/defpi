@@ -11,7 +11,7 @@
 			</v-toolbar>
 
 			<!--Navigation Drawer-->
-			<v-navigation-drawer class="hidden-sm-and-down elevation-5 v-navigation-drawer--fixed" style="z-index: 0;" dark app>
+			<v-navigation-drawer class="hidden-md-and-down elevation-5 v-navigation-drawer--fixed" style="z-index: 0;" dark app>
 				<v-list class="pa-0">
 					<v-list-tile style="height: 70px"></v-list-tile>
 					<v-list-tile v-for="settings in menu[1].sub_items" :key="settings.url" ripple v-bind="{to: settings.url}" active-class="grey darken-4" class="v-list--three-line">

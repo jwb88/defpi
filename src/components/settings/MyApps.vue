@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-layout class="justify-end">
-			<v-btn fab slot="activator"  v-on:click="dialog = true"><v-icon large>notification_important</v-icon></v-btn>
+			<v-btn fab slot="activator" v-on:click="dialog = true"><v-icon large>notification_important</v-icon></v-btn>
 		</v-layout>
 		<!--All Notifications Dialog-->
 		<v-dialog v-model="dialog" width="800" lazy>
@@ -176,34 +176,4 @@
 			this.updateAppList();
 		}
 	}
-
-	/*apps: [
-	{
-		id:	0,
-		serviceId: "Miele wasmachine P039",
-		icon_url: "http://www.bruggink-bv.nl/wp-content/uploads/2015/09/miele-logo-1.png",
-		locations: "Cloud",
-		ip_address: "192.168.1.15",
-		notifications: ["Er is een update beschikbaar.","Dit is een update"],
-		dialog: false
-	},
-	{
-		id:	1,
-		serviceId: "Smart Energy",
-		icon_url: "https://www.davehewer.com/wp-content/uploads/2018/02/greenleaf-logo-branding03.png",
-		locations: "Raspberry Pi - 1",
-		ip_address: "192.168.1.16",
-		notifications: "Dit is een notificatie.",
-		dialog: false
-	},
-	{
-		id:	2,
-		serviceId: "Vue Power",
-		icon_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Vue.js_Logo.svg/400px-Vue.js_Logo.svg.png",
-		locations: "Cloud",
-		ip_address: "192.168.1.17",
-		notifications: "Geen notificaties.",
-		dialog: false
-	},
-],*/
 </script>

@@ -3,9 +3,9 @@
 		<!-- BIG FOOTER THING -->
 		<v-footer class="background darken-1 pa-3" height="auto" app>
 			<v-layout row wrap>
-				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-md-and-up"
+				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-lg-and-up"
 									 app></v-toolbar-side-icon>
-				<v-layout class="hidden-sm-and-down">
+				<v-layout class="hidden-md-and-down">
 					<v-layout v-for="item in menu"  :key="item.url">
 							<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
 								<v-icon class="btn_arrow">arrow_drop_down</v-icon>
@@ -21,11 +21,11 @@
 				</v-layout>
 
 				<!--<v-flex primary lighten-1 py-3 text-xs-center xs12> &copy;{{ new Date().getFullYear() }} — <strong>dEF-PI</strong> </v-flex>-->
-			</v-layout row wrap>
+			</v-layout>
 		</v-footer>
 
 		<!-- SIDE MENU -->
-		<v-navigation-drawer class="hidden-md-and-up" v-model="drawer" temporary app>
+		<v-navigation-drawer class="hidden-lg-and-up" v-model="drawer" temporary app>
 			<v-list v-for="item in menu" :key="item.url">
 				<v-list-group v-if="(item.sub_items.length > 0)">
 					<v-list-tile slot="activator" ripple class="v-list--three-line">

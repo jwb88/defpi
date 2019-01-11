@@ -35,12 +35,15 @@ export default function() {
 		if(api_config.contentType !== this.CONTENT_TYPE.NONE) {
 			http.setRequestHeader("Content-Type", api_config.contentType);
 		}
-		http.setRequestHeader("Authorization", "Basic " + btoa("admin:admin"));
+		console.log(window.localStorage.getItem("defpi_token"));
+		http.setRequestHeader("Authorization", "Basic " + window.localStorage.getItem("defpi_token"));
 		return http;
 	};
 
 	this.send = function(api_config, uri, data, callback, error) {
-		//localStorage.setItem("username", "admin");
+		// For Testing purposes only!
+		/*localStorage.setItem("defpi_username", "admin");
+		localStorage.setItem("defpi_token", btoa("admin:admin"));*/
 
 		if(api_config === null) {
 			api_config = this.default_config;
@@ -63,7 +66,7 @@ export default function() {
 				}
 			}
 		};
-		http.send(data);
+		http.send(/*{username: "admin", password: "admin"} +*/ data);
 	};
 
 };
