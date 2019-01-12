@@ -3,9 +3,9 @@
 		<v-layout class="hidden-md-and-down" wrap justify-center>
 			<v-flex xs4>
 				<v-card height="500px">
-						<v-flex v-for="i in connections" :key="i.id" ma-3 pa-2>
-							<v-list-tile  wrap ripple v-on:click="checklist(i.id)">
-								{{ i.serviceId }}
+						<v-flex v-for="(i, index) in list" :key="i.id" ma-3 pa-2>
+							<v-list-tile  wrap ripple v-on:click="checklist(index)">
+								{{ i.id }}
 							</v-list-tile>
 						</v-flex>
 					</v-card>
@@ -27,15 +27,17 @@
 			<v-layout class="hidden-lg-and-up" right>
 				<v-flex>
 					<v-navigation-drawer>
-						<v-list v-for="i in connections">
+						<v-list v-for="(i, index) in list">
 							<v-list-group>
-								<v-list-tile slot="activator" v-on:click="checklist(i.id)">
-									<v-list-tile-title>{{ i.serviceId }}</v-list-tile-title>
+								<v-list-tile slot="activator" v-on:click="checklist(index)">
+									<v-list-tile-title>{{ i.id }}</v-list-tile-title>
 								</v-list-tile>
 								<v-card>
-									<v-card v-for="text in i.notifications">
-										{{ text }}
+									<v-card v-for="info in showinfo">
+										<v-card v-for="text in info">
+											{{ text }}
 										<v-switch v-model="switch1"></v-switch>
+										</v-card>
 									</v-card>
 								</v-card>
 							</v-list-group>
@@ -44,8 +46,6 @@
 				</v-flex>
 			</v-layout>
 		</v-container>
-
-	</v-app>
 </template>
 <script>
 	export default {
@@ -57,6 +57,14 @@
 			return {
 				applications: ["applicatie-1", "applicatie-2", "applicatie-3"],
 				showinfo: {},
+				username: "admin",
+				password: "admin",
+				api_config: {
+					port: 			this.$API.PORT.ORCHESTRATOR,
+					contentType: 	this.$API.CONTENT_TYPE.JSON,
+					method: 		this.$API.METHOD.GET,
+				},
+				list: [],
 				connections: [
 					{
 						id: 0,
@@ -81,11 +89,30 @@
 		},
 		methods: {
 			checklist: function(id) {
+				this.retrieveList();
+						this.showinfo = {
+							connections: [this.list[id].endpoint1.interfaceId, this.list[id].endpoint2.interfaceId]
+						}
 
-				this.showinfo = {
-					connections: this.connections[id].notifications
-				};
-			}
+			},
+			retrieveList: function(){
+				this.$API.send(this.api_config, "/connection", [], response => {
+					//console.log(response);
+					this.list = response;
+
+
+
+			})
+			},
+			login: function() { this.$API.send(this.api_config, "/", "username=" + this.username + "&password=" + this.password, () => {}, () => {
+				window.localStorage.setItem('defpi_username', this.username);
+				let token = btoa(this.username + ":" + this.password);
+				window.localStorage.setItem('defpi_token', token);
+				document.location = "/"
+			}) }
+		},
+		mounted () {
+			this.retrieveList();
 		}
 	}
 </script>
