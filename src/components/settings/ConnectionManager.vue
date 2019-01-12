@@ -57,8 +57,6 @@
 			return {
 				applications: ["applicatie-1", "applicatie-2", "applicatie-3"],
 				showinfo: {},
-				username: "admin",
-				password: "admin",
 				api_config: {
 					port: 			this.$API.PORT.ORCHESTRATOR,
 					contentType: 	this.$API.CONTENT_TYPE.JSON,
@@ -104,12 +102,6 @@
 
 			})
 			},
-			login: function() { this.$API.send(this.api_config, "/", "username=" + this.username + "&password=" + this.password, () => {}, () => {
-				window.localStorage.setItem('defpi_username', this.username);
-				let token = btoa(this.username + ":" + this.password);
-				window.localStorage.setItem('defpi_token', token);
-				document.location = "/"
-			}) }
 		},
 		mounted () {
 			this.retrieveList();
