@@ -24,10 +24,9 @@
 					</v-card>
 				</v-flex>
 			</v-layout>
-			<v-layout class="hidden-lg-and-up" right>
+			<v-layout class="hidden-lg-and-up">
 				<v-flex>
-					<v-navigation-drawer>
-						<v-list v-for="(i, index) in list">
+						<v-list v-for="(i, index) in list" :key="i.id">
 							<v-list-group>
 								<v-list-tile slot="activator" v-on:click="checklist(index)">
 									<v-list-tile-title>{{ i.id }}</v-list-tile-title>
@@ -42,7 +41,6 @@
 								</v-card>
 							</v-list-group>
 						</v-list>
-					</v-navigation-drawer>
 				</v-flex>
 			</v-layout>
 		</v-container>
@@ -57,6 +55,8 @@
 			return {
 				applications: ["applicatie-1", "applicatie-2", "applicatie-3"],
 				showinfo: {},
+				username: "admin",
+				password: "admin",
 				api_config: {
 					port: 			this.$API.PORT.ORCHESTRATOR,
 					contentType: 	this.$API.CONTENT_TYPE.JSON,
