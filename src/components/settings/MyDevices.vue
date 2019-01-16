@@ -218,7 +218,7 @@
 			pushNewDevice: function (id, deviceName) {
 				this.devices.push({
 					id: id,
-					deviceName: deviceName,
+					name: deviceName,
 				})
 			},
 			removeDevice: function (selectedDevice) {
