@@ -28,7 +28,7 @@
 				<v-flex>
 						<v-list v-for="(i, index) in list" :key="i.id">
 							<v-list-group>
-								<v-list-tile slot="activator" v-on:click="checklist(index)">
+								<v-list-tile slot="activator" v-on:click="checklist(i,index)">
 									<v-list-tile-title>{{ i.id }}</v-list-tile-title>
 								</v-list-tile>
 								<v-card>
