@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<v-dialog v-model="dialog_email" width="500">
+		<v-dialog v-model="dialog_password" width="500">
 			<v-btn icon ripple slot="activator">
 				<v-icon color="grey lighten-1">
 					edit
@@ -12,13 +12,13 @@
 					<v-text-field v-model="username" :rules="nameRules" label="Current password" required type="password"></v-text-field>
 					<v-text-field v-model="email" :rules="emailRules" label="Enter new password" required type="password"></v-text-field>
 					<v-text-field v-model="email" :rules="emailRules" label="Confirm password" required type="password"></v-text-field>
-					<v-btn @click="dialog_email = false">submit</v-btn>
-					<v-btn @click="dialog_email = false">clear</v-btn>
+					<v-btn @click="dialog_password = false">submit</v-btn>
+					<v-btn @click="dialog_password = false">clear</v-btn>
 				</v-form>
 			</v-card>
 		</v-dialog>
 
-		<v-dialog v-model="dialog_password" width="500">
+		<v-dialog v-model="dialog_email" width="500">
 			<v-card>
 				<v-card-title class="headline primary" primary-title="">
 					Change email-address
@@ -26,8 +26,8 @@
 				<v-form v-model="valid" class="pa-3">
 					<v-text-field v-model="username" :rules="nameRules" label="New email-address" required type="text"></v-text-field>
 					<v-text-field v-model="email" :rules="emailRules" label="Confirm email-address" required type="text"></v-text-field>
-					<v-btn @click="dialog_password = false">submit</v-btn>
-					<v-btn @click="dialog_password = false">clear</v-btn>
+					<v-btn @click="dialog_email = false">submit</v-btn>
+					<v-btn @click="dialog_email = false">clear</v-btn>
 				</v-form>
 			</v-card>
 		</v-dialog>

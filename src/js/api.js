@@ -16,6 +16,7 @@ export default function() {
 	this.METHOD = {
 		GET: "GET",
 		POST: "POST",
+		DELETE: "DELETE",
 	};
 
 	this.default_config = {

@@ -4,7 +4,7 @@
 			<v-flex xs4>
 				<v-card height="500px">
 						<v-flex v-for="(i, index) in list" :key="i.id" ma-3 pa-2>
-							<v-list-tile  wrap ripple v-on:click="checklist(index)">
+							<v-list-tile :key="i.id" wrap ripple v-on:click="checklist(i)"  v-bind:class="{ primary: (selected === i.id) }">
 								{{ i.id }}
 							</v-list-tile>
 						</v-flex>
@@ -55,8 +55,6 @@
 			return {
 				applications: ["applicatie-1", "applicatie-2", "applicatie-3"],
 				showinfo: {},
-				username: "admin",
-				password: "admin",
 				api_config: {
 					port: 			this.$API.PORT.ORCHESTRATOR,
 					contentType: 	this.$API.CONTENT_TYPE.JSON,
@@ -82,25 +80,23 @@
 						selected: false,
 						notifications: ["Miele washmachine", "Miele droger Z42","Roomba 671","Rachio Smart Sprinkler"],
 					},
-				]
+				],
+				selected: null,
 			}
 		},
 		methods: {
-			checklist: function(id) {
+			checklist: function(app) {
+				this.selected = app.id;
 				this.retrieveList();
-						this.showinfo = {
-							connections: [this.list[id].endpoint1.interfaceId, this.list[id].endpoint2.interfaceId]
-						}
-
+				/*this.showinfo = {
+					connections: [this.list[app.id].endpoint1.interfaceId, this.list[app.id].endpoint2.interfaceId]
+				}*/
 			},
 			retrieveList: function(){
 				this.$API.send(this.api_config, "/connection", [], response => {
-					//console.log(response);
+					console.log(response);
 					this.list = response;
-
-
-
-			})
+				});
 			},
 		},
 		mounted () {
@@ -108,4 +104,3 @@
 		}
 	}
 </script>
-

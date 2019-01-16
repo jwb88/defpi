@@ -45,13 +45,13 @@
 				<v-tab v-for="tab of tabs" :key="tab.id">{{ tab.name }}</v-tab>
 				<v-tab-item>
 					<v-card>
-						<v-layout justify-center row wrap>
-							<v-flex >
+						<v-layout justify-center class="row" wrap>
+							<v-flex class="xs5">
 								<v-container fluid grid-list-md>
 									<h2>{{ selectedApp.serviceId }}</h2>
 									<br>
 									<v-card-text center><h4>IP-address</h4></v-card-text>
-									<v-text-field align-center v-bind:label="selectedApp.ip_address"> </v-text-field>
+									<v-text-field align-center v-bind:label="selectedApp.ip_address" :rules="ipRules" placeholder="192.168.2.1"></v-text-field>
 									<v-card-actions>
 										<v-spacer></v-spacer>
 										<v-btn class="primary" @click="selectedApp.dialog = false">Save</v-btn>
@@ -59,13 +59,13 @@
 								</v-container>
 							</v-flex>
 							<v-divider vertical></v-divider>
-							<v-flex>
+							<v-flex class="xs5">
 								<v-container fluid grid-list-md>
 									<h4>Location</h4>
 									<v-overflow-btn label="Location" :items="locations"></v-overflow-btn>
 									<v-card-actions>
 										<v-spacer></v-spacer>
-										<v-btn class="primary" @click="close_dialog(app.id)">Uninstall <v-icon>delete</v-icon></v-btn>
+										<v-btn class="primary" @click="uninstall(selectedApp)">Uninstall <v-icon>delete</v-icon></v-btn>
 										<v-btn class="primary" @click="close_dialog(app.id)">Update <v-icon>play_for_work</v-icon></v-btn>
 									</v-card-actions>
 								</v-container>
@@ -106,6 +106,7 @@
 				<template slot="items" slot-scope="props">
 					<td class="title pa-4" @click="open_dialog(props.item)">{{ props.item.serviceId }}</td>
 					<td class="pa-4"  @click="open_dialog(props.item.id)">{{ props.item.token}}</td>
+					<td class="pa-4"  @click="open_dialog(props.item.id)">{{ props.item.state}}</td>
 				</template>
 			</v-data-table>
 		</v-container>
@@ -119,6 +120,7 @@
 				headers: [
 					{text: "Name", value: "serviceId"},
 					{text: "Token", value: "token"},
+					{text: "State", value: "state"},
 				],
 				notification_headers: [
 					{text: "Notification", value: "notification"},
@@ -136,21 +138,30 @@
 					contentType: 	this.$API.CONTENT_TYPE.JSON,
 					method: 		this.$API.METHOD.GET,
 				},
+				api_delete: {
+					port: 			this.$API.PORT.ORCHESTRATOR,
+					contentType: 	this.$API.CONTENT_TYPE.NONE,
+					method: 		this.$API.METHOD.DELETE,
+				},
 				selectedApp: {
 					serviceId: "",
 					ip_address: "unknown",
 					notifications: {},
 				},
+				ipRules: [
+					v => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v) || 'IP address must be valid'
+				]
 			}
 		},
 		methods: {
 			/* API Methods */
 			updateAppList: function () {
+				this.apps = [];
 				this.$API.send(this.api_config, "/process", [], response => {
 					console.log(response);
 					this.apps = response;
 
-					for(let key in this.apps) {
+					/*for(let key in this.apps) {
 						console.log(this.apps[key]);
 						this.$API.send(this.api_config, "/privatenode/" + this.apps[key].privateNodeId, [], response => {
 
@@ -158,9 +169,16 @@
 						this.apps[key].notifications = [
 							{notification: "Some notification", type: "Something", importance: "Warning"}
 						];
-					}
+					}*/
 				});
 			},
+			uninstall: function (app) {
+				this.$API.send(this.api_delete, "/process/" + app.id, [], response => {
+					console.log(response);
+					this.updateAppList();
+				});
+			},
+
 
 			/* Dialog Methods */
 			open_dialog: function(app) {
