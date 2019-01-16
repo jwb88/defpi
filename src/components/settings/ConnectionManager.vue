@@ -4,7 +4,7 @@
 			<v-flex xs4>
 				<v-card height="500px">
 						<v-flex v-for="(i, index) in list" :key="i.id" ma-3 pa-2>
-							<v-list-tile :key="i.id" wrap ripple v-on:click="checklist(i)"  v-bind:class="{ primary: (selected === i.id) }">
+							<v-list-tile :key="i.id" wrap ripple v-on:click="checklist(i,index)"  v-bind:class="{ primary: (selected === i.id) }">
 								{{ i.id }}
 							</v-list-tile>
 						</v-flex>
@@ -28,7 +28,7 @@
 				<v-flex>
 						<v-list v-for="(i, index) in list" :key="i.id">
 							<v-list-group>
-								<v-list-tile slot="activator" v-on:click="checklist(index)">
+								<v-list-tile slot="activator" v-on:click="checklist(i,index)">
 									<v-list-tile-title>{{ i.id }}</v-list-tile-title>
 								</v-list-tile>
 								<v-card>
@@ -81,16 +81,16 @@
 						notifications: ["Miele washmachine", "Miele droger Z42","Roomba 671","Rachio Smart Sprinkler"],
 					},
 				],
-				selected: null,
+				selected: null
 			}
 		},
 		methods: {
-			checklist: function(app) {
+			checklist: function(app,index) {
 				this.selected = app.id;
 				this.retrieveList();
-				/*this.showinfo = {
-					connections: [this.list[app.id].endpoint1.interfaceId, this.list[app.id].endpoint2.interfaceId]
-				}*/
+				this.showinfo = {
+					connections: [this.list[index].endpoint1.interfaceId, this.list[index].endpoint2.interfaceId]
+				}
 			},
 			retrieveList: function(){
 				this.$API.send(this.api_config, "/connection", [], response => {
