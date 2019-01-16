@@ -104,7 +104,8 @@
 		<v-container>
 			<v-data-table :headers="headers" :items="apps" class="elevation-1" hide-actions>
 				<template slot="items" slot-scope="props">
-					<td class="title pa-4" @click="open_dialog(props.item)">{{ props.item.serviceId }}</td>
+					<td class="title pa-4" @click="open_dialog(props.item)">{{ props.item.name }}</td>
+					<td class="pa-4" @click="open_dialog(props.item)">{{ props.item.serviceId }}</td>
 					<td class="pa-4"  @click="open_dialog(props.item.id)">{{ props.item.token}}</td>
 					<td class="pa-4"  @click="open_dialog(props.item.id)">{{ props.item.state}}</td>
 				</template>
@@ -118,7 +119,8 @@
 		data() {
 			return {
 				headers: [
-					{text: "Name", value: "serviceId"},
+					{text: "Name", value: "name"},
+					{text: "Service", value: "serviceId"},
 					{text: "Token", value: "token"},
 					{text: "State", value: "state"},
 				],
