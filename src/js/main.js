@@ -39,15 +39,9 @@ Vue.prototype.$MENU = [
 		url: "/settings",
 		sub_items: [
 			{
-				text: "User Config",
-				icon: "account_circle",
-				url: "/settings/user_settings",
-				sub_items: []
-			},
-			{
-				text: "My Devices",
-				icon: "devices",
-				url: "/settings/my_devices",
+				text: "My Apps",
+				icon: "settings_applications",
+				url: "/settings/my_apps",
 				sub_items: []
 			},
 			{
@@ -57,11 +51,17 @@ Vue.prototype.$MENU = [
 				sub_items: []
 			},
 			{
-				text: "My Apps",
-				icon: "settings_applications",
-				url: "/settings/my_apps",
+				text: "My Devices",
+				icon: "devices",
+				url: "/settings/my_devices",
 				sub_items: []
 			},
+			{
+				text: "User Config",
+				icon: "account_circle",
+				url: "/settings/user_settings",
+				sub_items: []
+			}
 		]
 	},
 	{
@@ -79,19 +79,21 @@ const router = new VueRouter({
         // dynamic segments start with a colon
 		{ path: '*',						component: PageNotFound 	},
 
-		{ path: '/',             	component: Dashboard,		},
+		{ path: '/',             			component: Dashboard,		},
         { path: '/dashboard/',             	component: Dashboard,		},
 		{ path: '/fullscreen_widget/:id',   component: Dashboard,		},
 		{ path: '/appstore',   				component: AppStore,		},
 		{ path: '/appstore/category/:cat', 	component: AppStore, 		},
 		{ path: '/appstore/app/:id',       	component: AppStore,		},
 
-        { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings, 	children: [
-			{path:"my_apps", 				component: MyApps				},
-			{path:"connection_manager", 	component: ConnectionManager	},
-			{path:"my_devices", 			component: MyDevices			},
-        	{path:"user_settings", 			component: UserSettings 		},
-		]},
+        { path: '/settings',		redirect: '/settings/my_apps',	component: Settings,
+			children: [
+				{path:"my_apps", 				component: MyApps				},
+				{path:"connection_manager", 	component: ConnectionManager	},
+				{path:"my_devices", 			component: MyDevices			},
+				{path:"user_settings", 			component: UserSettings 		},
+			]
+		},
     ]
 });
 

@@ -47,10 +47,10 @@
 			return {
 				menu: this.$MENU,
 				header_titles: {
-					"/settings/user_settings": 		"User Config",
-					"/settings/my_devices": 		"My Devices",
-					"/settings/connection_manager": "Connection Manager",
 					"/settings/my_apps": 			"My Apps",
+					"/settings/connection_manager": "Connection Manager",
+					"/settings/my_devices": 		"My Devices",
+					"/settings/user_settings": 		"User Config",
 				}
 			}
 		}
