@@ -41,17 +41,18 @@
 									<v-card class="elevation-4 ma-4" style="min-width: 300px;">
 										<v-card-title class="primary darken-1 title primary--text text--lighten-1 pa-1" color="primary"><v-avatar class="primary lighten-1 mr-3 black--text">{{ getInitials(app.name) }}</v-avatar>{{app.name}}</v-card-title>
 										<v-card-text class="pa-3" style="width:300px; height: 170px;">
-											<v-btn class="primary mb-4 mr-1"
-											   	v-on:click="openAppModal(app.id)"
-												absolute dark fab small bottom right
-											>
-												<v-icon>add</v-icon>
-											</v-btn>
-
 											<v-label>
 												{{ shortenText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.") }}
 											</v-label>
 										</v-card-text>
+										<v-card-actions>
+											<v-btn class="primary mb-4 mr-1"
+												   v-on:click="openAppModal(app.id)"
+												   absolute dark fab small bottom right
+											>
+												<v-icon>add</v-icon>
+											</v-btn>
+										</v-card-actions>
 									</v-card>
 								</v-layout>
 							</v-flex>
@@ -268,13 +269,12 @@
 			installApp: function() {
 				if ( this.selectedLocation !== null &&
 					this.selectedLocation !== '' &&
-					this.appDetails !== null /*&&
-					window.localStorage.getItem('efpi_orchestrator_username') !== null &&
-					window.localStorage.getItem('efpi_orchestrator_username') !== ''*/ ) {
+					this.appDetails !== null &&
+					window.localStorage.getItem('defpi_username') !== null &&
+					window.localStorage.getItem('defpi_username') !== '' ) {
 
 					this.isInstalling = true;
-					let username = window.localStorage.getItem('efpi_orchestrator_username');
-					username = 'admin'; // TODO: REMOVE THIS ABOMINATION
+					let username = window.localStorage.getItem('defpi_username');
 					// Fetch user Id
 					this.$API.send(this.getRequestConfig, "/user/by_username/" + username, null, response => {
 						let data = response;

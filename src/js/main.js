@@ -87,10 +87,10 @@ const router = new VueRouter({
 		{ path: '/appstore/app/:id',       	component: AppStore,		},
 
         { path: '/settings',		redirect: '/settings/user_settings',      		component: Settings, 	children: [
+			{path:"my_apps", 				component: MyApps				},
+			{path:"connection_manager", 	component: ConnectionManager	},
+			{path:"my_devices", 			component: MyDevices			},
         	{path:"user_settings", 			component: UserSettings 		},
-        	{path:"my_devices", 			component: MyDevices			},
-        	{path:"connection_manager", 	component: ConnectionManager	},
-        	{path:"my_apps", 				component: MyApps				},
 		]},
     ]
 });

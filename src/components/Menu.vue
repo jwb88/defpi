@@ -7,16 +7,27 @@
 									 app></v-toolbar-side-icon>
 				<v-layout class="hidden-md-and-down">
 					<v-layout v-for="item in menu"  :key="item.url">
+						<v-layout>
 							<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
-								<v-icon class="btn_arrow">arrow_drop_down</v-icon>
-								<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
-								{{item.text}}
+								<!--<v-layout style="width:100%;">
+									<v-icon style="width:100%;" class="btn_arrow">arrow_drop_down</v-icon>
+								</v-layout>-->
+								<v-layout align-center justify-center style="position:absolute;top:-65px;width:100%;">
+									<v-icon class="selector_arrow">arrow_drop_down</v-icon>
+								</v-layout>
+								<!--<v-icon style="position:relative; top:-25px; width:1px;" class="btn_arrow">arrow_drop_down</v-icon>-->
+									<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
+									{{item.text}}
 							</v-btn>
+						</v-layout>
 					</v-layout>
 					<v-layout class="justify-end">
-						<v-btn class="pa-4.5 title" v-bind="{to: '/logout'}" @click="logout">
-							<v-icon class="pr-1" medium>logout</v-icon>Logout
-						</v-btn>
+						<!--<v-btn class="pa-4.5 title" v-bind="{to: './logout'}" @click="logout">-->
+						<a class="pa-4.5 title v-btn v-btn--router theme--light" href="/logout">
+							<div class="v-btn__content">
+								<v-icon class="pr-1" medium>logout</v-icon>Logout
+							</div>
+						</a>
 					</v-layout>
 				</v-layout>
 
@@ -74,11 +85,6 @@
 					method: 		this.$API.METHOD.POST,
 				}
 			}
-		},
-		methods: {
-			logout: function() {
-				this.$API.send(this.api_config, "/logout", null, () => { document.location = "/" });
-			}
 		}
 	}
 </script>
@@ -91,15 +97,13 @@
 		padding: 34px;
 	}
 
-	.btn_arrow {
+	.selector_arrow {
 		display: none;
 	}
 
-	.v-btn.primary .btn_arrow {
+	.v-btn.primary .selector_arrow {
 		color: rgba(0,0,0,0.4);
 		font-size: 60px;
-		display: inline-block !important;
-		position: absolute;
-		margin-top: -50px;
+		display:inline-block;
 	}
 </style>
