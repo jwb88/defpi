@@ -35,7 +35,7 @@
 				</v-flex>
 				<v-flex md12 lg10 xs10>
 					<v-container grid-list-xs fluid>
-						<v-layout row wrap class="align-center justify-center">
+						<v-layout row wrap :class="{ 'justify-center': $vuetify.breakpoint.mdAndDown}">
 							<v-flex v-for="app in displayableApps" :key="app.id" xs12 sm6 md4 lg3 style="min-width: 400px !important;">
 								<v-layout align-center justify-center>
 									<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
@@ -194,7 +194,7 @@
 		},
 		methods: {
 			updateAppList: function () {
-				API.send(this.getRequestConfig, "/service", null, response => { this.appList = response; this.updateFilteredList(); this.modalLoading = false; });
+				API.send(this.getRequestConfig, "/service", null, response => { this.appList = response; this.updateFilteredList(); this.modalLoading = false; },null);
 			},
 			updateFilteredList: function() {
 				let tempAppList = [];
@@ -204,7 +204,6 @@
 				if( this.appList.length > 0 ){
 					this.appList.forEach(function (value, key) {
 						//TODO: Replace with actual description
-						value.description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 						if(	value.name !== "Dashboard" &&
 							value.name !== "Dashboard Gateway") {
 							if( searchTerm.length > 0 ) {
@@ -220,8 +219,8 @@
 				this.displayableApps = tempAppList;
 			},
 			fetchNodes: function() {
-				API.send(this.getRequestConfig, "/privatenode", null, response => { this.privateNodes = response; });
-				API.send(this.getRequestConfig, "/nodepool", null, response => { this.nodePools = response; });
+				API.send(this.getRequestConfig, "/privatenode", null, response => { this.privateNodes = response; },null);
+				API.send(this.getRequestConfig, "/nodepool", null, response => { this.nodePools = response; },null);
 			},
 			createNodeList: function() {
 				let tempLocationPicker = [];
@@ -263,11 +262,14 @@
 					return null;
 				if(!appId)
 					return null;
-				let app = object;
+				let app = null;
+				console.log(this.appList);
 				this.appList.forEach(function(value, key){
+					console.log(value);
 					if( value.id === appId )
 						app = value;
 				});
+				console.log(this.app);
 				return app;
 			},
 			closeAppModal: function() {
@@ -320,8 +322,8 @@
 
 							this.isInstalling = false;
 							this.appInstalled = true;
-						});
-					});
+						},null);
+					},null);
 				}
 			},
 			getInitials: function(name) {
