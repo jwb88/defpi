@@ -69,6 +69,8 @@
 </template>
 
 <script>
+	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../../js/api.js";
+
 	export default {
 		data () {
 			return {
@@ -77,11 +79,7 @@
 				information: {},
 				dialogDisconnect: false,
 				dialogConnect: false,
-				api_config: {
-					port: 			this.$API.PORT.ORCHESTRATOR,
-					contentType: 	this.$API.CONTENT_TYPE.NONE,
-					method: 		this.$API.METHOD.GET,
-				},
+				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET),
 				valid: false,
 				username: '',
 				email: '',
@@ -98,7 +96,7 @@
 		},
 		methods: {
 			getUserData: function () {
-				this.$API.send(this.api_config, "/user/by_username/" + window.localStorage.getItem("defpi_username"), [], response => {
+				API.send(this.api_config, "/user/by_username/" + window.localStorage.getItem("defpi_username"), [], response => {
 					console.log(response);
 					this.information = response;
 					this.information.password = "*******";

@@ -1,7 +1,6 @@
 import Vue          		from 'vue';
 import VueRouter    		from 'vue-router';
 import VueResource 			from 'vue-resource';
-import API					from '../js/api.js';
 
 import App 					from "../App";
 import Dashboard      		from "../components/Dashboard";
@@ -24,7 +23,6 @@ Vue.use(Vuetify, {
 });
 Vue.use(VueRouter);
 Vue.use(VueResource);
-Vue.prototype.$API = new API();
 
 Vue.prototype.$MENU = [
 	{

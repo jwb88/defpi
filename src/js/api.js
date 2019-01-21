@@ -1,58 +1,59 @@
 /**
+ * PORTs for APIConfig
+ * @type {{ORCHESTRATOR: string, GATEWAY: string}}
+ */
+export const PORT = {
+	GATEWAY: 		"8080",
+	ORCHESTRATOR: 	"8484",
+};
+
+
+/**
+ * ContentTypes for APIConfig
+ * @type {{JAVASCRIPT: string, WWW_FORM: string, JSON: string, NONE: string}}
+ */
+export const CONTENT_TYPE = {
+	WWW_FORM: 	"application/x-www-form-urlencoded",
+	JSON: 		"application/json",
+	JAVASCRIPT: "application/javascript",
+	NONE: 		"",
+};
+
+
+/**
+ * METHODs for APIConfig
+ * @type {{DELETE: string, POST: string, GET: string}}
+ */
+export const METHOD = {
+	GET: 	"GET",
+	POST: 	"POST",
+	DELETE: "DELETE",
+};
+
+
+/**
+ * Config Object for API
+ * @param {string} port
+ * @param {string} contentType
+ * @param {string} method
+ * @constructor
+ */
+export function Config(port, contentType, method) {
+	this.port = port;
+	this.contentType = contentType;
+	this.method = method;
+}
+
+
+
+/**
  * API Class for the dEF-PI Interface
  * @author J.W.Balsma
  */
-export default function() {
-	/**
-	 * PORT config for APIConfig
-	 * @type {{ORCHESTRATOR: string, GATEWAY: string}}
-	 */
-	this.PORT = {
-		GATEWAY: 		"8080",
-		ORCHESTRATOR: 	"8484",
-	};
-
-
-	/**
-	 * ContentType config for APIConfig
-	 * @type {{JAVASCRIPT: string, WWW_FORM: string, JSON: string, NONE: string}}
-	 */
-	this.CONTENT_TYPE = {
-		WWW_FORM: 	"application/x-www-form-urlencoded",
-		JSON: 		"application/json",
-		JAVASCRIPT: "application/javascript",
-		NONE: 		"",
-	};
-
-
-	/**
-	 * METHOD config for APIConfig
-	 * @type {{DELETE: string, POST: string, GET: string}}
-	 */
-	this.METHOD = {
-		GET: 	"GET",
-		POST: 	"POST",
-		DELETE: "DELETE",
-	};
-
-
-	/**
-	 * Config Object for API
-	 * @param {string} port
-	 * @param {string} contentType
-	 * @param {string} method
-	 * @constructor
-	 */
-	this.APIConfig = function(port, contentType, method) {
-		this.port = port;
-		this.contentType = contentType;
-		this.method = method;
-	};
-
-
+function APIClass() {
 	// Config
 	this.api_url_base = "http://" + window.location.hostname + ":";
-	this.default_config = new this.APIConfig(this.PORT.ORCHESTRATOR, this.CONTENT_TYPE.NONE, this.METHOD.GET);
+	this.default_config = new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET);
 
 
 	/**
@@ -67,7 +68,7 @@ export default function() {
 
 		let http = new XMLHttpRequest();
 		http.open(api_config.method, url, true);
-		if(api_config.contentType !== this.CONTENT_TYPE.NONE) {
+		if(api_config.contentType !== CONTENT_TYPE.NONE) {
 			http.setRequestHeader("Content-Type", api_config.contentType);
 		}
 		http.setRequestHeader("Authorization", "Basic " + window.localStorage.getItem("defpi_token"));
@@ -76,11 +77,11 @@ export default function() {
 
 	/**
 	 * Send method for API request
-	 * @param {object}			api_config
-	 * @param {string}         	uri
-	 * @param {object}         	data
-	 * @param {action}         	callback
-	 * @param {action}         	error
+	 * @param {object}				api_config
+	 * @param {string}         		uri
+	 * @param {object}         		data
+	 * @param {function}       		callback
+	 * @param {function(number)}    error
 	 */
 	this.send = function(api_config, uri, data, callback, error) {
 		// TODO REMOVE BEFORE BUILD (For Testing purposes only!)
@@ -92,20 +93,23 @@ export default function() {
 		let http = this.open_request(api_config, uri);
 		http.onreadystatechange = function() {
 			if(http.readyState === http.DONE ) {
-				if (http.status === 200) {
+				if (http.status >= 200 && http.status <= 207) {
 					if (this.getResponseHeader("Content-Type") === "application/javascript" || this.getResponseHeader("Content-Type") === "application/json") {
 						let response = JSON.parse(http.response);
 						callback(response);
-						return;
 					}
+				} else {
+					console.error("[Api] HTTP CODE: " + http.status);
+					if(error != null) { error(http.status); return; }
+
+					console.log("Server down?");
+					//document.location = "/";
 				}
 			}
-			console.error("[Api] HTTP CODE: " + http.status);
-			if(error != null) { error(); return; }
-
-			document.location = "/";
 		};
 		http.send(data);
 	};
 
-};
+}
+
+export const API = new APIClass();

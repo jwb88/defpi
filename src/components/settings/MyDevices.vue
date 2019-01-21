@@ -136,6 +136,8 @@
 	</v-container>
 </template>
 <script>
+	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../../js/api.js";
+
 	export default {
 		name: "MyDevices",
 		components: {
@@ -143,11 +145,7 @@
 		},
 		data() {
 			return {
-				api_config: {
-					port: 			this.$API.PORT.ORCHESTRATOR,
-					contentType: 	this.$API.CONTENT_TYPE.JSON,
-					method: 		this.$API.METHOD.GET,
-				},
+				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				headers: [
 					{text: "Name", value: "name"},
 					{text: "Token", value: "id"},
@@ -181,7 +179,7 @@
 		methods: {
 
 			retrieveDevices: function(){
-				this.$API.send(this.api_config, "/privatenode", [], response => {
+				API.send(this.api_config, "/privatenode", [], response => {
 					console.log(response);
 					this.list = response;
 

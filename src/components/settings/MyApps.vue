@@ -115,6 +115,8 @@
 </template>
 
 <script>
+	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../../js/api.js";
+
 	export default {
 		data() {
 			return {
@@ -135,23 +137,16 @@
 				apps: [],
 				active_tab: 0,
 				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}],
-				api_config: {
-					port: 			this.$API.PORT.ORCHESTRATOR,
-					contentType: 	this.$API.CONTENT_TYPE.JSON,
-					method: 		this.$API.METHOD.GET,
-				},
-				api_delete: {
-					port: 			this.$API.PORT.ORCHESTRATOR,
-					contentType: 	this.$API.CONTENT_TYPE.NONE,
-					method: 		this.$API.METHOD.DELETE,
-				},
+				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
+				api_delete: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.DELETE),
 				selectedApp: {
 					serviceId: "",
 					ip_address: "unknown",
 					notifications: {},
 				},
 				ipRules: [
-					v => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v) || 'IP address must be valid'
+					/*v => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v) || 'IP address must be valid'*/
+					v => /^[0-256].[0-256].[0-256].[0-256]$/.test(v) || 'IP address must be valid'
 				]
 			}
 		},
@@ -159,7 +154,7 @@
 			/* API Methods */
 			updateAppList: function () {
 				this.apps = [];
-				this.$API.send(this.api_config, "/process", [], response => {
+				API.send(this.api_config, "/process", [], response => {
 					console.log(response);
 					this.apps = response;
 
@@ -175,7 +170,7 @@
 				});
 			},
 			uninstall: function (app) {
-				this.$API.send(this.api_delete, "/process/" + app.id, [], response => {
+				API.send(this.api_delete, "/process/" + app.id, [], response => {
 					console.log(response);
 					this.updateAppList();
 				});

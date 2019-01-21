@@ -73,17 +73,15 @@
 
 
 <script>
+	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../js/api.js";
+
 	export default {
 		data() {
 			return {
 				menu: this.$MENU,
 				bottomNav: null,
 				drawer: false,
-				api_config: {
-					port: 			this.$API.PORT.GATEWAY,
-					contentType: 	this.$API.CONTENT_TYPE.WWW_FORM,
-					method: 		this.$API.METHOD.POST,
-				}
+				api_config: new Config(PORT.GATEWAY, CONTENT_TYPE.WWW_FORM, METHOD.POST)
 			}
 		}
 	}

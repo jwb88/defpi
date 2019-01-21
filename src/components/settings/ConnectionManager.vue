@@ -46,6 +46,8 @@
 		</v-container>
 </template>
 <script>
+	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../../js/api.js";
+
 	export default {
 		name: "ConnectionManager",
 		props: ["menu"],
@@ -55,11 +57,7 @@
 			return {
 				applications: ["applicatie-1", "applicatie-2", "applicatie-3"],
 				showinfo: {},
-				api_config: {
-					port: 			this.$API.PORT.ORCHESTRATOR,
-					contentType: 	this.$API.CONTENT_TYPE.JSON,
-					method: 		this.$API.METHOD.GET,
-				},
+				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				list: [],
 				connections: [
 					{
@@ -93,7 +91,7 @@
 				}
 			},
 			retrieveList: function(){
-				this.$API.send(this.api_config, "/connection", [], response => {
+				API.send(this.api_config, "/connection", [], response => {
 					console.log(response);
 					this.list = response;
 				});

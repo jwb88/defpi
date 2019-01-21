@@ -86,7 +86,7 @@
 
 <script>
 	import Menu from './Menu';
-	import { APIConfig } from "../js/api";
+	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../js/api";
 
 	export default {
 		components: {
@@ -96,13 +96,8 @@
 			return {
 				widgetLoading: true,
 				widgets: [],
-/*				api_config: {
-					port: 			this.$API.PORT.GATEWAY,
-					contentType: 	this.$API.CONTENT_TYPE.WWW_FORM,
-					method: 		this.$API.METHOD.POST,
-				},*/
-				api_config: new APIConfig(this.$API.PORT.ORCHESTRATOR, this.$API.CONTENT_TYPE.JSON, this.$API.METHOD.GET),
-				iframe_url: this.$API.api_url_base + "8080/dashboard/"
+				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
+				iframe_url: API.api_url_base + "8080/dashboard/"
 			}
 		},
 		methods: {
@@ -111,19 +106,17 @@
 					this.widgets = response;
 					this.widgetLoading = false;
 				});*/
-				this.$API.send(this.api_config, "/process", {}, response => {
-					//console.log(response);
+				API.send(this.api_config, "/process", {}, response => {
 					let temp = [];
 					response.forEach(function (value, key) {
 						console.log(value);
 						if(	value.serviceId !== "dashboard" && value.serviceId !== "dashboard-gateway") temp.push(value);
 					});
-					//this.widgets = response;
 					this.widgets = temp;
 					this.widgetLoading = false;
-				}, () => {
+				}, (code) => {
+					console.log("FROM DASHBOARD: " + code);
 					this.widgetLoading = false;
-
 				});
 			},
 			getInitials: function(name) {
