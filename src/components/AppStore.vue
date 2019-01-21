@@ -239,7 +239,6 @@
 				this.locationPicker = tempLocationPicker;
 			},
 			openAppModal: function(appId) {
-				this.modalLoading = true;
 				this.appNickName = '';
 
 				this.appDetails = this.getAppByID(appId);
