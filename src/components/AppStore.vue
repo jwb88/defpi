@@ -41,9 +41,8 @@
 									<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 
 										<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
-											<v-avatar class="primary lighten-1 mr-3 black--text">
-												{{ getInitials(app.name) }}
-											</v-avatar>
+											<v-avatar v-if="widget.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + widget.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+											<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(app.name) }}</v-avatar>
 											{{app.name}}
 										</v-card-title>
 										<v-card-text class="pa-3" style="width:300px; height: 170px;">
@@ -178,7 +177,6 @@
 				appList: [],
 				displayableApps: [],
 				searchFilter: "",
-				publicNodes: [],
 				privateNodes: [],
 				nodePools: [],
 				locationPicker: [],
@@ -239,18 +237,16 @@
 						tempLocationPicker.push(value);
 					});
 				}
-				if( this.publicNodes.length > 0 ) {
-					this.publicNodes.forEach(function (value, key) {
-						value.isPublicNode = true;
-						tempLocationPicker.push(value);
-					});
-				}
 				this.locationPicker = tempLocationPicker;
 			},
 			openAppModal: function(appId) {
 				this.modalLoading = true;
 				this.appNickName = '';
-				API.send(this.getRequestConfig, "/service/" + appId, null, response => {
+
+				this.appDetails = this.getAppByID(appId);
+				if(this.appDetails)
+					this.appModal = true;
+				/*API.send(this.getRequestConfig, "/service/" + appId, null, response => {
 					let data = response;
 					this.appDetails = {
 						id: data.id,
@@ -260,7 +256,19 @@
 					};
 					this.modalLoading = false;
 					this.appModal = true;
+				});*/
+			},
+			getAppByID: function(appId) {
+				if(!this.appList)
+					return null;
+				if(!appId)
+					return null;
+				let app = object;
+				this.appList.forEach(function(value, key){
+					if( value.id === appId )
+						app = value;
 				});
+				return app;
 			},
 			closeAppModal: function() {
 				this.appNickName = '';
