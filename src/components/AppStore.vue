@@ -41,7 +41,7 @@
 									<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 
 										<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
-											<v-avatar v-if="widget.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + widget.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+											<v-avatar v-if="app.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + app.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 											<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(app.name) }}</v-avatar>
 											{{app.name}}
 										</v-card-title>
