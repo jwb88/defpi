@@ -11,11 +11,11 @@
 					</v-card>
 				</v-flex>
 				<v-divider vertical ma-3></v-divider>
-				<v-flex v-for="info in showinfo" wrap xs12 sm6>
+				<v-flex v-for="info in showinfo" :key="info" wrap xs12 sm6>
 					<v-card row wrap xs12 sm6 height="500px">
 						<v-flex row wrap ma-3 pa-2>
 							<v-card >
-								<v-card v-for="text in info" xs12 sm6 wrap row>
+								<v-card v-for="text in info" :key="text" xs12 sm6 wrap row>
 									{{ text }}
 									<v-switch align-right v-model="switch1"></v-switch>
 								</v-card>
@@ -32,8 +32,8 @@
 									<v-list-tile-title>{{ i.id }}</v-list-tile-title>
 								</v-list-tile>
 								<v-card>
-									<v-card v-for="info in showinfo">
-										<v-card v-for="text in info">
+									<v-card v-for="info in showinfo" :key="info">
+										<v-card v-for="text in info" :key="text">
 											{{ text }}
 										<v-switch v-model="switch1"></v-switch>
 										</v-card>
