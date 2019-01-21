@@ -20,7 +20,7 @@
 		<!-- Widgets -->
 		<v-content style="height: 94%;">
 			<v-container v-if="$route.params.id == null" grid-list-xs fluid>
-				<v-layout row wrap class="align-center justify-center">
+				<v-layout row wrap :class="{ 'justify-center': $vuetify.breakpoint.mdAndDown}">
 					<!--No Widgets Installed-->
 					<v-flex v-if="widgets[0] == null">
 						<v-layout v-if="!widgetLoading" align-center justify-center>
@@ -39,7 +39,7 @@
 					</v-flex>
 					<!--Small Widgets-->
 					<v-flex v-else v-for="(widget, k) in widgets" :key="k" xs12 sm6 md4 lg3 style="min-width: 400px !important;"> <!--v-if="widget.has_widget"-->
-						<v-layout align-center justify-center>
+						<v-layout justify-center>
 							<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
 									<v-avatar v-if="widget.icon_url != null" class="primary lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + '' + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
