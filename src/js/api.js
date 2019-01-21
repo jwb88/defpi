@@ -1,54 +1,93 @@
+/**
+ * API Class for the dEF-PI Interface
+ * @author J.W.Balsma
+ */
 export default function() {
-	this.api_url_base = "http://" + window.location.hostname + ":";
-
+	/**
+	 * PORT config for APIConfig
+	 * @type {{ORCHESTRATOR: string, GATEWAY: string}}
+	 */
 	this.PORT = {
-		GATEWAY: "8080",
-		ORCHESTRATOR: "8484",
+		GATEWAY: 		"8080",
+		ORCHESTRATOR: 	"8484",
 	};
 
+
+	/**
+	 * ContentType config for APIConfig
+	 * @type {{JAVASCRIPT: string, WWW_FORM: string, JSON: string, NONE: string}}
+	 */
 	this.CONTENT_TYPE = {
-		WWW_FORM: "application/x-www-form-urlencoded",
-		JSON: "application/json",
+		WWW_FORM: 	"application/x-www-form-urlencoded",
+		JSON: 		"application/json",
 		JAVASCRIPT: "application/javascript",
-		NONE: "",
+		NONE: 		"",
 	};
 
+
+	/**
+	 * METHOD config for APIConfig
+	 * @type {{DELETE: string, POST: string, GET: string}}
+	 */
 	this.METHOD = {
-		GET: "GET",
-		POST: "POST",
+		GET: 	"GET",
+		POST: 	"POST",
 		DELETE: "DELETE",
 	};
 
-	this.default_config = {
-		port: 			this.PORT.ORCHESTRATOR,
-		contentType: 	this.CONTENT_TYPE.NONE,
-		method: 		this.METHOD.GET,
+
+	/**
+	 * Config Object for API
+	 * @param {string} port
+	 * @param {string} contentType
+	 * @param {string} method
+	 * @constructor
+	 */
+	this.APIConfig = function(port, contentType, method) {
+		this.port = port;
+		this.contentType = contentType;
+		this.method = method;
 	};
 
+
+	// Config
+	this.api_url_base = "http://" + window.location.hostname + ":";
+	this.default_config = new this.APIConfig(this.PORT.ORCHESTRATOR, this.CONTENT_TYPE.NONE, this.METHOD.GET);
+
+
+	/**
+	 * Open HTTP Request
+	 * @param api_config
+	 * @param uri
+	 * @returns {XMLHttpRequest}
+	 */
 	this.open_request = function(api_config, uri) {
 		let url = this.api_url_base + api_config.port + uri;
 		console.log("[API] [" + api_config.method + "] " + url);
 
 		let http = new XMLHttpRequest();
 		http.open(api_config.method, url, true);
-		//http.setRequestHeader("Access-Control-Allow-Origin", "*");
-		//http.setRequestHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
 		if(api_config.contentType !== this.CONTENT_TYPE.NONE) {
 			http.setRequestHeader("Content-Type", api_config.contentType);
 		}
-		console.log(window.localStorage.getItem("defpi_token"));
 		http.setRequestHeader("Authorization", "Basic " + window.localStorage.getItem("defpi_token"));
 		return http;
 	};
 
+	/**
+	 * Send method for API request
+	 * @param {object}			api_config
+	 * @param {string}         	uri
+	 * @param {object}         	data
+	 * @param {action}         	callback
+	 * @param {action}         	error
+	 */
 	this.send = function(api_config, uri, data, callback, error) {
-		// For Testing purposes only!
-		/*localStorage.setItem("defpi_username", "admin");
-		localStorage.setItem("defpi_token", btoa("admin:admin"));*/
+		// TODO REMOVE BEFORE BUILD (For Testing purposes only!)
+		localStorage.setItem("defpi_username", "admin");
+		localStorage.setItem("defpi_token", btoa("admin:admin"));
 
-		if(api_config === null) {
-			api_config = this.default_config;
-		}
+		if(api_config === null) api_config = this.default_config;
 
 		let http = this.open_request(api_config, uri);
 		http.onreadystatechange = function() {
@@ -57,17 +96,16 @@ export default function() {
 					if (this.getResponseHeader("Content-Type") === "application/javascript" || this.getResponseHeader("Content-Type") === "application/json") {
 						let response = JSON.parse(http.response);
 						callback(response);
+						return;
 					}
-				} else {
-					console.error("[Api] HTTP CODE: " + http.status);
-				}
-			} else {
-				if(error != null) {
-					error();
 				}
 			}
+			console.error("[Api] HTTP CODE: " + http.status);
+			if(error != null) { error(); return; }
+
+			document.location = "/";
 		};
-		http.send(/*{username: "admin", password: "admin"} +*/ data);
+		http.send(data);
 	};
 
 };
