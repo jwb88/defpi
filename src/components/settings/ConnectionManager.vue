@@ -1,5 +1,10 @@
 <template>
 	<v-container>
+		<v-layout wrap justify-center>
+		<v-icon color="blue" large @click="info = !info">help</v-icon>
+			<v-alert dismissible :value="info" type="info" outline transition="scale-transition">This is the Connection Manager. Here you can manage every connection for each individual app.
+			For example, if you do not wish that a certain app is displayed on the dashboard, you can simply turn the connection between that app and the dashboard off with the appropriate switch.</v-alert>
+		</v-layout>
 		<v-layout class="hidden-md-and-down" wrap justify-center>
 			<v-flex xs4>
 				<v-card height="500px">
@@ -47,7 +52,6 @@
 </template>
 <script>
 	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../../js/api.js";
-
 	export default {
 		name: "ConnectionManager",
 		props: ["menu"],
@@ -56,8 +60,10 @@
 		data () {
 			return {
 				showinfo: {},
+				info: false,
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				list: [],
+				filteredList: [],
 				connections: [],
 				selected: null
 			}
@@ -70,12 +76,24 @@
 					connections: [this.list[index].endpoint2.interfaceId]
 				}
 			},
+			filterList: function(){
+				this.retrieveList();
+				for (let i in this.list) {
+					if(this.filteredList.includes(this.list[i])){
+
+					}
+					else{
+						this.filteredList.connections.push(this.list[i]);
+					}
+				}
+			},
 			retrieveList: function(){
 				API.send(this.api_config, "/connection", [], response => {
 					console.log(response);
 					this.list = response;
 				});
 			},
+
 		},
 		mounted () {
 			this.retrieveList();

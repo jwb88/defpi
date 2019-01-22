@@ -110,15 +110,15 @@
 					</v-card-title>
 
 					<v-card-text>
-						<v-text-field label="Enter device name"></v-text-field>
-						<v-text-field label="Enter Identifier"></v-text-field>
+						<v-text-field v-model="devicename" label="Enter device name"></v-text-field>
+						<v-text-field v-model="identifier" label="Enter Identifier"></v-text-field>
 					</v-card-text>
 					<v-card-actions>
 						<v-spacer></v-spacer>
 						<v-btn
 							activator
 							color="primary"
-							@click="pushNewDevice(Math.random(), 'Test') ; dialogConnect = false"
+							@click="pushNewDevice(identifier, devicename) ; dialogConnect = false"
 						>
 							<v-icon>check</v-icon>Confirm
 						</v-btn>
@@ -150,21 +150,10 @@
 					{text: "Name", value: "name"},
 					{text: "Token", value: "id"},
 				],
+				devicename: "",
+				identifier: "",
 				list: [],
-				devices: [
-					{
-						id: 0,
-						name: "Raspberry Pi 1",
-					},
-					{
-						id: 1,
-						name: "Raspberry Pi 2"
-					},
-					{
-						id: 2,
-						name: "Cloud Server 1"
-					}
-				],
+				devices: [],
 				dialogDisconnect: false,
 				dialogConnect: false,
 				device_dialog: false,
