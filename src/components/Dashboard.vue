@@ -8,7 +8,7 @@
 				<v-tab v-for="(widget, k) in widgets" :key="k" justify-center v-bind="{to: '/fullscreen_widget/' + k}" class="fullscreenBtn" active-class="fullscreenActive"> <!--v-if="widget.has_fullscreen_widget"-->
 					<v-container class="column fill-height" style="border: 3px solid rgba(255,255,255,0.6); border-radius: 20px">
 						<v-flex>
-							<v-avatar v-if="widget.icon_url != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + '' + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+							<v-avatar v-if="widget.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + widget.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 							<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(widget.serviceId) }}</v-avatar>
 							<h4 class="hidden-sm-and-down white--text" style="margin-top: 12px;">{{ widget.name }}</h4>
 						</v-flex>
@@ -42,11 +42,11 @@
 						<v-layout justify-center>
 							<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
-									<v-avatar v-if="widget.icon_url != null" class="primary lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + '' + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+									<v-avatar v-if="widget.iconURL != null" class="primary lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + widget.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 									<v-avatar v-else class="primary lighten-1 mr-3 black--text">{{ getInitials(widget.serviceId) }}</v-avatar>
 									{{widget.name}}
 								</v-card-title>
-								<v-responsive v-if="widget.state === 'RUNNING'" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="iframe_url + k + '/index.html'"></iframe></v-responsive>
+								<v-responsive v-if="widget.state === 'RUNNING'" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="iframe_url + widget.wilco_dude + '/index.html'"></iframe></v-responsive>
 								<v-responsive v-if="widget.state === 'STARTING'" class="pa-4 d-inline-flex">App start!</v-responsive>
 								<v-responsive v-if="widget.state === 'INITIALIZING'" class="pa-4 d-inline-flex">Komt er aan hoor! ff geduld</v-responsive>
 								<v-responsive v-if="widget.state === 'TERMINATED'" class="pa-4 d-inline-flex">Removing the App!</v-responsive>
@@ -95,36 +95,55 @@
 		data() {
 			return {
 				widgetLoading: true,
+				services: [],
 				widgets: [],
+				iframes: [],
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				iframe_url: API.api_url_base + "8080/dashboard/"
 			}
 		},
 		methods: {
+			getServices: function (){
+				API.send(this.api_config, "/service", {}, response => {
+					response.forEach(function (value, i) {
+						this.services[value.id] = value;
+					}, this);
+					console.log("services: ");
+					console.log(this.services);
+				});
+			},
 			getWidgets: function () {
-/*				this.$API.send(this.api_config, "/dashboard/getWidgets", {}, response => {
-					this.widgets = response;
-					this.widgetLoading = false;
-				});*/
 				API.send(this.api_config, "/process", {}, response => {
-					let temp = [];
-					response.forEach(function (value, key) {
-						console.log(value);
-						if(	value.serviceId !== "dashboard" && value.serviceId !== "dashboard-gateway") temp.push(value);
+					let widgets = [];
+					response.forEach(function (value, i) {
+						if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
+							value = Object.assign(value, this.services[value.serviceId]);
+							widgets.push(value);
+						}
+					}, this);
+
+					API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.WWW_FORM, METHOD.POST), "/dashboard/getWidgets", {}, response => {
+						let n = 0;
+						console.log(response);
+						Object.keys(response).forEach(function (value) {
+							widgets[n++]["wilco_dude"] = value;
+						}, this);
+
+						this.widgets = widgets;
+						console.log(this.widgets);
+						this.widgetLoading = false;
 					});
-					this.widgets = temp;
-					this.widgetLoading = false;
-				}, (code) => {
-					console.log("FROM DASHBOARD: " + code);
-					this.widgetLoading = false;
 				});
 			},
 			getInitials: function(name) {
-				let initials = name.match(/\b(\w)/g);
-				return initials.join('');
+				if(name === "") {
+					let initials = name.match(/\b(\w)/g);
+					return initials.join('');
+				} else { return ""; }
 			}
 		},
 		mounted () {
+			this.getServices();
 			this.getWidgets();
 			setInterval(function () {
 				this.getWidgets();
