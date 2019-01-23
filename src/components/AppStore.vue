@@ -36,7 +36,7 @@
 				<v-flex md12 lg10 xs10>
 					<v-container grid-list-xs fluid>
 						<v-layout row wrap :class="{ 'justify-center': $vuetify.breakpoint.mdAndDown}">
-							<v-flex v-for="app in displayableApps" :key="app.id" xs12 sm6 md4 lg3 style="min-width: 400px !important;">
+							<v-flex v-for="app in getDisplayableApps()" :key="app.id" xs12 sm6 md4 lg3 style="min-width: 400px !important;">
 								<v-layout align-center justify-center>
 									<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 
@@ -50,8 +50,13 @@
 										</v-card-text>
 										<v-divider></v-divider>
 										<v-card-actions style="height:50px;">
+											<v-flex xs12>
+												<v-label v-if="installCounter[app.id]">
+													Deze app is al <b>{{installCounter[app.id]}}</b>x geïnstalleerd!
+												</v-label>
+											</v-flex>
 											<v-btn class="primary mb-4 mr-1"
-												   style="left:80%;top:10px;"
+												   style="left:0%;top:10px;"
 												   v-on:click="openAppModal(app.id)"
 												   dark fab small
 											>
@@ -60,6 +65,15 @@
 										</v-card-actions>
 									</v-card>
 								</v-layout>
+							</v-flex>
+							<v-flex v-if="pagination.totalItems > pagination.perPage" xs12>
+								<div class="text-xs-center">
+									<v-pagination
+										v-model="pagination.currentPage"
+										:length="pGetPages()"
+										:total-visible="pagination.paginationLength"
+									></v-pagination>
+								</div>
 							</v-flex>
 						</v-layout>
 					</v-container>
@@ -106,6 +120,7 @@
 											</v-list-tile>
 											<v-list-tile>
 												<v-select
+													:rules="[rules.required]"
 													:items="locationPicker"
 													v-model="selectedLocation"
 													item-text="name"
@@ -115,8 +130,7 @@
 												></v-select>
 											</v-list-tile>
 											<v-list-tile>
-												<!-- TODO: Add checks -->
-												<v-text-field v-model="appNickName" placeholder="Enter a name..."> </v-text-field>
+												<v-text-field :rules="[rules.required, rules.allowedName]" v-model="appNickName" placeholder="Enter a name..."> </v-text-field>
 											</v-list-tile>
 										</v-list>
 									</v-card-actions>
@@ -181,18 +195,40 @@
 				nodePools: [],
 				locationPicker: [],
 				appDetails: null,
+				installCounter: {},
+				pagination: {
+					perPage: 12,
+					currentPage: 1,
+					totalItems: 0,
+					paginationLength: 7,
+				},
 				categories: [
 					{ name: "All" },
-					{ name: "Category_One" },
-					{ name: "Category_Two" },
-					{ name: "Category_Three" },
-					{ name: "Category_Four" }
+					{ name: "Huishoudelijke apparaten" },
+					{ name: "Slimme meters" },
+					{ name: "Elektrische autos" }
 				],
 				getRequestConfig: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET),
 				postRequestConfig: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.POST),
+				rules: {
+					required: value => !!value || 'Required.',
+					allowedName: value => {
+						const pattern =/^\w+$/;
+
+						return pattern.test(value) || 'Invalid name';
+					}
+				}
 			};
 		},
 		methods: {
+			pGetPages: function() {
+				return Math.ceil( this.pagination.totalItems / this.pagination.perPage );
+			},
+			getDisplayableApps: function() {
+				let startIndex = (this.pagination.currentPage -1 ) * this.pagination.perPage;
+				let endIndex = startIndex + this.pagination.perPage;
+				return this.displayableApps.slice(startIndex, endIndex)
+			},
 			updateAppList: function () {
 				API.send(this.getRequestConfig, "/service", null, response => { this.appList = response; this.updateFilteredList(); this.modalLoading = false; },null);
 			},
@@ -200,10 +236,8 @@
 				let tempAppList = [];
 				let searchTerm = this.searchFilter.toLowerCase();
 
-				// TODO: Add filtering
 				if( this.appList.length > 0 ){
 					this.appList.forEach(function (value, key) {
-						//TODO: Replace with actual description
 						if(	value.name !== "Dashboard" &&
 							value.name !== "Dashboard Gateway") {
 							if( searchTerm.length > 0 ) {
@@ -216,6 +250,9 @@
 						}
 					});
 				}
+				this.pagination.totalItems = tempAppList.length;
+				if(this.displayableApps.length !== tempAppList.length)
+					this.pagination.currentPage = 1;
 				this.displayableApps = tempAppList;
 			},
 			fetchNodes: function() {
@@ -244,17 +281,6 @@
 				this.appDetails = this.getAppByID(appId);
 				if(this.appDetails)
 					this.appModal = true;
-				/*API.send(this.getRequestConfig, "/service/" + appId, null, response => {
-					let data = response;
-					this.appDetails = {
-						id: data.id,
-						name: data.name,
-						//TODO: Replace with actual description
-						description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-					};
-					this.modalLoading = false;
-					this.appModal = true;
-				});*/
 			},
 			getAppByID: function(appId) {
 				if(!this.appList)
@@ -317,8 +343,10 @@
 						payLoad.userId = data.id;
 
 						API.send(this.postRequestConfig, "/process", JSON.stringify(payLoad), response => {
-							let data = response;
-
+							if(this.installCounter[this.appDetails.id] == null)
+								this.installCounter[this.appDetails.id] = 1;
+							else
+								this.installCounter[this.appDetails.id] += 1;
 							this.isInstalling = false;
 							this.appInstalled = true;
 						},null);
@@ -331,13 +359,26 @@
 			},
 			shortenText: function(text) {
 				return text.replace(/(.{220})..+/, "$1…");
+			},
+			updateInstalledCounter: function() {
+				let payLoad = {};
+				let tempCounter = {};
+				payLoad._filters = { "userId" : "5c40487065591c00061c974a" }; //TODO: Add dynamic from localStorage
+				API.send(this.getRequestConfig, "/process", JSON.stringify(payLoad), response => {
+					response.forEach(function(value, key) {
+						console.log(key + '\t' + value);
+						if(tempCounter[value.serviceId] == null)
+							tempCounter[value.serviceId] = 0;
+						tempCounter[value.serviceId] += 1;
+					});
+					console.log(tempCounter);
+					this.installCounter = tempCounter;
+				}, null);
 			}
 		},
 		mounted () {
-			console.log("IS AppStore:");
-			console.log(this.$route.matched[0].components["default"].name === this.name);
-
 			this.modalLoading = true;
+			this.updateInstalledCounter();
 			this.updateAppList();
 			this.fetchNodes();
 			setInterval(function () {
@@ -349,6 +390,9 @@
 			setInterval(function () {
 				this.createNodeList();
 			}.bind(this), 2500);
+			setInterval(function() {
+				this.updateInstalledCounter();
+			}.bind(this), 15000)
 		}
     }
 </script>

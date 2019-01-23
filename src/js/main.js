@@ -101,7 +101,7 @@ new Vue({
 }).$mount('#app');
 
 function getAppstoreCategories() {
-	return ['All', 'Category_One', 'Category_Two', 'Category_Three', 'Category_Four'];
+	return ['All', 'Huishoudelijke apparaten', 'Slimme Meters', 'Elektrische Autos'];
 }
 
 function buildSubItems(subList) {
