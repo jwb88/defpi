@@ -271,10 +271,8 @@
 			},
 			removeDevice: function (selectedDevice) {
 				API.send(this.deleteConfig, '/privatenode/' + selectedDevice.id, null, response => {
-					console.log(response);
 					this.deviceRemoved = true;
 				}, response => {
-					console.log(response);
 					this.deviceFailedRemove = true;
 				})
 			}
