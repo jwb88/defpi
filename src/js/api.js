@@ -28,7 +28,7 @@ export const METHOD = {
 	GET: 	"GET",
 	POST: 	"POST",
 	DELETE: "DELETE",
-	UPDATE: "UPDATE"
+	UPDATE: "PUT"
 };
 
 
@@ -85,10 +85,6 @@ function APIClass() {
 	 * @param {function(number)}    error
 	 */
 	this.send = function(api_config, uri, data, callback, error) {
-		// TODO REMOVE BEFORE BUILD (For Testing purposes only!)
-		localStorage.setItem("defpi_username", "admin");
-		localStorage.setItem("defpi_token", btoa("admin:admin"));
-
 		if(api_config === null) api_config = this.default_config;
 
 		let http = this.open_request(api_config, uri);
