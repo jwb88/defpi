@@ -99,18 +99,18 @@
 
 						<v-divider></v-divider>
 						<v-layout wrap>
-							<v-responsive>
+							<v-card-text>
 								<v-container>
 									<v-flex xs12>
 										<v-layout align-center justify-center pb-1>
 											<img src="https://picsum.photos/350/165?random" class="grey darken-4" alt="App Preview"/>
 										</v-layout>
 									</v-flex>
-									<v-flex xs12 wrap>
-										<v-label v-if="appDetails" >{{ appDetails.description }}</v-label>
+									<v-flex v-if="appDetails !== null" xs12 wrap>
+										{{ appDetails.description }}
 									</v-flex>
 								</v-container>
-							</v-responsive>
+							</v-card-text>
 							<v-flex sm12 md12 lg12>
 								<v-layout align-center justify-center>
 									<v-card-actions>
