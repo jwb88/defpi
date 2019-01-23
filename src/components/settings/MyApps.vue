@@ -1,8 +1,10 @@
 <template>
 	<v-container>
+		<!--All Notifications Bell-->
 		<v-layout class="justify-end">
 			<v-btn fab slot="activator" v-on:click="dialog = true"><v-icon large>notification_important</v-icon></v-btn>
 		</v-layout>
+
 		<!--All Notifications Dialog-->
 		<v-dialog v-model="dialog" width="800" lazy>
 			<v-card>
@@ -32,56 +34,55 @@
 		</v-dialog>
 
 		<!--App Dialog-->
-		<v-dialog v-if="selectedApp !== null" v-model="app_dialog" persistent :fullscreen="$vuetify.breakpoint.mdAndDown" max-width="800" lazy>
-			<v-toolbar color="primary" class="pl-3">
-				<v-toolbar-side-icon @click="close_dialog()"><v-icon>navigate_before</v-icon></v-toolbar-side-icon>
-				<v-layout class="text-xs-center">
-					<v-flex>
-						<h1 class="primary title white--text text--lighten-3 pa-1">{{ selectedApp.serviceId }}</h1>
-					</v-flex>
-				</v-layout>
-			</v-toolbar>
-			<v-tabs v-model="active_tab" show arrows grow>
-				<v-tab v-for="tab of tabs" :key="tab.id">{{ tab.name }}</v-tab>
-				<v-tab-item>
-					<v-card>
-						<v-layout class="row wrap">
-							<v-flex class="xs6">
-								<v-container fluid grid-list-md>
-									<v-container v-for="(param, i) in selectedApp.service.parameters">
-										{{param.name}}
-										<v-text-field :value="param.default" :type="settingsForms[param.type]"></v-text-field>
-									</v-container>
-									<!--{{selectedApp.service.parameters}}-->
-									<br>
-									<!--<v-card-text center><h4>IP-address</h4></v-card-text>-->
-									<!--<v-text-field align-center v-bind:label="selectedApp.ip_address" :rules="ipRules" placeholder="192.168.2.1"></v-text-field>-->
-									<v-card-actions>
-										<v-spacer></v-spacer>
-										<v-btn class="primary" @click="selectedApp.dialog = false">Save</v-btn>
-									</v-card-actions>
-								</v-container>
-							</v-flex>
-							<v-divider vertical></v-divider>
-							<v-flex class="xs5">
-								<v-container fluid grid-list-md>
-									<h4>Location</h4>
-									<v-select label="Location" :items="nodeOptions" item-text="hostname" v-model="selectedApp.node"></v-select>
-									<v-card-actions>
-										<v-spacer></v-spacer>
-										<v-btn class="primary" @click="uninstall(selectedApp)">Uninstall <v-icon>delete</v-icon></v-btn>
-										<v-btn class="primary" @click="close_dialog()">Update <v-icon>play_for_work</v-icon></v-btn>
-									</v-card-actions>
-								</v-container>
-							</v-flex>
-						</v-layout>
-					</v-card>
-				</v-tab-item>
-				<v-tab-item>
-					<v-card>
-						<v-card-title class="headline grey lighten-2" primary-title>
-							Notifications
-						</v-card-title>
+		<v-dialog v-if="selectedApp !== null" v-model="app_dialog" :fullscreen="$vuetify.breakpoint.mdAndDown" max-width="800" persistent lazy>
+			<v-card>
+				<!--Dialog Header-->
+				<v-card-title class="primary hidden-md-and-down" relative>
+					<span v-if="selectedApp" class="headline">{{ selectedApp.process.name }}</span>
+					<v-btn class="background" absolute dark small fab right v-on:click="close_dialog()">
+						<v-icon> close </v-icon>
+					</v-btn>
+				</v-card-title>
+				<v-card-title class="primary hidden-lg-and-up text-xs-center justify-center" relative>
+					<span v-if="selectedApp" class="headline">{{ selectedApp.process.name }}</span>
+					<v-btn absolute large flat icon fab left v-on:click="close_dialog()">
+						<v-icon> arrow_back </v-icon>
+					</v-btn>
+				</v-card-title>
+
+				<!--Tabs-->
+				<v-tabs v-model="active_tab" show arrows grow>
+					<v-tab class="primary white--text" v-for="tab of tabs" :key="tab.id" active-class="white black--text">{{ tab.name }}</v-tab>
+
+					<!--Global Settings Tab-->
+					<v-tab-item>
+						<v-container>
+							<v-text-field v-model="selectedApp.process.name" label="Name" required></v-text-field>
+							<v-select label="Location" :items="nodeOptions" item-text="hostname" v-model="selectedApp.node"></v-select>
+							<v-card-actions class="justify-end">
+								<v-btn class="primary" @click="saveSettings(selectedApp)">Save</v-btn>
+							</v-card-actions>
+
+							<v-card-actions class="justify-end">
+								<v-btn class="primary" @click="uninstall(selectedApp)">Uninstall <v-icon>delete</v-icon></v-btn>
+								<v-btn class="primary" @click="close_dialog()">Update <v-icon>play_for_work</v-icon></v-btn>
+							</v-card-actions>
+						</v-container>
+					</v-tab-item>
+
+					<!--Settings Tab-->
+					<v-tab-item>
+						<v-container v-for="(param) in selectedApp.service.parameters">
+							{{param.name}}
+							<v-text-field :value="param.default" :type="settingsForms[param.type]"></v-text-field>
+						</v-container>
+						<v-card-actions class="justify-end">
+							<v-btn class="primary" @click="saveSettings()">Save</v-btn>
+						</v-card-actions>
+					</v-tab-item>
+
+					<!--Notifications Tab-->
+					<v-tab-item>
 						<v-card-text>
 							<v-data-table :headers="notification_headers" :items="selectedApp.notifications" class="elevation-1" hide-actions>
 								<template slot="items" slot-scope="props">
@@ -98,9 +99,9 @@
 							<v-btn class="primary" @click="close_dialog()">Mark as read</v-btn>
 							<v-btn color="primary" @click="close_dialog()">Ok</v-btn>
 						</v-card-actions>
-					</v-card>
-				</v-tab-item>
-			</v-tabs>
+					</v-tab-item>
+				</v-tabs>
+			</v-card>
 		</v-dialog>
 
 		<!--App Table-->
@@ -111,10 +112,10 @@
 						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.serviceId) }}</v-avatar>
 					</td>
-					<td class="title pa-4">{{ props.item.name }}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.serviceId }}</td>
+					<td class="title pa-4">{{ props.item.process.name }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.serviceId }}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.node.hostname}}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.state}}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.state}}</td>
 					<td><v-icon @click="open_dialog(props.item)">edit</v-icon></td>
 				</template>
 			</v-data-table>
@@ -143,10 +144,11 @@
 				loading: true,
 				headers: [
 					{sortable: false},
-					{text: "Name", value: "name"},
+					{text: "Name", value: "process.name"},
 					{text: "Service", value: "service.name"},
 					{text: "Host", value: "node.hostname"},
-					{text: "State", value: "state"},
+					{text: "State", value: "process.state"},
+					{sortable: false}
 				],
 				notification_headers: [
 					{text: "Notification", value: "notification"},
@@ -164,13 +166,13 @@
 				privateNodes: [],
 				apps: [],
 				active_tab: 0,
-				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}],
+				tabs: [{ id: 1, name: "Global Settings"},{ id: 2, name: "Settings"}, {id:3, name: "Notifications"}],
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				api_delete: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.DELETE),
 				selectedApp: null,
 				ipRules: [
 					v => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v) || 'IP address must be valid'
-				]
+				],
 			}
 		},
 		methods: {
@@ -205,13 +207,16 @@
 					response.forEach(function (value) {
 						if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
 							console.log(this.privateNodes);
-							value["node"] = this.privateNodes[value.runningNodeId];
-							value["service"] = this.services[value.serviceId];
-							value["notifications"] = [
-								{notification: "hello", importance: "Warning"},
-								{notification: "update", importance: "Warning"},
-							];
-							temp.push(value);
+							let collection = {
+								"process": 	value,
+								"node": 	this.privateNodes[value.runningNodeId],
+								"service": 	this.services[value.serviceId],
+								"notifications": [
+									{notification: "hello", importance: "Warning"},
+									{notification: "update", importance: "Warning"},
+								],
+							};
+							temp.push(collection);
 						}
 					}, this);
 					this.apps = temp;
@@ -219,9 +224,16 @@
 				});
 			},
 			uninstall: function (app) {
-				API.send(this.api_delete, "/process/" + app.id, [], response => {
+				API.send(this.api_delete, "/process/" + app.process.id, [], response => {
 					console.log(response);
 					this.updateAppList();
+				});
+			},
+			saveSettings: function() {
+				let data = this.selectedApp.process;
+				console.log(this.appName);
+				API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.UPDATE), "/process/" + data.id, JSON.stringify(data), response => {
+					console.log(response);
 				});
 			},
 
