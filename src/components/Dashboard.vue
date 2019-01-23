@@ -112,15 +112,15 @@
 				});
 			},
 			getWidgets: function () {
-				API.send(this.api_config, "/process", {}, response => {
-					let widgets = [];
-					response.forEach(function (value, i) {
-						if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
-							// value = Object.assign(value, this.services[value.serviceId]);
-							value["service"] = this.services[value.serviceId];
-							widgets.push(value);
-						}
-					}, this);
+				// eerst wilco, dan koppelen met process enstuff
+				let temp = [];
+				API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.WWW_FORM, METHOD.POST), "/dashboard/getWidgets", null, widgets => {
+					API.send(this.api_config, "/process", {}, processes => {
+						Object.keys(widgets).forEach(function (id) {
+							processes.forEach(function (value) {
+								value["service"] = this.services[value.serviceId];
+								console.log(widgets[id] + " > " + value.service.name);
+							}, this);
 
 					API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.WWW_FORM, METHOD.POST), "/dashboard/getWidgets", {}, response => {
 						let n = 0;
@@ -129,9 +129,11 @@
 							widgets[n++]["iframe_id"] = value;
 						}, this);
 
-						this.widgets = widgets;
-						console.log(this.widgets);
-						this.widgetLoading = false;
+						// processes.forEach(function (value) {
+						// 	value["service"] = this.services[value.serviceId];
+						// 	temp.push(value);
+						// }, this);
+						console.log(temp);
 					});
 				});
 			},

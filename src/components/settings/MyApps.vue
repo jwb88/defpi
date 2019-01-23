@@ -48,14 +48,14 @@
 						<v-layout justify-center class="row" wrap>
 							<v-flex class="xs5">
 								<v-container fluid grid-list-md>
-									<h1 v-for="(param, i) in selectedApp.service.parameters">
-										{{ param.default }}
-									</h1>
+									<v-container v-for="(param, i) in selectedApp.service.parameters">
+										{{param.name}}
+										<v-text-field :value="param.default" :type="settingsForms[param.type]"></v-text-field>
+									</v-container>
 									<!--{{selectedApp.service.parameters}}-->
-									<h2>{{ selectedApp.serviceId }}</h2>
 									<br>
-									<v-card-text center><h4>IP-address</h4></v-card-text>
-									<v-text-field align-center v-bind:label="selectedApp.ip_address" :rules="ipRules" placeholder="192.168.2.1"></v-text-field>
+									<!--<v-card-text center><h4>IP-address</h4></v-card-text>-->
+									<!--<v-text-field align-center v-bind:label="selectedApp.ip_address" :rules="ipRules" placeholder="192.168.2.1"></v-text-field>-->
 									<v-card-actions>
 										<v-spacer></v-spacer>
 										<v-btn class="primary" @click="selectedApp.dialog = false">Save</v-btn>
@@ -152,6 +152,11 @@
 					{text: "Notification", value: "notification"},
 					{text: "Importance", value: "importance"},
 				],
+				settingsForms: {
+					"integer": "number",
+					"double": "number",
+					"string": "text",
+				},
 				app_dialog: false,
 				dialog: false,
 				nodeOptions: [],
