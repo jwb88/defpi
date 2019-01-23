@@ -280,6 +280,9 @@
 		},
 		mounted () {
 			this.retrieveDevices();
+			setInterval(function() {
+				this.retrieveDevices();
+			}.bind(this), 12500)
 		}
 	}
 </script>
