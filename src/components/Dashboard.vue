@@ -57,14 +57,14 @@
 				</v-layout>
 			</v-container>
 
-			<!--Fullscreen Widget-->
+			<!--Fullscreen Widget FullDisplay-->
 			<v-container v-else style="max-width: 1200px;" class="fill-height">
 				<v-card v-if="widgets[$route.params.id] != null" style="width: 100%; height: 100%;">
 					<v-card-title class="title">{{ widgets[$route.params.id].name }}</v-card-title>
 					<v-responsive style="width: 100%; height: 100%"><iframe width="100%" height="100%" :src="iframe_url + $route.params.id + '/index.html'"></iframe></v-responsive>
 				</v-card>
 				<v-card v-else>
-					<v-card-title class="title">[404] Deze App is niet aanwezig... :(</v-card-title>
+					<v-card-title class="title">[404] Fullscreen Widget Not Found!</v-card-title>
 				</v-card>
 			</v-container>
 		</v-content>
@@ -125,9 +125,14 @@
 			},
 			getWidgets: function (processes) {
 				API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.WWW_FORM, METHOD.POST), "/dashboard/getWidgets", {}, response => {
-					Object.keys(response).forEach(function(id) {
-						processes[id]["iframe_id"] = id;
-					}, this);
+					// Object.keys(response).forEach(function(id) {
+					// 	processes[id]["iframe_id"] = id;
+					// }, this);
+					let widgets = [];
+					processes.forEach(function(value, i) {
+						value["iframe_id"] = i;
+						widgets.push(value);
+					});
 					this.widgets = processes;
 					console.log(this.widgets);
 					this.widgetLoading = false;
@@ -161,7 +166,7 @@
 		border: none;
 	}
 
-	.fullscreenActive {
-		border-bottom: 4px solid black;
-	}
+	/*.fullscreenActive {*/
+		/*border-bottom: 4px solid black;*/
+	/*}*/
 </style>

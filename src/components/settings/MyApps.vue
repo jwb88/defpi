@@ -11,19 +11,21 @@
 				<v-card-title class="headline grey lighten-2" primary-title>
 					Notifications
 				</v-card-title>
-				<v-card-text v-for="app in apps" :key="app.id">
-					<v-list two-line>
-						<v-list-tile v-on:click="open_dialog(app)" @click="dialog = false; active_tab = 1">
-							<v-list-tile-avatar>
-								<img :src="app.icon_url" alt="">
-							</v-list-tile-avatar>
-							<v-list-tile-content>
-								<v-list-tile-title>{{ app.serviceId }}</v-list-tile-title>
-								<v-list-tile-sub-title>{{ app.id }}</v-list-tile-sub-title>
-							</v-list-tile-content>
-						</v-list-tile>
-					</v-list>
-				</v-card-text>
+					<v-card-text v-for="app in apps" :key="app.id">
+						<v-list two-line>
+							<v-list-tile v-on:click="open_dialog(app)" @click="dialog = false; active_tab = 2">
+								<v-list-tile-avatar>
+									<img :src="app.icon_url" alt="">
+								</v-list-tile-avatar>
+								<v-list-tile-content>
+									<v-list-tile-title>{{ app.process.name }}</v-list-tile-title>
+									<v-list-tile-sub-title v-for="(notification) in app.notifications" :key="notification">
+										[{{ notification.importance }}] {{ notification.notification }}
+									</v-list-tile-sub-title>
+								</v-list-tile-content>
+							</v-list-tile>
+						</v-list>
+					</v-card-text>
 				<v-divider></v-divider>
 				<v-card-actions>
 					<v-spacer></v-spacer>
