@@ -32,8 +32,8 @@
 		</v-dialog>
 
 		<!--App Dialog-->
-		<v-dialog v-if="selectedApp !== null" v-model="app_dialog" width="800" lazy>
-			<v-toolbar color="primary">
+		<v-dialog v-if="selectedApp !== null" v-model="app_dialog" persistent :fullscreen="$vuetify.breakpoint.mdAndDown" max-width="800" lazy>
+			<v-toolbar color="primary" class="pl-3">
 				<v-toolbar-side-icon @click="close_dialog()"><v-icon>navigate_before</v-icon></v-toolbar-side-icon>
 				<v-layout class="text-xs-center">
 					<v-flex>
@@ -45,8 +45,8 @@
 				<v-tab v-for="tab of tabs" :key="tab.id">{{ tab.name }}</v-tab>
 				<v-tab-item>
 					<v-card>
-						<v-layout justify-center class="row" wrap>
-							<v-flex class="xs5">
+						<v-layout class="row wrap">
+							<v-flex class="xs6">
 								<v-container fluid grid-list-md>
 									<v-container v-for="(param, i) in selectedApp.service.parameters">
 										{{param.name}}
@@ -112,9 +112,9 @@
 						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.serviceId) }}</v-avatar>
 					</td>
 					<td class="title pa-4">{{ props.item.name }}</td>
-					<td class="pa-4">{{ props.item.serviceId }}</td>
-					<td class="pa-4">{{ props.item.node.hostname}}</td>
-					<td class="pa-4">{{ props.item.state}}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.serviceId }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.node.hostname}}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.state}}</td>
 					<td><v-icon @click="open_dialog(props.item)">edit</v-icon></td>
 				</template>
 			</v-data-table>
@@ -232,7 +232,7 @@
 				this.app_dialog = true;
 			},
 			close_dialog: function() {
-				this.selectedApp = {};
+				this.selectedApp = null;
 				this.app_dialog = false;
 			},
 
