@@ -263,9 +263,11 @@
 				payLoad.name = this.newDevice.name;
 				payLoad.userId = this.newDevice.userId;
 
-				API.send(this.addConfig, 'privatenode', payLoad, response => {
+				API.send(this.addConfig, '/privatenode', payLoad, response => {
 					this.deviceAdded = true;
+					this.dialogConnect = false;
 				}, response => {
+					this.dialogConnect = false;
 					this.deviceFailedToAdd = true;
 				});
 			},
