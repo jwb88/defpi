@@ -363,15 +363,13 @@
 			updateInstalledCounter: function() {
 				let payLoad = {};
 				let tempCounter = {};
-				payLoad._filters = { "userId" : "5c40487065591c00061c974a" }; //TODO: Add dynamic from localStorage
+				payLoad._filters = { "userId" : window.localStorage.getItem('defpi_userId') };
 				API.send(this.getRequestConfig, "/process", JSON.stringify(payLoad), response => {
 					response.forEach(function(value, key) {
-						console.log(key + '\t' + value);
 						if(tempCounter[value.serviceId] == null)
 							tempCounter[value.serviceId] = 0;
 						tempCounter[value.serviceId] += 1;
 					});
-					console.log(tempCounter);
 					this.installCounter = tempCounter;
 				}, null);
 			}

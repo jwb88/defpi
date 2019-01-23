@@ -149,7 +149,7 @@
 				this.getWidgets();
 			}.bind(this), 5000);
 
-			API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET), "/user/by_username/", null, response => {
+			API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET), "/user/by_username/" + window.localStorage.getItem('defpi_username'), null, response => {
 				window.localStorage.setItem("defpi_userId", response.id);
 			}, null);
 		}
