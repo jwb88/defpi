@@ -5,10 +5,10 @@
 			<!--<v-container class="text-xs-center"><v-toolbar-title class="white&#45;&#45;text align-content-center">dEF - PI</v-toolbar-title></v-container>-->
 			<v-tabs height="100%" color="primary" show-arrows app fixed-tabs grow :hide-slider="($route.params.id == null)"><!-- slot="extension"-->
 				<v-tabs-slider type="arrow_drop_up" color="black"></v-tabs-slider>
-				<v-tab v-for="(widget, k) in widgets" :key="k" justify-center v-bind="{to: '/fullscreen_widget/' + k}" class="fullscreenBtn" active-class="fullscreenActive"> <!--v-if="widget.has_fullscreen_widget"-->
+				<v-tab v-for="(widget, k) in widgets" :key="k" justify-center v-bind="{to: '/fullscreen_widget/' + widget.iframe_id}" class="fullscreenBtn" active-class="fullscreenActive"> <!--v-if="widget.has_fullscreen_widget"-->
 					<v-container class="column fill-height" style="border: 3px solid rgba(255,255,255,0.6); border-radius: 20px">
 						<v-flex>
-							<v-avatar v-if="widget.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + widget.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+							<v-avatar v-if="widget.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + widget.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 							<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(widget.serviceId) }}</v-avatar>
 							<h4 class="hidden-sm-and-down white--text" style="margin-top: 12px;">{{ widget.name }}</h4>
 						</v-flex>
@@ -42,14 +42,14 @@
 						<v-layout justify-center>
 							<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
-									<v-avatar v-if="widget.iconURL != null" class="primary lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + widget.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+									<v-avatar v-if="widget.service.iconURL != null" class="primary lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + widget.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 									<v-avatar v-else class="primary lighten-1 mr-3 black--text">{{ getInitials(widget.serviceId) }}</v-avatar>
-									{{widget.name}}
+									{{widget.name}} ({{widget.service.name}})
 								</v-card-title>
-								<v-responsive v-if="widget.state === 'RUNNING'" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="iframe_url + widget.wilco_dude + '/index.html'"></iframe></v-responsive>
-								<v-responsive v-if="widget.state === 'STARTING'" class="pa-4 d-inline-flex">App start!</v-responsive>
-								<v-responsive v-if="widget.state === 'INITIALIZING'" class="pa-4 d-inline-flex">Komt er aan hoor! ff geduld</v-responsive>
-								<v-responsive v-if="widget.state === 'TERMINATED'" class="pa-4 d-inline-flex">Removing the App!</v-responsive>
+								<v-responsive v-if="widget.state === 'RUNNING'" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="iframe_url + widget.iframe_id + '/index.html'"></iframe></v-responsive>
+								<v-responsive v-if="widget.state === 'STARTING'" class="pa-4 d-inline-flex">STARTING..</v-responsive>
+								<v-responsive v-if="widget.state === 'INITIALIZING'" class="pa-4 d-inline-flex">INITIALIZING..</v-responsive>
+								<v-responsive v-if="widget.state === 'TERMINATED'" class="pa-4 d-inline-flex">TERMINATED..</v-responsive>
 							</v-card>
 						</v-layout>
 					</v-flex>
@@ -59,7 +59,7 @@
 			<!--Fullscreen Widget-->
 			<v-container v-else style="max-width: 1200px;" class="fill-height">
 				<v-card v-if="widgets[$route.params.id] != null" style="width: 100%; height: 100%;">
-					<v-card-title class="title">{{ widgets[$route.params.id] }}</v-card-title>
+					<v-card-title class="title">{{ widgets[$route.params.id].name }}</v-card-title>
 					<v-responsive style="width: 100%; height: 100%"><iframe width="100%" height="100%" :src="iframe_url + $route.params.id + '/index.html'"></iframe></v-responsive>
 				</v-card>
 				<v-card v-else>
@@ -97,7 +97,6 @@
 				widgetLoading: true,
 				services: [],
 				widgets: [],
-				iframes: [],
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				iframe_url: API.api_url_base + "8080/dashboard/"
 			}
@@ -117,7 +116,8 @@
 					let widgets = [];
 					response.forEach(function (value, i) {
 						if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
-							value = Object.assign(value, this.services[value.serviceId]);
+							// value = Object.assign(value, this.services[value.serviceId]);
+							value["service"] = this.services[value.serviceId];
 							widgets.push(value);
 						}
 					}, this);
@@ -126,7 +126,7 @@
 						let n = 0;
 						console.log(response);
 						Object.keys(response).forEach(function (value) {
-							widgets[n++]["wilco_dude"] = value;
+							widgets[n++]["iframe_id"] = value;
 						}, this);
 
 						this.widgets = widgets;
@@ -148,6 +148,10 @@
 			setInterval(function () {
 				this.getWidgets();
 			}.bind(this), 5000);
+
+			API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET), "/user/by_username/", null, response => {
+				window.localStorage.setItem("defpi_userId", response.id);
+			}, null);
 		}
 	}
 </script>

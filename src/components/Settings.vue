@@ -5,7 +5,7 @@
 			<v-toolbar color="primary" class="v-toolbar--fixed" height="70px" app>
 				<v-layout class="text-xs-center">
 					<v-flex>
-						<h1 class="primary title primary--text text--lighten-3 pa-1">{{ header_titles[$route.path] }}</h1>
+						<h1 class="primary title white--text text--lighten-3 pa-1">{{ header_titles[$route.path] }}</h1>
 					</v-flex>
 				</v-layout>
 			</v-toolbar>

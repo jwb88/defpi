@@ -32,12 +32,12 @@
 		</v-dialog>
 
 		<!--App Dialog-->
-		<v-dialog v-model="app_dialog" width="800" lazy>
+		<v-dialog v-if="selectedApp !== null" v-model="app_dialog" width="800" lazy>
 			<v-toolbar color="primary">
 				<v-toolbar-side-icon @click="close_dialog()"><v-icon>navigate_before</v-icon></v-toolbar-side-icon>
 				<v-layout class="text-xs-center">
 					<v-flex>
-						<h1 class="primary title primary--text text--lighten-3 pa-1">{{ selectedApp.serviceId }}</h1>
+						<h1 class="primary title white--text text--lighten-3 pa-1">{{ selectedApp.serviceId }}</h1>
 					</v-flex>
 				</v-layout>
 			</v-toolbar>
@@ -48,6 +48,10 @@
 						<v-layout justify-center class="row" wrap>
 							<v-flex class="xs5">
 								<v-container fluid grid-list-md>
+									<h1 v-for="(param, i) in selectedApp.service.parameters">
+										{{ param.default }}
+									</h1>
+									<!--{{selectedApp.service.parameters}}-->
 									<h2>{{ selectedApp.serviceId }}</h2>
 									<br>
 									<v-card-text center><h4>IP-address</h4></v-card-text>
@@ -62,11 +66,11 @@
 							<v-flex class="xs5">
 								<v-container fluid grid-list-md>
 									<h4>Location</h4>
-									<v-overflow-btn label="Location" :items="locations"></v-overflow-btn>
+									<v-select label="Location" :items="nodeOptions" item-text="hostname" v-model="selectedApp.node"></v-select>
 									<v-card-actions>
 										<v-spacer></v-spacer>
 										<v-btn class="primary" @click="uninstall(selectedApp)">Uninstall <v-icon>delete</v-icon></v-btn>
-										<v-btn class="primary" @click="close_dialog(app.id)">Update <v-icon>play_for_work</v-icon></v-btn>
+										<v-btn class="primary" @click="close_dialog()">Update <v-icon>play_for_work</v-icon></v-btn>
 									</v-card-actions>
 								</v-container>
 							</v-flex>
@@ -82,7 +86,6 @@
 							<v-data-table :headers="notification_headers" :items="selectedApp.notifications" class="elevation-1" hide-actions>
 								<template slot="items" slot-scope="props">
 									<td>{{ props.item.notification }}</td>
-									<td>{{ props.item.type }}</td>
 									<td>{{ props.item.importance }}</td>
 								</template>
 							</v-data-table>
@@ -92,8 +95,8 @@
 
 						<v-card-actions>
 							<v-spacer></v-spacer>
-							<v-btn class="primary" @click="close_dialog(app.id)">Mark as read</v-btn>
-							<v-btn color="primary" @click="close_dialog(app.id)">Ok</v-btn>
+							<v-btn class="primary" @click="close_dialog()">Mark as read</v-btn>
+							<v-btn color="primary" @click="close_dialog()">Ok</v-btn>
 						</v-card-actions>
 					</v-card>
 				</v-tab-item>
@@ -104,13 +107,30 @@
 		<v-container>
 			<v-data-table :headers="headers" :items="apps" class="elevation-1" hide-actions>
 				<template slot="items" slot-scope="props">
-					<td class="title pa-4" @click="open_dialog(props.item)">{{ props.item.name }}</td>
-					<td class="pa-4" @click="open_dialog(props.item)">{{ props.item.serviceId }}</td>
-					<td class="pa-4"  @click="open_dialog(props.item.id)">{{ props.item.token}}</td>
-					<td class="pa-4"  @click="open_dialog(props.item.id)">{{ props.item.state}}</td>
+					<td class="pa-4">
+						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.serviceId) }}</v-avatar>
+					</td>
+					<td class="title pa-4">{{ props.item.name }}</td>
+					<td class="pa-4">{{ props.item.serviceId }}</td>
+					<td class="pa-4">{{ props.item.node.hostname}}</td>
+					<td class="pa-4">{{ props.item.state}}</td>
+					<td><v-icon @click="open_dialog(props.item)">edit</v-icon></td>
 				</template>
 			</v-data-table>
 		</v-container>
+
+		<!-- Load bar -->
+		<div class="text-xs-center">
+			<v-dialog v-model="loading" hide-overlay persistent width="300">
+				<v-card class="primary" dark >
+					<v-card-text>
+						Loading widgets..
+						<v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+					</v-card-text>
+				</v-card>
+			</v-dialog>
+		</div>
 	</v-container>
 </template>
 
@@ -120,53 +140,77 @@
 	export default {
 		data() {
 			return {
+				loading: true,
 				headers: [
+					{sortable: false},
 					{text: "Name", value: "name"},
-					{text: "Service", value: "serviceId"},
-					{text: "Token", value: "token"},
+					{text: "Service", value: "service.name"},
+					{text: "Host", value: "node.hostname"},
 					{text: "State", value: "state"},
 				],
 				notification_headers: [
 					{text: "Notification", value: "notification"},
-					{text: "Type", value: "type"},
 					{text: "Importance", value: "importance"},
 				],
 				app_dialog: false,
 				dialog: false,
-				locations: ["Cloud","Pi meterkast","Thuis PC", "Homeserver"],
+				nodeOptions: [],
+				services: [],
+				privateNodes: [],
 				apps: [],
 				active_tab: 0,
 				tabs: [{ id: 1, name: 'Settings'},{ id: 2, name: 'Notifications'}],
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				api_delete: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.DELETE),
-				selectedApp: {
-					serviceId: "",
-					ip_address: "unknown",
-					notifications: {},
-				},
+				selectedApp: null,
 				ipRules: [
-					/*v => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v) || 'IP address must be valid'*/
-					v => /^[0-256].[0-256].[0-256].[0-256]$/.test(v) || 'IP address must be valid'
+					v => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(v) || 'IP address must be valid'
 				]
 			}
 		},
 		methods: {
 			/* API Methods */
+			getPrivateNodes: function() {
+				API.send(this.api_config, "/privatenode", null, response => {
+					let temp = [];
+					response.forEach(function (value) {
+						temp[value.id] = value;
+						this.nodeOptions.push(value);
+					}, this);
+					this.privateNodes = temp;
+					console.log(this.privateNodes);
+					this.getServices();
+				});
+			},
+			getServices: function (){
+				API.send(this.api_config, "/service", {}, response => {
+					response.forEach(function (value, i) {
+						this.services[value.id] = value;
+					}, this);
+					console.log("services: ");
+					console.log(this.services);
+					this.updateAppList();
+				});
+			},
 			updateAppList: function () {
 				this.apps = [];
-				API.send(this.api_config, "/process", [], response => {
+				API.send(this.api_config, "/process", null, response => {
 					console.log(response);
-					this.apps = response;
-
-					/*for(let key in this.apps) {
-						console.log(this.apps[key]);
-						this.$API.send(this.api_config, "/privatenode/" + this.apps[key].privateNodeId, [], response => {
-
-						});
-						this.apps[key].notifications = [
-							{notification: "Some notification", type: "Something", importance: "Warning"}
-						];
-					}*/
+					let temp = [];
+					response.forEach(function (value) {
+						if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
+							console.log(this.privateNodes);
+							value["node"] = this.privateNodes[value.runningNodeId];
+							value["service"] = this.services[value.serviceId];
+							value["notifications"] = [
+								{notification: "hello", importance: "Warning"},
+								{notification: "update", importance: "Warning"},
+							];
+							temp.push(value);
+						}
+					}, this);
+					this.apps = temp;
+					this.loading = false;
 				});
 			},
 			uninstall: function (app) {
@@ -185,10 +229,19 @@
 			close_dialog: function() {
 				this.selectedApp = {};
 				this.app_dialog = false;
+			},
+
+
+
+			getInitials: function(name) {
+				if(name === "") {
+					let initials = name.match(/\b(\w)/g);
+					return initials.join('');
+				} else { return ""; }
 			}
 		},
 		mounted () {
-			this.updateAppList();
+			this.getPrivateNodes();
 		}
 	}
 </script>
