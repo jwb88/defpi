@@ -130,7 +130,7 @@
 												></v-select>
 											</v-list-tile>
 											<v-list-tile>
-												<v-text-field :rules="[rules.required, rules.allowedName]" v-model="appNickName" placeholder="Enter a name..."> </v-text-field>
+												<v-text-field :rules="[rules.required, rules.allowedName, rules.uniqueName]" v-model="appNickName" placeholder="Enter a name..."> </v-text-field>
 											</v-list-tile>
 										</v-list>
 									</v-card-actions>
@@ -195,6 +195,7 @@
 				nodePools: [],
 				locationPicker: [],
 				appDetails: null,
+				processNameList: [],
 				installCounter: {},
 				pagination: {
 					perPage: 12,
@@ -214,8 +215,10 @@
 					required: value => !!value || 'Required.',
 					allowedName: value => {
 						const pattern =/^\w+$/;
-
 						return pattern.test(value) || 'Invalid name';
+					},
+					uniqueName: value => {
+						return !this.processNameList.includes( value.toLowerCase() ) || 'This name is already in use.';
 					}
 				}
 			};
@@ -304,7 +307,7 @@
 				this.appDetails = null;
 			},
 			canInstall: function() {
-				return this.selectedLocation == null || this.selectedLocation === '' || this.appNickName == null || this.appNickName === '';
+				return this.selectedLocation == null || this.selectedLocation === '' || this.appNickName == null || this.appNickName === '' || this.processNameList.includes(this.appNickName.toLowerCase());
 			},
 			installApp: function() {
 				if ( this.selectedLocation !== null &&
@@ -315,41 +318,40 @@
 					this.appNickName !== null &&
 					this.appNickName !== '' ) {
 
-					//TODO: Verify Unique nickname
+					this.updateInstalledCounter();
 
 					this.isInstalling = true;
-					let username = window.localStorage.getItem('defpi_username');
-					// Fetch user Id
-					API.send(this.getRequestConfig, "/user/by_username/" + username, null, response => {
-						let data = response;
 
-						// Build payload
-						let payLoad = {};
-						payLoad.configuration = null;
-						payLoad.debuggingPort =  0;
-						payLoad.exposePorts = null;
-						payLoad.maxMemoryBytes = 0;
-						payLoad.maxNanoCPUs = 0;
-						payLoad.mountPoints = null;
-						payLoad.name = this.appNickName;
-						if( this.selectedLocation.isNodePool ) {
-							payLoad.nodePoolId = this.selectedLocation.id;
-							payLoad.privateNodeId = null;
-						}else {
-							payLoad.nodePoolId = null;
-							payLoad.privateNodeId = this.selectedLocation.id;
-						}
-						payLoad.serviceId = this.appDetails.id;
-						payLoad.userId = data.id;
+					// Build payload
+					let payLoad = {};
+					payLoad.configuration = null;
+					payLoad.debuggingPort =  0;
+					payLoad.exposePorts = null;
+					payLoad.maxMemoryBytes = 0;
+					payLoad.maxNanoCPUs = 0;
+					payLoad.mountPoints = null;
+					payLoad.name = this.appNickName;
+					if( this.selectedLocation.isNodePool ) {
+						payLoad.nodePoolId = this.selectedLocation.id;
+						payLoad.privateNodeId = null;
+					}else {
+						payLoad.nodePoolId = null;
+						payLoad.privateNodeId = this.selectedLocation.id;
+					}
+					payLoad.serviceId = this.appDetails.id;
+					payLoad.userId = window.localStorage.getItem('defpi_userId');
 
-						API.send(this.postRequestConfig, "/process", JSON.stringify(payLoad), response => {
-							if(this.installCounter[this.appDetails.id] == null)
-								this.installCounter[this.appDetails.id] = 1;
-							else
-								this.installCounter[this.appDetails.id] += 1;
-							this.isInstalling = false;
-							this.appInstalled = true;
-						},null);
+					API.send(this.postRequestConfig, "/process", JSON.stringify(payLoad), response => {
+						if(this.installCounter[this.appDetails.id] == null)
+							this.installCounter[this.appDetails.id] = 1;
+						else
+							this.installCounter[this.appDetails.id] += 1;
+
+						if(!this.processNameList.includes(this.appNickName.toLowerCase()))
+							this.processNameList.push(this.appNickName.toLowerCase());
+
+						this.isInstalling = false;
+						this.appInstalled = true;
 					},null);
 				}
 			},
@@ -363,14 +365,18 @@
 			updateInstalledCounter: function() {
 				let payLoad = {};
 				let tempCounter = {};
+				let tempNames = [];
 				payLoad._filters = { "userId" : window.localStorage.getItem('defpi_userId') };
 				API.send(this.getRequestConfig, "/process", JSON.stringify(payLoad), response => {
 					response.forEach(function(value, key) {
 						if(tempCounter[value.serviceId] == null)
 							tempCounter[value.serviceId] = 0;
 						tempCounter[value.serviceId] += 1;
+						if(!tempNames.includes(value.name.toLowerCase()))
+							tempNames.push(value.name.toLowerCase());
 					});
 					this.installCounter = tempCounter;
+					this.processNameList = tempNames;
 				}, null);
 			}
 		},
