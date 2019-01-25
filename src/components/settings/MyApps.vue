@@ -60,7 +60,7 @@
 					<v-tab-item>
 						<v-container>
 							<v-text-field v-model="selectedApp.process.name" label="Name" required></v-text-field>
-							<v-select label="Location" :items="nodeOptions" item-text="hostname" v-model="selectedApp.node"></v-select>
+							<v-select label="Location" :items="nodeOptions" item-text="name" v-model="selectedApp.node"></v-select>
 							<v-card-actions class="justify-end">
 								<v-btn class="primary" @click="saveSettings(selectedApp)">Save</v-btn>
 							</v-card-actions>
@@ -116,7 +116,7 @@
 					</td>
 					<td class="title pa-4">{{ props.item.process.name }}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.serviceId }}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.node.hostname}}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.node.name}}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.state}}</td>
 					<td><v-icon @click="open_dialog(props.item)">edit</v-icon></td>
 				</template>
@@ -166,6 +166,7 @@
 				nodeOptions: [],
 				services: [],
 				privateNodes: [],
+				nodePools:[],
 				apps: [],
 				active_tab: 0,
 				tabs: [{ id: 1, name: "Global Settings"},{ id: 2, name: "Settings"}, {id:3, name: "Notifications"}],
@@ -179,7 +180,18 @@
 		},
 		methods: {
 			/* API Methods */
-			getPrivateNodes: function() {
+			getNodes: function() {
+				API.send(this.api_config, "/nodepool", null, response => {
+					let temp = [];
+					response.forEach(function (value) {
+						value.isNodePool = true;
+						temp[value.id] = value;
+						this.nodeOptions.push(value);
+					}, this);
+					this.nodePools = temp;
+					console.log(this.nodePools);
+				}, null);
+
 				API.send(this.api_config, "/privatenode", null, response => {
 					let temp = [];
 					response.forEach(function (value) {
@@ -211,7 +223,7 @@
 							console.log(this.privateNodes);
 							let collection = {
 								"process": 	value,
-								"node": 	this.privateNodes[value.runningNodeId],
+								"node": 	(value.nodePoolId !== null ? this.nodePools[value.nodePoolId] : this.privateNodes[value.privateNodeId]),//this.privateNodes[value.runningNodeId],
 								"service": 	this.services[value.serviceId],
 								"notifications": [
 									{notification: "hello", importance: "Warning"},
@@ -253,14 +265,14 @@
 
 
 			getInitials: function(name) {
-				if(name === "") {
+				if(name !== "") {
 					let initials = name.match(/\b(\w)/g);
 					return initials[0] + initials[1];
 				} else { return ""; }
 			}
 		},
 		mounted () {
-			this.getPrivateNodes();
+			this.getNodes();
 		}
 	}
 </script>
