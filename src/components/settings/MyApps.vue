@@ -19,7 +19,7 @@
 								</v-list-tile-avatar>
 								<v-list-tile-content>
 									<v-list-tile-title>{{ app.process.name }}</v-list-tile-title>
-									<v-list-tile-sub-title v-for="(notification) in app.notifications" :key="notification">
+									<v-list-tile-sub-title v-for="(notification) in app.notifications" :key="notification.id">
 										[{{ notification.importance }}] {{ notification.notification }}
 									</v-list-tile-sub-title>
 								</v-list-tile-content>
@@ -74,7 +74,7 @@
 
 					<!--Settings Tab-->
 					<v-tab-item>
-						<v-container v-for="(param) in selectedApp.service.parameters">
+						<v-container v-for="(param) in selectedApp.service.parameters" :key="param.id">
 							{{param.name}}
 							<v-text-field :value="param.default" :type="settingsForms[param.type]"></v-text-field>
 						</v-container>
@@ -112,7 +112,7 @@
 				<template slot="items" slot-scope="props">
 					<td class="pa-4">
 						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
-						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.serviceId) }}</v-avatar>
+						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.process.name) }}</v-avatar>
 					</td>
 					<td class="title pa-4">{{ props.item.process.name }}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.serviceId }}</td>
@@ -266,8 +266,14 @@
 
 			getInitials: function(name) {
 				if(name !== "") {
+					let result = "";
 					let initials = name.match(/\b(\w)/g);
-					return initials[0] + initials[1];
+					for(let i = 0; i < 2; i++) {
+						if(i < initials.length) {
+							result += initials[i];
+						}
+					}
+					return result;
 				} else { return ""; }
 			}
 		},

@@ -75,7 +75,7 @@
 				// showinfo: {},
 				info: false,
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
-				list: [],
+				interfaces: [],
 				// filteredList: [],
 				// connections: [],
 				selected: null
@@ -106,9 +106,30 @@
 			// 		this.list = response;
 			// 	});
 			// },
-			getInterfaces: function () {
+			getInterfaces: function (services) {
 				API.send(this.api_config, "/interface", null, response => {
-					console.log(response);
+					response.forEach(function(value) {
+						value.sendHash = value.interfaceVersions[0].sendsHash;
+						value.receiveHash = value.interfaceVersions[0].receivesHash;
+					});
+
+					let send = {};
+					let receive = {};
+					response.forEach(function(interface1) {
+						send[interface1.sendHash] = [];
+						receive[interface1.receiveHash] = [];
+						response.forEach(function(interface2) {
+							if(interface1.sendHash === interface2.receiveHash) {
+								send[interface1.sendHash].push(interface2);
+							}
+							if(interface1.receiveHash === interface2.sendHash) {
+								receive[interface1.receiveHash].push(interface2);
+							}
+						});
+					});
+					console.log(send);
+					console.log(receive);
+					this.interfaces = send;
 				}, null);
 			},
 			getServices: function (){
@@ -117,7 +138,7 @@
 					response.forEach(function (value) {
 						services[value.id] = value;
 					}, this);
-					this.getProcesses(services);
+					this.getInterfaces(services);
 				}, null);
 			},
 			getProcesses: function(services) {

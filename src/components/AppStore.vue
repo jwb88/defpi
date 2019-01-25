@@ -357,10 +357,16 @@
 			},
 			getInitials: function(name) {
 				if(name !== "") {
+					let result = "";
 					let initials = name.match(/\b(\w)/g);
-					return initials[0] + initials[1];
+					for(let i = 0; i < 2; i++) {
+						if(i < initials.length) {
+							result += initials[i];
+						}
+					}
+					return result;
 				} else { return ""; }
-			},
+			}
 			shortenText: function(text) {
 				return text.replace(/(.{220})..+/, "$1…");
 			},

@@ -199,12 +199,6 @@
 					this.widgetLoading = false;
 				}, null);
 			},
-			getInitials: function(name) {
-				if(name === "") {
-					let initials = name.match(/\b(\w)/g);
-					return initials.join('');
-				} else { return ""; }
-			},
 			hasFullscreenWidget: function(id) {
 				if(this.widgetsFullscreen.length < 1)
 					return false;
@@ -219,6 +213,18 @@
 					if(value.widgetId === id)
 						return value;
 				});
+			},
+			getInitials: function(name) {
+				if(name !== "") {
+					let result = "";
+					let initials = name.match(/\b(\w)/g);
+					for(let i = 0; i < 2; i++) {
+						if(i < initials.length) {
+							result += initials[i];
+						}
+					}
+					return result;
+				} else { return ""; }
 			}
 		},
 		mounted () {
