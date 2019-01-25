@@ -189,7 +189,7 @@
 					this.privateNodes = temp;
 					console.log(this.privateNodes);
 					this.getServices();
-				});
+				}, null);
 			},
 			getServices: function (){
 				API.send(this.api_config, "/service", {}, response => {
@@ -199,7 +199,7 @@
 					console.log("services: ");
 					console.log(this.services);
 					this.updateAppList();
-				});
+				}, null);
 			},
 			updateAppList: function () {
 				this.apps = [];
@@ -223,20 +223,20 @@
 					}, this);
 					this.apps = temp;
 					this.loading = false;
-				});
+				}, null);
 			},
 			uninstall: function (app) {
 				API.send(this.api_delete, "/process/" + app.process.id, [], response => {
 					console.log(response);
 					this.updateAppList();
-				});
+				}, null);
 			},
 			saveSettings: function() {
 				let data = this.selectedApp.process;
 				console.log(this.appName);
 				API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.UPDATE), "/process/" + data.id, JSON.stringify(data), response => {
 					console.log(response);
-				});
+				}, null);
 			},
 
 
@@ -255,7 +255,7 @@
 			getInitials: function(name) {
 				if(name === "") {
 					let initials = name.match(/\b(\w)/g);
-					return initials.join('');
+					return initials[0] + initials[1];
 				} else { return ""; }
 			}
 		},
