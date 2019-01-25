@@ -5,12 +5,12 @@
 			<!--<v-container class="text-xs-center"><v-toolbar-title class="white&#45;&#45;text align-content-center">dEF - PI</v-toolbar-title></v-container>-->
 			<v-tabs height="100%" color="primary" show-arrows app fixed-tabs grow :hide-slider="($route.params.id == null)"><!-- slot="extension"-->
 				<v-tabs-slider type="arrow_drop_up" color="black"></v-tabs-slider>
-				<v-tab v-for="(widget, k) in widgets" :key="widget.iframe_id" justify-center v-bind:to="'/fullscreen_widget/' + widget.iframe_id" active-class="fullscreenActive"> <!--v-if="widget.has_fullscreen_widget"-->
+				<v-tab v-for="(widget, k) in widgetsFullscreen" :key="widget.widgetId" justify-center v-bind:to="'/fullscreen_widget/' + widget.iframe_id" active-class="fullscreenActive"> <!--v-if="widget.has_fullscreen_widget"-->
 					<v-container class="column fill-height">
 						<v-flex>
 							<v-avatar v-if="widget.service.iconURL != null" class="background lighten-3" v-bind:style="{backgroundImage: 'url(' + widget.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
-							<v-avatar v-else class="background lighten-3 font-weight-bold">{{ getInitials(widget.serviceId) }}</v-avatar>
-							<h4 class="hidden-sm-and-down black--text" style="margin-top: 12px;">{{ widget.name }}</h4>
+							<v-avatar v-else class="background lighten-3 font-weight-bold">{{ getInitials(widget.process.name) }}</v-avatar>
+							<h4 class="hidden-sm-and-down black--text" style="margin-top: 12px;">{{ widget.title }}</h4>
 						</v-flex>
 					</v-container>
 				</v-tab>
@@ -22,7 +22,7 @@
 			<v-container v-if="$route.params.id == null" grid-list-xs fluid>
 				<v-layout row wrap :class="{ 'justify-center': $vuetify.breakpoint.mdAndDown}">
 					<!--No Widgets Installed-->
-					<v-flex v-if="widgets[0] == null">
+					<v-flex v-if="widgets.length < 1">
 						<v-layout v-if="!widgetLoading" align-center justify-center>
 							<v-card class="elevation-2 ma-4" style="width: 400px; height: 200px;">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
@@ -43,14 +43,14 @@
 							<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
 									<v-avatar v-if="widget.service.iconURL != null" class="background lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + widget.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
-									<v-avatar v-else class="background lighten-1 mr-3 black--text">{{ getInitials(widget.serviceId) }}</v-avatar>
-									{{widget.name}}
+									<v-avatar v-else class="background lighten-1 mr-3 black--text">{{ getInitials(widget.process.name) }}</v-avatar>
+									{{widget.process.name}}
 								</v-card-title>
-								<v-card-title class="primary pa-0 pr-3 primary--text text--lighten-3 text-xs-right" style="display: block;">{{widget.service.name}}</v-card-title>
-								<v-responsive v-if="widget.state === 'RUNNING'" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="iframe_url + widget.iframe_id + '/index.html'"></iframe></v-responsive>
-								<v-responsive v-if="widget.state === 'STARTING'" class="pa-4 d-inline-flex">STARTING..</v-responsive>
-								<v-responsive v-if="widget.state === 'INITIALIZING'" class="pa-4 d-inline-flex">INITIALIZING..</v-responsive>
-								<v-responsive v-if="widget.state === 'TERMINATED'" class="pa-4 d-inline-flex">TERMINATED..</v-responsive>
+								<v-card-title class="primary pa-0 pr-3 primary--text text--lighten-3 text-xs-right" style="display: block;">{{widget.title}}</v-card-title>
+								<v-responsive v-if="widget.process.state === 'RUNNING'" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="'/' + widget.widgetId + '/index.html'"></iframe></v-responsive>
+								<v-responsive v-if="widget.process.state === 'STARTING'" class="pa-4 d-inline-flex">STARTING..</v-responsive>
+								<v-responsive v-if="widget.process.state === 'INITIALIZING'" class="pa-4 d-inline-flex">INITIALIZING..</v-responsive>
+								<v-responsive v-if="widget.process.state === 'TERMINATED'" class="pa-4 d-inline-flex">TERMINATED..</v-responsive>
 							</v-card>
 						</v-layout>
 					</v-flex>
@@ -59,9 +59,9 @@
 
 			<!--Fullscreen Widget FullDisplay-->
 			<v-container v-else style="max-width: 1200px;" class="fill-height">
-				<v-card v-if="widgets[$route.params.id] != null" style="width: 100%; height: 100%;">
-					<v-card-title class="title">{{ widgets[$route.params.id].name }}</v-card-title>
-					<v-responsive style="width: 100%; height: 100%"><iframe width="100%" height="100%" :src="iframe_url + $route.params.id + '/index.html'"></iframe></v-responsive>
+				<v-card v-if="hasFullscreenWidget($route.params.id)" style="width: 100%; height: 100%;">
+					<v-card-title class="title">{{ getFullScreenWidget($route.params.id).name }}</v-card-title>
+					<v-responsive style="width: 100%; height: 100%"><iframe width="100%" height="100%" :src="'/' + $route.params.id + '/index.html'"></iframe></v-responsive>
 				</v-card>
 				<v-card v-else>
 					<v-card-title class="title">[404] Fullscreen Widget Not Found!</v-card-title>
@@ -97,6 +97,7 @@
 			return {
 				widgetLoading: true,
 				widgets: [],
+				widgetsFullscreen: [],
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				iframe_url: API.api_url_base + "8080/dashboard/"
 			}
@@ -109,7 +110,7 @@
 						services[value.id] = value;
 					}, this);
 					this.getProcesses(services);
-				});
+				}, null);
 			},
 			getProcesses: function(services) {
 				API.send(this.api_config, "/process", {}, response => {
@@ -121,35 +122,110 @@
 						}
 					}, this);
 					this.getWidgets(processes);
-				});
+				}, null);
 			},
 			getWidgets: function (processes) {
-				API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.WWW_FORM, METHOD.POST), "/dashboard/getWidgets", {}, response => {
+				API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.NONE, METHOD.GET), "/getWidgets", {}, response => {
 					// Object.keys(response).forEach(function(id) {
 					// 	processes[id]["iframe_id"] = id;
 					// }, this);
-					let widgets = [];
+
+					// Create a new object to store processes with their services based on processId
+					let processList = {};
+					let tempWidgetsFullscreen = [];
+					let _tempWidgets = [];
+					let tempWidgets = {};
+
+					processes.forEach(function(value,key) {
+						processList[value.id] = value;
+						tempWidgets[value.id] = {
+							process: value,
+							service: value.service
+						};
+					});
+
+					console.log('---------------------');
+					console.log(tempWidgets);
+					console.log('---------------------');
+					response.forEach(function(value,key) {
+						// Add the correct process and service to widget
+						value.process = processList[value.processId];
+						value.service = value.process.service;
+
+						switch(value.type) {
+							case 'FULL_WIDGET':
+								console.log('FULL: \t' + value.widgetId + '\t' + value.toString());
+								console.log(value);
+								tempWidgetsFullscreen.push(value);
+								delete tempWidgets[value.process.id];
+								break;
+
+							default:
+							case 'SMALL_WIDGET':
+								console.log('SMALL: \t' + value.widgetId + '\t' + value.toString());
+								console.log(value);
+								delete tempWidgets[value.process.id];
+								_tempWidgets.push(value);
+								break;
+						}
+					});
+
+					console.log('---------------------');
+					console.log(tempWidgets);
+					console.log('---------------------');
+
+
+					console.log('---------------------');
+					console.log(Object.keys(tempWidgets));
+					console.log('---------------------');
+					Object.keys(tempWidgets).forEach(function(value,key) {
+						/*if(!tempWidgetsFullscreen.findIndex(value))
+							_tempWidgets.push(value);*/
+						if(tempWidgets[value])
+							_tempWidgets.push(tempWidgets[value]);
+					});
+					console.log('---------------------');
+					console.log(_tempWidgets);
+					console.log('---------------------');
+					this.widgets = _tempWidgets;
+					this.widgetsFullscreen = tempWidgetsFullscreen;
+					/*let widgets = [];
 					processes.forEach(function(value, i) {
 						value["iframe_id"] = i;
 						widgets.push(value);
 					});
 					this.widgets = processes;
-					console.log(this.widgets);
+					console.log(this.widgets);*/
 					this.widgetLoading = false;
-				});
+				}, null);
 			},
 			getInitials: function(name) {
 				if(name === "") {
 					let initials = name.match(/\b(\w)/g);
 					return initials.join('');
 				} else { return ""; }
+			},
+			hasFullscreenWidget: function(id) {
+				if(this.widgetsFullscreen.length < 1)
+					return false;
+				this.widgetsFullscreen.forEach(function(value,key){
+					if(value.widgetId === id)
+						return true;
+				});
+				return false;
+			},
+			getFullScreenWidget: function(id) {
+				this.widgetsFullscreen.forEach(function(value,key){
+					if(value.widgetId === id)
+						return value;
+				});
 			}
 		},
 		mounted () {
 			this.getServices();
 			setInterval(function () {
 				this.getServices();
-			}.bind(this), 5000);
+			}.bind(this), 7500);
 
 			API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET), "/user/by_username/" + window.localStorage.getItem('defpi_username'), null, response => {
 				window.localStorage.setItem("defpi_userId", response.id);

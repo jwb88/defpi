@@ -214,7 +214,7 @@
 				rules: {
 					required: value => !!value || 'Required.',
 					allowedName: value => {
-						const pattern =/^\w+$/;
+						const pattern = /^[\w -]+$/;
 						return pattern.test(value) || 'Invalid name';
 					},
 					uniqueName: value => {
@@ -356,8 +356,10 @@
 				}
 			},
 			getInitials: function(name) {
-				let initials = name.match(/\b(\w)/g);
-				return initials.join('');
+				if(name !== "") {
+					let initials = name.match(/\b(\w)/g);
+					return initials[0] + initials[1];
+				} else { return ""; }
 			},
 			shortenText: function(text) {
 				return text.replace(/(.{220})..+/, "$1…");
