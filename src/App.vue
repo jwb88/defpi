@@ -12,6 +12,10 @@
 	}
 </script>
 
-<style scoped>
+<style>
+	.v-icon,
+	.v-list__tile__title {
+		user-select: none;
+	}
 
 </style>

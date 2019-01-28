@@ -1,18 +1,18 @@
 <template>
-	<v-container>
+	<v-container class="pa-0">
 		<!--All Notifications Bell-->
 		<v-layout class="justify-end">
-			<v-btn fab slot="activator" v-on:click="dialog = true"><v-icon large>notification_important</v-icon></v-btn>
+			<v-btn small fab slot="activator" v-on:click="dialog = true"><v-icon large>notification_important</v-icon></v-btn>
 		</v-layout>
 
 		<!--All Notifications Dialog-->
-		<v-dialog v-model="dialog" width="800" lazy>
+		<v-dialog v-model="dialog" scrollable width="800" lazy>
 			<v-card>
 				<v-card-title class="headline grey lighten-2" primary-title>
 					Notifications
 				</v-card-title>
-					<v-card-text v-for="app in apps" :key="app.id">
-						<v-list two-line>
+					<v-card-text>
+						<v-list two-line v-for="app in apps" :key="app.id">
 							<v-list-tile v-on:click="open_dialog(app)" @click="dialog = false; active_tab = 2">
 								<v-list-tile-avatar>
 									<img :src="app.icon_url" alt="">
@@ -27,7 +27,7 @@
 						</v-list>
 					</v-card-text>
 				<v-divider></v-divider>
-				<v-card-actions>
+				<v-card-actions app>
 					<v-spacer></v-spacer>
 					<v-btn class="primary" @click="dialog = false">Mark as read</v-btn>
 					<v-btn color="primary" @click="dialog = false">Ok</v-btn>
@@ -107,14 +107,14 @@
 		</v-dialog>
 
 		<!--App Table-->
-		<v-container>
-			<v-data-table :headers="headers" :items="apps" class="elevation-1" hide-actions>
+		<v-container class="fluid pa-0">
+			<v-data-table :headers="($vuetify.breakpoint.mdAndUp) ? headers : headers_mobile" :items="apps" class="elevation-1" hide-actions>
 				<template slot="items" slot-scope="props">
 					<td class="pa-4">
 						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
-						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.process.name) }}</v-avatar>
+						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.service.name) }}</v-avatar>
 					</td>
-					<td class="title pa-4">{{ props.item.process.name }}</td>
+					<td class="subheading pa-4">{{ props.item.process.name }}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.serviceId }}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.node.name}}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.state}}</td>
@@ -150,6 +150,11 @@
 					{text: "Service", value: "service.name"},
 					{text: "Host", value: "node.hostname"},
 					{text: "State", value: "process.state"},
+					{sortable: false}
+				],
+				headers_mobile: [
+					{sortable: false},
+					{text: "Name", value: "process.name"},
 					{sortable: false}
 				],
 				notification_headers: [
