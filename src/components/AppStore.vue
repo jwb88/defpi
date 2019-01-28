@@ -366,7 +366,7 @@
 					}
 					return result;
 				} else { return ""; }
-			}
+			},
 			shortenText: function(text) {
 				return text.replace(/(.{220})..+/, "$1…");
 			},

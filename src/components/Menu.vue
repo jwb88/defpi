@@ -36,7 +36,7 @@
 		</v-footer>
 
 		<!-- SIDE MENU -->
-		<v-navigation-drawer class="hidden-lg-and-up" v-model="drawer" temporary app>
+		<v-navigation-drawer class="hidden-lg-and-up" v-model="drawer" absolute app>
 			<v-list v-for="item in menu" :key="item.url">
 				<v-list-group v-if="(item.sub_items.length > 0)">
 					<v-list-tile slot="activator" ripple class="v-list--three-line">

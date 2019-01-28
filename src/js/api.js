@@ -94,6 +94,8 @@ function APIClass() {
 					if (this.getResponseHeader("Content-Type") === "application/javascript" || this.getResponseHeader("Content-Type") === "application/json") {
 						let response = JSON.parse(http.response);
 						callback(response);
+					} else {
+						callback(http.response);
 					}
 				} else {
 					console.error("[Api] HTTP CODE: " + http.status);
