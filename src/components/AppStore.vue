@@ -259,7 +259,7 @@
 				this.displayableApps = tempAppList;
 			},
 			fetchNodes: function() {
-				API.send(this.getRequestConfig, "/privatenode", null, response => { this.privateNodes = response; },null);
+				API.send(this.getRequestConfig, "/privatenode"+ '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => { this.privateNodes = response; },null);
 				API.send(this.getRequestConfig, "/nodepool", null, response => { this.nodePools = response; },null);
 			},
 			createNodeList: function() {
@@ -371,11 +371,9 @@
 				return text.replace(/(.{220})..+/, "$1…");
 			},
 			updateInstalledCounter: function() {
-				let payLoad = {};
 				let tempCounter = {};
 				let tempNames = [];
-				payLoad._filters = { "userId" : window.localStorage.getItem('defpi_userId') };
-				API.send(this.getRequestConfig, "/process", JSON.stringify(payLoad), response => {
+				API.send(this.getRequestConfig, "/process" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					response.forEach(function(value, key) {
 						if(tempCounter[value.serviceId] == null)
 							tempCounter[value.serviceId] = 0;

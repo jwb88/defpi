@@ -197,7 +197,7 @@
 					console.log(this.nodePools);
 				}, null);
 
-				API.send(this.api_config, "/privatenode", null, response => {
+				API.send(this.api_config, "/privatenode" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					let temp = [];
 					response.forEach(function (value) {
 						temp[value.id] = value;
@@ -209,7 +209,7 @@
 				}, null);
 			},
 			getServices: function (){
-				API.send(this.api_config, "/service", {}, response => {
+				API.send(this.api_config, "/service", null, response => {
 					response.forEach(function (value, i) {
 						this.services[value.id] = value;
 					}, this);
@@ -220,7 +220,7 @@
 			},
 			updateAppList: function () {
 				this.apps = [];
-				API.send(this.api_config, "/process", null, response => {
+				API.send(this.api_config, "/process" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					console.log(response);
 					let temp = [];
 					response.forEach(function (value) {

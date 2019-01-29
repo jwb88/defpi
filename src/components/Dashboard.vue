@@ -39,7 +39,7 @@
 					</v-flex>
 					<!--Small Widgets-->
 					<v-flex v-else v-for="(widget, k) in widgets" :key="k" xs12 sm6 md4 lg3 style="min-width: 400px !important;"> <!--v-if="widget.has_widget"-->
-						<v-layout justify-center>
+						<v-layout justify-center v-if="!(widget.process.state === 'RUNNING' && widget.widgetId == null)">
 							<v-card class="elevation-2 ma-4" style="min-width: 340px !important;">
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
 									<v-avatar v-if="widget.service.iconURL != null" class="background lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + widget.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
@@ -47,7 +47,7 @@
 									{{widget.process.name}}
 								</v-card-title>
 								<v-card-title class="primary pa-0 pr-3 primary--text text--lighten-3 text-xs-right" style="display: block;">{{widget.title}}</v-card-title>
-								<v-responsive v-if="widget.process.state === 'RUNNING'" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="'/' + widget.widgetId + '/index.html'"></iframe></v-responsive>
+								<v-responsive v-if="widget.process.state === 'RUNNING' && widget.widgetId !== null" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="'/' + widget.widgetId + '/index.html'"></iframe></v-responsive>
 								<v-responsive v-if="widget.process.state === 'STARTING'" class="pa-4 d-inline-flex">STARTING..</v-responsive>
 								<v-responsive v-if="widget.process.state === 'INITIALIZING'" class="pa-4 d-inline-flex">INITIALIZING..</v-responsive>
 								<v-responsive v-if="widget.process.state === 'TERMINATED'" class="pa-4 d-inline-flex">TERMINATED..</v-responsive>
@@ -104,7 +104,7 @@
 		},
 		methods: {
 			getServices: function (){
-				API.send(this.api_config, "/service", {}, response => {
+				API.send(this.api_config, "/service", null, response => {
 					let services = {};
 					response.forEach(function (value, i) {
 						services[value.id] = value;
@@ -113,7 +113,7 @@
 				}, null);
 			},
 			getProcesses: function(services) {
-				API.send(this.api_config, "/process", {}, response => {
+				API.send(this.api_config, "/process"+ '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					let processes = [];
 					response.forEach(function(value) {
 						if(services[value.serviceId].id !== "dashboard-gateway" && services[value.serviceId].id !== "dashboard") {

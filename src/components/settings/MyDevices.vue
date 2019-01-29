@@ -230,7 +230,7 @@
 				})
 			},
 			retrieveDevices: function(){
-				API.send(this.api_config, "/privatenode", {"_filters": { "userId" : window.localStorage.getItem('defpi_userId') }}, response => {
+				API.send(this.api_config, "/privatenode" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					this.list = response;
 					this.devices = [];
 					for(let key in this.list) {

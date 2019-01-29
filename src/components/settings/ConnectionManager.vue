@@ -129,7 +129,8 @@
 
 			// Get all processes
 			getProcesses: function() {
-				API.send(this.api_config, "/process", null, response => {
+				let payLoad = {};
+				API.send(this.api_config, "/process" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					response.forEach(function(value) {
 						// if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
 							this.processes.push(value);
@@ -142,8 +143,9 @@
 			// Selecting the clicked App
 			select: function(app) {
 				this.selected = app;
-
-				API.send(this.api_config, "/connection", null, connections => {
+				let payLoad = {};
+				payLoad._filters = { "userId" : window.localStorage.getItem('defpi_userId') };
+				API.send(this.api_config, "/connection" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, connections => {
 					this.connections = [];
 					console.log(connections);
 					this.services[app.serviceId].available_connections.forEach(function(link) {
