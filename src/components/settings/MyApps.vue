@@ -62,7 +62,7 @@
 							<v-text-field v-model="selectedApp.process.name" label="Name" required></v-text-field>
 							<v-select label="Location" :items="nodeOptions" item-text="name" v-model="selectedApp.node"></v-select>
 							<v-card-actions class="justify-end">
-								<v-btn class="primary" @click="saveSettings(selectedApp)">Save</v-btn>
+								<v-btn class="primary" @click="saveSettings()">Save</v-btn>
 							</v-card-actions>
 
 							<v-card-actions class="justify-end">
@@ -73,14 +73,15 @@
 					</v-tab-item>
 
 					<!--Settings Tab-->
-					<v-tab-item>
+					<v-tab-item v-if="selectedApp !== null">
 						<v-container v-for="(param) in selectedApp.service.parameters" :key="param.id">
 							{{param.name}}
 							<v-text-field v-model="param.default" :type="settingsForms[param.type]"></v-text-field>
 						</v-container>
-						<v-card-actions class="justify-end">
+						<v-card-actions v-if="selectedApp.service.parameters !== null" class="justify-end">
 							<v-btn class="primary" @click="saveSettings()">Save</v-btn>
 						</v-card-actions>
+						<v-container v-else>This app does not have any settings to change..</v-container>
 					</v-tab-item>
 
 					<!--Notifications Tab-->
@@ -114,7 +115,7 @@
 						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.service.name) }}</v-avatar>
 					</td>
-					<td class="subheading pa-4">{{ props.item.process.name }}</td>
+					<td class="subheading pa-4">{{ minifyName(props.item.process.name) }}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.serviceId }}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.node.name}}</td>
 					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.state}}</td>
@@ -301,12 +302,14 @@
 			saveSettings: function() {
 				let data = this.selectedApp.process;
 				data.configuration = [];
-				this.selectedApp.service.parameters.forEach(function(param) {
-					data.configuration.push({
-						key: param.id,
-						value: param.default
+				if(this.selectedApp.service.parameters !== null) {
+					this.selectedApp.service.parameters.forEach(function(param) {
+						data.configuration.push({
+							key: param.id,
+							value: param.default
+						});
 					});
-				});
+				}
 
 				console.log(this.appName);
 				API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.UPDATE), "/process/" + data.id, JSON.stringify(data), response => {
