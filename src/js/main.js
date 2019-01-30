@@ -125,3 +125,9 @@ function buildSubItems(subList) {
 	// Return our created subItem list
 	return subItems;
 }
+
+
+Vue.prototype.$minifyName = function(txt) {
+	let maxChars = (this.$vuetify.breakpoint.mdAndDown) ? 12 : 24;
+	return txt.substring(0, maxChars) + ((txt.length <= maxChars) ? "" : "..");
+};

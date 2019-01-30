@@ -115,10 +115,10 @@
 						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.service.name) }}</v-avatar>
 					</td>
-					<td class="subheading pa-4">{{ minifyName(props.item.process.name) }}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.serviceId }}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.node.name}}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ props.item.process.state}}</td>
+					<td class="subheading pa-4">{{ $minifyName(props.item.process.name) }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ $minifyName(props.item.process.serviceId) }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ $minifyName(props.item.node.name) }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ $minifyName(props.item.process.state) }}</td>
 					<td><v-icon @click="open_dialog(props.item)">edit</v-icon></td>
 				</template>
 			</v-data-table>
@@ -315,7 +315,9 @@
 				API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.UPDATE), "/process/" + data.id, JSON.stringify(data), response => {
 					this.appUpdated = true;
 					console.log(response);
+					this.getNodes();
 				}, null);
+				this.app_dialog = false;
 			},
 
 
@@ -353,7 +355,7 @@
 					}
 					return result;
 				} else { return ""; }
-			}
+			},
 		},
 		mounted () {
 			this.getNodes();

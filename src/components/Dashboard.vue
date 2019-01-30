@@ -10,7 +10,7 @@
 						<v-flex>
 							<v-avatar v-if="widget.service.iconURL != null" class="background lighten-3" v-bind:style="{backgroundImage: 'url(' + widget.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 							<v-avatar v-else class="background lighten-3 font-weight-bold">{{ getInitials(widget.process.name) }}</v-avatar>
-							<h4 class="hidden-sm-and-down black--text" style="margin-top: 12px;">{{ widget.title }}</h4>
+							<h4 class="hidden-sm-and-down black--text" style="margin-top: 12px;">{{ $minifyName(widget.title) }}</h4>
 						</v-flex>
 					</v-container>
 				</v-tab>
@@ -44,9 +44,9 @@
 								<v-card-title class="primary darken-1 title white--text pa-1" color="primary">
 									<v-avatar v-if="widget.service.iconURL != null" class="background lighten-1 mr-3" v-bind:style="{backgroundImage: 'url(' + widget.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
 									<v-avatar v-else class="background lighten-1 mr-3 black--text">{{ getInitials(widget.process.name) }}</v-avatar>
-									{{widget.process.name}}
+									{{ $minifyName(widget.process.name) }}
 								</v-card-title>
-								<v-card-title class="primary pa-0 pr-3 primary--text text--lighten-3 text-xs-right" style="display: block;">{{widget.title}}</v-card-title>
+								<v-card-title class="primary pa-0 pr-3 primary--text text--lighten-3 text-xs-right" style="display: block;">{{$minifyName(widget.title)}}</v-card-title>
 								<v-responsive v-if="widget.process.state === 'RUNNING' && widget.widgetId !== null" class="pa-4 d-inline-flex"><iframe width="300px" height="170px" v-bind:src="'/' + widget.widgetId + '/index.html'"></iframe></v-responsive>
 								<v-responsive v-if="widget.process.state === 'STARTING'" class="pa-4 d-inline-flex">STARTING..</v-responsive>
 								<v-responsive v-if="widget.process.state === 'INITIALIZING'" class="pa-4 d-inline-flex">INITIALIZING..</v-responsive>
