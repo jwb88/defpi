@@ -2,8 +2,8 @@
 	<v-container>
 		<!--Desktop Display-->
 		<v-layout wrap justify-center>
-			<v-icon color="blue" large @click="info = !info">help</v-icon>
-			<v-alert class="white" dismissible :value="info" type="info" outline transition="scale-transition">This is the Connection Manager. Here you can manage every connection for each individual app.
+			<v-icon color="primary" large @click="info = !info">help</v-icon>
+			<v-alert class="primary" dismissible :value="info" type="none" outline transition="scale-transition">This is the Connection Manager. Here you can manage every connection for each individual app.
 			For example, if you do not wish that a certain app is displayed on the dashboard, you can simply turn the connection between that app and the dashboard off with the appropriate switch.</v-alert>
 		</v-layout>
 		<v-layout class="hidden-md-and-down row ma-4">
@@ -110,8 +110,7 @@
 						service1.interfaces.forEach(function(interface1) {
 							response.forEach(function (service2) {
 								service2.interfaces.forEach(function(interface2) {
-									if(interface1.interfaceVersions[0].sendsHash === interface2.interfaceVersions[0].receivesHash &&
-										interface1.interfaceVersions[0].receivesHash === interface2.interfaceVersions[0].sendsHash) {
+									if(interface1.interfaceVersions[0].sendsHash === interface2.interfaceVersions[0].receivesHash) {
 										service1.available_connections.push({
 											service: service2,
 											interface1: interface1,
@@ -154,8 +153,13 @@
 								let connected = false;
 								let connectionId = null;
 								connections.forEach(function(connection) {
-									if(connection.endpoint1.processId === app.id &&
-										connection.endpoint2.processId === process.id) {
+									if(
+										(connection.endpoint1.processId === app.id || connection.endpoint2.processId === app.id) &&
+										(
+											connection.endpoint2.processId === app.id && connection.endpoint1.processId === process.id ||
+											connection.endpoint1.processId === app.id && connection.endpoint2.processId === process.id
+										)
+									) {
 										connected = true;
 										connectionId = connection.id;
 									}

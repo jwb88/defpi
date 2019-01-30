@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<!-- BIG FOOTER THING -->
-		<v-footer class="background darken-1 pa-3" height="auto" app>
+		<v-footer class="background darken-1 pa-3" height="auto" :absolute="$vuetify.breakpoint.mdAndDown" app>
 			<v-layout row wrap>
 				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-lg-and-up"
 									 app></v-toolbar-side-icon>
@@ -37,8 +37,8 @@
 
 		<!-- SIDE MENU -->
 		<v-navigation-drawer class="hidden-lg-and-up" v-model="drawer" fixed app>
-			<v-list v-for="item in menu" :key="item.url">
-				<v-list-group v-if="(item.sub_items.length > 0)">
+			<v-list>
+				<v-list-group v-for="item in menu" :key="item.url" v-if="(item.sub_items.length > 0)">
 					<v-list-tile slot="activator" ripple class="v-list--three-line">
 						<v-list-tile-action>
 							<v-icon large>{{ item.icon }}</v-icon>
@@ -64,6 +64,15 @@
 					</v-list-tile-action>
 					<v-list-tile-content>
 						<v-list-tile-title class="title">{{ item.text }}</v-list-tile-title>
+					</v-list-tile-content>
+				</v-list-tile>
+
+				<v-list-tile ripple class="v-list--two-line" href="/logout">
+					<v-list-tile-action>
+						<v-icon large>logout</v-icon>
+					</v-list-tile-action>
+					<v-list-tile-content>
+						<v-list-tile-title class="title">Logout</v-list-tile-title>
 					</v-list-tile-content>
 				</v-list-tile>
 			</v-list>

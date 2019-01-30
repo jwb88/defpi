@@ -76,7 +76,7 @@
 					<v-tab-item>
 						<v-container v-for="(param) in selectedApp.service.parameters" :key="param.id">
 							{{param.name}}
-							<v-text-field :value="param.default" :type="settingsForms[param.type]"></v-text-field>
+							<v-text-field v-model="param.default" :type="settingsForms[param.type]"></v-text-field>
 						</v-container>
 						<v-card-actions class="justify-end">
 							<v-btn class="primary" @click="saveSettings()">Save</v-btn>
@@ -274,14 +274,7 @@
 					response.forEach(function (value) {
 						if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
 							console.log(this.privateNodes);
-							if(value.configuration === null) {
-								value.configuration = {};
-							}
-							this.services[value.serviceId].parameters.forEach(function(val,key){
-								if(value.configuration[val.id] === null) {
-									value.configuration[val.name] = val.default;
-								}
-							});
+
 							let collection = {
 								"process": 	value,
 								"node": 	(value.nodePoolId !== null ? this.nodePools[value.nodePoolId] : this.privateNodes[value.privateNodeId]),//this.privateNodes[value.runningNodeId],
@@ -307,6 +300,14 @@
 			},
 			saveSettings: function() {
 				let data = this.selectedApp.process;
+				data.configuration = [];
+				this.selectedApp.service.parameters.forEach(function(param) {
+					data.configuration.push({
+						key: param.id,
+						value: param.default
+					});
+				});
+
 				console.log(this.appName);
 				API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.UPDATE), "/process/" + data.id, JSON.stringify(data), response => {
 					this.appUpdated = true;
@@ -318,6 +319,17 @@
 			/* Dialog Methods */
 			open_dialog: function(app) {
 				this.selectedApp = app;
+				if(this.selectedApp.process.configuration !== null) {
+					this.selectedApp.service.parameters.forEach(function(param) {
+						this.selectedApp.process.configuration.forEach(function(config) {
+							console.log(config);
+							if(param.id === config.key) {
+								console.log(param);
+								param.default = config.value;
+							}
+						}, this);
+					}, this);
+				}
 				this.app_dialog = true;
 			},
 			close_dialog: function() {
