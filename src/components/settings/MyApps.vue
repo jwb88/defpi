@@ -66,7 +66,7 @@
 							</v-card-actions>
 
 							<v-card-actions class="justify-end">
-								<v-btn class="primary" @click="uninstall(selectedApp)">Uninstall <v-icon>delete</v-icon></v-btn>
+								<v-btn class="primary" @click="confirmDelete = true">Uninstall <v-icon>delete</v-icon></v-btn>
 								<v-btn class="primary" @click="close_dialog()">Update <v-icon>play_for_work</v-icon></v-btn>
 							</v-card-actions>
 						</v-container>
@@ -134,6 +134,51 @@
 				</v-card>
 			</v-dialog>
 		</div>
+
+		<v-layout row justify-center>
+			<v-dialog v-model="confirmDelete" persistent max-width="340">
+				<v-card v-if="selectedApp !== null">
+					<v-card-title class="headline">Uninstall the app?</v-card-title>
+					<v-card-text>
+						Are you sure you wish to uninstall the {{ selectedApp.name }} app?
+					</v-card-text>
+					<v-card-actions>
+						<v-btn large color="grey darken-1" flat @click="confirmDelete = false">Disagree</v-btn>
+						<v-spacer></v-spacer>
+						<v-btn large color="primary darken-1" flat @click="uninstall(selectedApp)">Agree</v-btn>
+					</v-card-actions>
+				</v-card>
+				<v-card class="pa-4" v-else>
+					<v-layout class="justify-center">
+						<v-progress-circular class="justify-center" :size="70" :width="7" color="primary" indeterminate></v-progress-circular>
+					</v-layout>
+				</v-card>
+			</v-dialog>
+		</v-layout>
+
+		<!-- App Removed-->
+		<div class="text-xs-center">
+			<v-dialog v-model="appRemoved" persistent width="300" >
+				<v-card dark >
+					<v-card-text>
+						Your app has been uninstalled!
+						<v-btn class="primary" v-on:click="appRemoved = false; confirmDelete = false;">Ok</v-btn>
+					</v-card-text>
+				</v-card>
+			</v-dialog>
+		</div>
+
+		<!-- App Updated-->
+		<div class="text-xs-center">
+			<v-dialog v-model="appUpdated" persistent width="300" >
+				<v-card dark >
+					<v-card-text>
+						Your app has been updated!
+						<v-btn class="primary" v-on:click="appUpdated = false">Ok</v-btn>
+					</v-card-text>
+				</v-card>
+			</v-dialog>
+		</div>
 	</v-container>
 </template>
 
@@ -173,6 +218,9 @@
 				privateNodes: [],
 				nodePools:[],
 				apps: [],
+				appRemoved: false,
+				confirmDelete: false,
+				appUpdated: false,
 				active_tab: 0,
 				tabs: [{ id: 1, name: "Global Settings"},{ id: 2, name: "Settings"}, {id:3, name: "Notifications"}],
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
@@ -226,6 +274,14 @@
 					response.forEach(function (value) {
 						if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
 							console.log(this.privateNodes);
+							if(value.configuration === null) {
+								value.configuration = {};
+							}
+							this.services[value.serviceId].parameters.forEach(function(val,key){
+								if(value.configuration[val.id] === null) {
+									value.configuration[val.name] = val.default;
+								}
+							});
 							let collection = {
 								"process": 	value,
 								"node": 	(value.nodePoolId !== null ? this.nodePools[value.nodePoolId] : this.privateNodes[value.privateNodeId]),//this.privateNodes[value.runningNodeId],
@@ -244,6 +300,7 @@
 			},
 			uninstall: function (app) {
 				API.send(this.api_delete, "/process/" + app.process.id, [], response => {
+					this.appRemoved = true;
 					console.log(response);
 					this.updateAppList();
 				}, null);
@@ -252,6 +309,7 @@
 				let data = this.selectedApp.process;
 				console.log(this.appName);
 				API.send(new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.UPDATE), "/process/" + data.id, JSON.stringify(data), response => {
+					this.appUpdated = true;
 					console.log(response);
 				}, null);
 			},
