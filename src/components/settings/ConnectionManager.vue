@@ -1,13 +1,16 @@
 <template>
 	<v-container>
-		<!--Desktop Display-->
+		<!--Info Button-->
 		<v-layout wrap justify-center>
 			<v-icon color="primary" large @click="info = !info">help</v-icon>
 			<v-alert class="primary" dismissible :value="info" type="none" outline transition="scale-transition">This is the Connection Manager. Here you can manage every connection for each individual app.
-			For example, if you do not wish that a certain app is displayed on the dashboard, you can simply turn the connection between that app and the dashboard off with the appropriate switch.</v-alert>
+				For example, if you do not wish that a certain app is displayed on the dashboard, you can simply turn the connection between that app and the dashboard off with the appropriate switch.</v-alert>
 		</v-layout>
+
+		<!--Desktop Display-->
 		<v-layout class="hidden-md-and-down row ma-4">
 			<v-flex xs6>
+				<v-card class="title pa-4 primary darken-1 white--text">Apps:</v-card>
 				<v-card>
 					<v-flex v-for="app in processes" :key="app.id">
 						<v-list-tile class="pa-2" wrap ripple v-on:click="select(app)"  v-bind:class="{ primary: (selected === app), 'white--text': (selected === app) }">
@@ -16,8 +19,9 @@
 					</v-flex>
 				</v-card>
 			</v-flex>
-			<v-flex v-if="selected !== null" xs6>
-				<v-card class="mb-1 ml-1" v-for="connection in connections" :key="connection.id" >
+			<v-flex class="ml-2" v-if="selected !== null" xs6>
+				<v-card class="title pa-4 primary darken-1 white--text">Connect to:</v-card>
+				<v-card class="mb-1" v-for="connection in connections" :key="connection.id" >
 					<v-layout class="pr-5">
 						<v-flex xs6>
 							<v-card-title class="ma-2">
@@ -83,6 +87,8 @@
 		</v-layout>
 	</v-container>
 </template>
+
+
 <script>
 	import { API, Config, PORT, CONTENT_TYPE, METHOD } from "../../js/api.js";
 
@@ -101,7 +107,9 @@
 			}
 		},
 		methods: {
-			// Get all services
+			/**
+			 * Get all services
+			 */
 			getServices: function () {
 				API.send(this.api_config, "/service", null, response => {
 					console.log(response);
@@ -126,20 +134,25 @@
 				}, null);
 			},
 
-			// Get all processes
+			/**
+			 * Get all processes
+			 */
 			getProcesses: function() {
 				let payLoad = {};
 				API.send(this.api_config, "/process" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					response.forEach(function(value) {
-						// if(value.serviceId !== "dashboard-gateway" && value.serviceId !== "dashboard") {
+						if(value.serviceId !== "dashboard-gateway") {
 							this.processes.push(value);
-						// }
+						}
 					}, this);
 					this.select(this.processes[0]);
 				}, null);
 			},
 
-			// Selecting the clicked App
+			/**
+			 * Selecting the clicked App
+			 * @param {object}				app
+			 */
 			select: function(app) {
 				this.selected = app;
 				let payLoad = {};
@@ -189,7 +202,10 @@
 				}, null);
 			},
 
-			// API calls for Adding and Removing Connections
+			/**
+			 * API calls for Adding and Removing Connections
+			 * @param {object}				connection
+			 */
 			toggleConnection: function(connection) {
 				this.switch_disabled = true;
 				this.connect_info = null;
@@ -211,6 +227,7 @@
 			}
 		},
 		mounted () {
+			// Call on page load
 			this.getServices();
 		}
 	}

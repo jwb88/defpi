@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<!-- BIG FOOTER THING -->
+		<!-- Footer Desktop -->
 		<v-footer class="background darken-1 pa-3" height="auto" :absolute="$vuetify.breakpoint.mdAndDown" app>
 			<v-layout row wrap>
 				<v-toolbar-side-icon @click.stop="drawer = !drawer" large class="hidden-lg-and-up"
@@ -9,20 +9,15 @@
 					<v-layout v-for="item in menu"  :key="item.url">
 						<v-layout>
 							<v-btn class="pa-4.5 title" v-bind="{to: item.url}" active-class="primary">
-								<!--<v-layout style="width:100%;">
-									<v-icon style="width:100%;" class="btn_arrow">arrow_drop_down</v-icon>
-								</v-layout>-->
 								<v-layout align-center justify-center style="position:absolute;top:-65px;width:100%;">
 									<v-icon class="selector_arrow">arrow_drop_down</v-icon>
 								</v-layout>
-								<!--<v-icon style="position:relative; top:-25px; width:1px;" class="btn_arrow">arrow_drop_down</v-icon>-->
-									<v-icon class="pr-1" medium>{{item.icon}}</v-icon> <!--{{ $route.path }}-->
-									{{item.text}}
+								<v-icon class="pr-1" medium>{{item.icon}}</v-icon>
+								{{item.text}}
 							</v-btn>
 						</v-layout>
 					</v-layout>
 					<v-layout class="justify-end">
-						<!--<v-btn class="pa-4.5 title" v-bind="{to: './logout'}" @click="logout">-->
 						<a class="pa-4.5 title v-btn v-btn--router theme--light" href="/logout">
 							<div class="v-btn__content">
 								<v-icon class="pr-1" medium>logout</v-icon>Logout
@@ -30,12 +25,10 @@
 						</a>
 					</v-layout>
 				</v-layout>
-
-				<!--<v-flex primary lighten-1 py-3 text-xs-center xs12> &copy;{{ new Date().getFullYear() }} — <strong>dEF-PI</strong> </v-flex>-->
 			</v-layout>
 		</v-footer>
 
-		<!-- SIDE MENU -->
+		<!-- Side Menu -->
 		<v-navigation-drawer class="hidden-lg-and-up" v-model="drawer" fixed app>
 			<v-list>
 				<v-list-group v-for="item in menu" :key="item.url" v-if="(item.sub_items.length > 0)">
@@ -95,6 +88,7 @@
 		}
 	}
 </script>
+
 
 <style scoped>
 	.v-footer {

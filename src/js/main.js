@@ -1,6 +1,5 @@
 import Vue          		from 'vue';
 import VueRouter    		from 'vue-router';
-import VueResource 			from 'vue-resource';
 
 import App 					from "../App";
 import Dashboard      		from "../components/Dashboard";
@@ -15,15 +14,39 @@ import PageNotFound     	from "../components/404";
 import Vuetify      		from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 
+
+/**
+ * Use Vuetify
+ * Theme colors are defined in here
+ */
 Vue.use(Vuetify, {
     theme: {
         primary: "#7DB530",
         background: "#bdbdbd",
     }
 });
-Vue.use(VueRouter);
-Vue.use(VueResource);
 
+/**
+ * Use VueRouter
+ * Load pages without browser refresh
+ */
+Vue.use(VueRouter);
+
+
+/**
+ * Minify method for long names
+ * @param {string}				txt
+ */
+Vue.prototype.$minifyName = function(txt) {
+	let maxChars = (this.$vuetify.breakpoint.mdAndDown) ? 12 : 24;
+	return txt.substring(0, maxChars) + ((txt.length <= maxChars) ? "" : "..");
+};
+
+
+/**
+ * Menu settings
+ * This is available in all VueComponents
+ */
 Vue.prototype.$MENU = [
 	{
 		text: "Home",
@@ -71,6 +94,9 @@ Vue.prototype.$MENU = [
 ];
 
 
+/**
+ * VueRouter Setup
+ */
 const router = new VueRouter({
     mode: 'hash',
     routes: [
@@ -95,15 +121,21 @@ const router = new VueRouter({
     ]
 });
 
+
+/**
+ * Create a new Vue instance
+ * and render the App Component
+ */
 new Vue({
     router,
     render: (h) => h(App),
 }).$mount('#app');
 
-function getAppstoreCategories() {
-	return ['All', 'Huishoudelijke apparaten', 'Slimme Meters', 'Elektrische Autos'];
-}
 
+/**
+ * Creating the AppStore subItems
+ * @param {array}				subList
+ */
 function buildSubItems(subList) {
 	let subItems = [];
 	// Make sure we only create the list if there's actually any subItems
@@ -126,8 +158,6 @@ function buildSubItems(subList) {
 	return subItems;
 }
 
-
-Vue.prototype.$minifyName = function(txt) {
-	let maxChars = (this.$vuetify.breakpoint.mdAndDown) ? 12 : 24;
-	return txt.substring(0, maxChars) + ((txt.length <= maxChars) ? "" : "..");
-};
+function getAppstoreCategories() {
+	return ['All', 'Huishoudelijke apparaten', 'Slimme Meters', 'Elektrische Autos'];
+}

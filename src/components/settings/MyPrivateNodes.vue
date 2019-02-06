@@ -23,7 +23,6 @@
 						<v-card-title class="headline primary" primary-title >
 							Settings
 						</v-card-title>
-
 						<v-card-text>
 							General Information {{ selectedDevice.name}}
 						</v-card-text>
@@ -51,6 +50,7 @@
 					</v-card>
 				</v-dialog>
 
+				<!-- Dialog Disconnect -->
 				<v-dialog v-model="dialogDisconnect" width="500">
 					<v-card>
 						<v-card-title class="headline primary" primary-title >
@@ -73,6 +73,7 @@
 			</v-flex>
 		</v-flex>
 
+		<!-- Dialog Connect -->
 		<v-layout align-start justify-end row>
 			<v-dialog v-model="dialogConnect" width="500" >
 				<v-btn slot="activator" color="primary" class="right" large >
@@ -218,6 +219,9 @@
 			}
 		},
 		methods: {
+			/**
+			 * Update a privateNode
+			 */
 			applyChanges: function() {
 				let device = this.selectedDevice;
 				device.name = this.newDeviceName;
@@ -229,6 +233,10 @@
 					this.retrieveDevices();
 				})
 			},
+
+			/**
+			 * Get devices from back-end
+			 */
 			retrieveDevices: function(){
 				API.send(this.api_config, "/privatenode" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					this.list = response;
@@ -239,24 +247,40 @@
 				}, null)
 			},
 
-			/* Dialog Methods */
+			/**
+			 * Open dialog
+			 * @param {object}				device
+			 */
 			open_dialog: function(device) {
 				this.newDeviceName = device.name;
 				this.selectedDevice = device;
 				this.device_dialog = true;
 			},
+			/**
+			 * Open remove dialog
+			 * @param {object}				device
+			 */
 			open_removeDialog: function(device){
 				this.selectedDevice = device;
 				this.dialogDisconnect = true;
 			},
-			close_removeDialog: function(){
-				this.dialogDisconnect = false;
-			},
+			/**
+			 * Close dialog
+			 */
 			close_dialog: function() {
 				this.selectedDevice = {};
 				this.device_dialog = false;
 			},
+			/**
+			 * Close remove dialog
+			 */
+			close_removeDialog: function(){
+				this.dialogDisconnect = false;
+			},
 
+			/**
+			 * Adding a privateNode
+			 */
 			pushNewDevice: function () {
 				let payLoad = {};
 				payLoad.dockerId = this.newDevice.identifier;
@@ -271,6 +295,11 @@
 					this.deviceFailedToAdd = true;
 				});
 			},
+
+			/**
+			 * Selecting a privateNode
+			 * @param {object}				selectedDevice
+			 */
 			removeDevice: function (selectedDevice) {
 				API.send(this.deleteConfig, '/privatenode/' + selectedDevice.id, null, response => {
 					this.deviceRemoved = true;
