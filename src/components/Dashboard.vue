@@ -103,6 +103,9 @@
 			}
 		},
 		methods: {
+			/**
+			 * Get Services
+			 */
 			getServices: function (){
 				API.send(this.api_config, "/service", null, response => {
 					let services = {};
@@ -112,6 +115,11 @@
 					this.getProcesses(services);
 				}, null);
 			},
+
+			/**
+			 * Get Services
+			 * @param {object}	services
+			 */
 			getProcesses: function(services) {
 				API.send(this.api_config, "/process"+ '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
 					let processes = [];
@@ -124,6 +132,11 @@
 					this.getWidgets(processes);
 				}, null);
 			},
+
+			/**
+			 * Get Widgets
+			 * @param {object}	processes
+			 */
 			getWidgets: function (processes) {
 				API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.NONE, METHOD.GET), "/getWidgets", {}, response => {
 					// Create a new object to store processes with their services based on processId
@@ -173,6 +186,11 @@
 					this.widgetLoading = false;
 				}, null);
 			},
+
+			/**
+			 * Check if a process has a Fullscreen widget
+			 * @param {number}	id
+			 */
 			hasFullscreenWidget: function(id) {
 				if(this.widgetsFullscreen.length < 1)
 					return false;
@@ -182,12 +200,22 @@
 				});
 				return false;
 			},
+			/**
+			 * Get Fullscreen widget
+			 * @param {number}	id
+			 */
 			getFullScreenWidget: function(id) {
 				this.widgetsFullscreen.forEach(function(value,key){
 					if(value.widgetId === id)
 						return value;
 				});
 			},
+
+			/**
+			 * Retrieves a set of initials based on app name
+			 * @param name Name of the app
+			 * @returns {string} Initials
+			 */
 			getInitials: function(name) {
 				if(name !== "") {
 					let result = "";
@@ -221,8 +249,4 @@
 	iframe {
 		border: none;
 	}
-
-	/*.fullscreenActive {*/
-		/*border-bottom: 4px solid black;*/
-	/*}*/
 </style>
