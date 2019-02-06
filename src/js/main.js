@@ -39,6 +39,7 @@ Vue.use(VueRouter);
  * @returns {string}			minifiedName
  */
 Vue.prototype.$minifyName = function(txt) {
+	if(txt === undefined) return "";
 	let maxChars = (this.$vuetify.breakpoint.mdAndDown) ? 12 : 24;
 	return txt.substring(0, maxChars) + ((txt.length <= maxChars) ? "" : "..");
 };
