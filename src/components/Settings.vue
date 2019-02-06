@@ -49,7 +49,7 @@
 				header_titles: {
 					"/settings/my_apps": 			"My Apps",
 					"/settings/connection_manager": "Connection Manager",
-					"/settings/my_devices": 		"My Devices",
+					"/settings/my_private_nodes": 	"My Private Nodes",
 					"/settings/user_settings": 		"User Config",
 				}
 			}

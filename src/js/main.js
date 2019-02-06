@@ -6,7 +6,7 @@ import App 					from "../App";
 import Dashboard      		from "../components/Dashboard";
 import Settings     		from "../components/Settings";
 import UserSettings     	from "../components/settings/UserSettings";
-import MyDevices     		from "../components/settings/MyDevices";
+import MyPrivateNodes  		from "../components/settings/MyPrivateNodes";
 import ConnectionManager    from "../components/settings/ConnectionManager";
 import MyApps     			from "../components/settings/MyApps";
 import AppStore     		from "../components/AppStore";
@@ -49,9 +49,9 @@ Vue.prototype.$MENU = [
 				sub_items: []
 			},
 			{
-				text: "My Devices",
+				text: "My Private Nodes",
 				icon: "devices",
-				url: "/settings/my_devices",
+				url: "/settings/my_private_nodes",
 				sub_items: []
 			},
 			{
@@ -88,7 +88,7 @@ const router = new VueRouter({
 			children: [
 				{path:"my_apps", 				component: MyApps				},
 				{path:"connection_manager", 	component: ConnectionManager	},
-				{path:"my_devices", 			component: MyDevices			},
+				{path:"my_private_nodes",		component: MyPrivateNodes		},
 				{path:"user_settings", 			component: UserSettings 		},
 			]
 		},
