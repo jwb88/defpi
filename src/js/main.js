@@ -36,6 +36,7 @@ Vue.use(VueRouter);
 /**
  * Minify method for long names
  * @param {string}				txt
+ * @returns {string}			minifiedName
  */
 Vue.prototype.$minifyName = function(txt) {
 	let maxChars = (this.$vuetify.breakpoint.mdAndDown) ? 12 : 24;
@@ -135,6 +136,7 @@ new Vue({
 /**
  * Creating the AppStore subItems
  * @param {array}				subList
+ * @returns {array}				items
  */
 function buildSubItems(subList) {
 	let subItems = [];
@@ -158,6 +160,10 @@ function buildSubItems(subList) {
 	return subItems;
 }
 
+/**
+ * Retrieves the AppStore categories
+ * @returns {array} categories
+ */
 function getAppstoreCategories() {
 	return ['All', 'Huishoudelijke apparaten', 'Slimme Meters', 'Elektrische Autos'];
 }
