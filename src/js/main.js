@@ -166,5 +166,5 @@ function buildSubItems(subList) {
  * @returns {array} categories
  */
 function getAppstoreCategories() {
-	return ['All', 'Huishoudelijke apparaten', 'Slimme Meters', 'Elektrische Autos'];
+	return ['All', 'Household devices', 'Smart Meters', 'Electric Vehicles'];
 }
