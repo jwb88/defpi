@@ -243,7 +243,9 @@
 			}
 		},
 		methods: {
-			/* API Methods */
+			/**
+			 * Get Nodes
+			 */
 			getNodes: function() {
 				API.send(this.api_config, "/nodepool", null, response => {
 					let temp = [];
@@ -267,6 +269,10 @@
 					this.getServices();
 				}, null);
 			},
+
+			/**
+			 * Get Services
+			 */
 			getServices: function (){
 				API.send(this.api_config, "/service", null, response => {
 					response.forEach(function (value, i) {
@@ -277,6 +283,10 @@
 					this.updateAppList();
 				}, null);
 			},
+
+			/**
+			 * Get Processes
+			 */
 			updateAppList: function () {
 				this.apps = [];
 				API.send(this.api_config, "/process" + '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => {
@@ -302,6 +312,11 @@
 					this.loading = false;
 				}, null);
 			},
+
+			/**
+			 * Delete Process
+			 * @param {object}	app
+			 */
 			uninstall: function (app) {
 				API.send(this.api_delete, "/process/" + app.process.id, [], response => {
 					this.appRemoved = true;
@@ -309,6 +324,9 @@
 					this.updateAppList();
 				}, null);
 			},
+			/**
+			 * Save Process Settings
+			 */
 			saveSettings: function() {
 				let data = this.selectedApp.process;
 				data.configuration = [];
@@ -331,7 +349,10 @@
 			},
 
 
-			/* Dialog Methods */
+			/**
+			 * Open Dialog
+			 * @param {object}	app
+			 */
 			open_dialog: function(app) {
 				this.selectedApp = app;
 				if(this.selectedApp.process.configuration !== null) {
@@ -347,13 +368,19 @@
 				}
 				this.app_dialog = true;
 			},
+			/**
+			 * Close Dialog
+			 */
 			close_dialog: function() {
 				this.selectedApp = null;
 				this.app_dialog = false;
 			},
 
-
-
+			/**
+			 * Retrieves a set of initials based on app name
+			 * @param name Name of the app
+			 * @returns {string} Initials
+			 */
 			getInitials: function(name) {
 				if(name !== "") {
 					let result = "";
