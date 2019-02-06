@@ -1,9 +1,39 @@
 <template>
 	<v-container class="pa-0">
+
+		<!-- Load bar -->
+		<div class="text-xs-center">
+			<v-dialog v-model="loading" hide-overlay persistent width="300">
+				<v-card class="primary" dark >
+					<v-card-text>
+						Loading widgets..
+						<v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+					</v-card-text>
+				</v-card>
+			</v-dialog>
+		</div>
+
 		<!--All Notifications Bell-->
 		<v-layout class="justify-end">
 			<v-btn small fab slot="activator" v-on:click="dialog = true"><v-icon large>notification_important</v-icon></v-btn>
 		</v-layout>
+
+		<!--App Table-->
+		<v-container class="fluid pa-0">
+			<v-data-table :headers="($vuetify.breakpoint.mdAndUp) ? headers : headers_mobile" :items="apps" class="elevation-1" hide-actions>
+				<template slot="items" slot-scope="props">
+					<td class="pa-4" @click="open_dialog(props.item)">
+						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
+						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.service.name) }}</v-avatar>
+					</td>
+					<td class="subheading pa-4" @click="open_dialog(props.item)">{{ $minifyName(props.item.process.name) }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp" @click="open_dialog(props.item)">{{ $minifyName(props.item.process.serviceId) }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp" @click="open_dialog(props.item)">{{ $minifyName(props.item.node.name) }}</td>
+					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp" @click="open_dialog(props.item)">{{ $minifyName(props.item.process.state) }}</td>
+					<td><v-icon @click="open_dialog(props.item)">edit</v-icon></td>
+				</template>
+			</v-data-table>
+		</v-container>
 
 		<!--All Notifications Dialog-->
 		<v-dialog v-model="dialog" scrollable width="800" lazy>
@@ -39,7 +69,7 @@
 		<v-dialog v-if="selectedApp !== null" v-model="app_dialog" :fullscreen="$vuetify.breakpoint.mdAndDown" max-width="800" persistent lazy>
 			<v-card>
 				<!--Dialog Header-->
-				<v-card-title class="primary hidden-md-and-down" relative>
+				<v-card-title class="primary hidden-md-and-down" style="box-shadow: 0 4px 2px rgba(0,0,0,0.6)" relative>
 					<span v-if="selectedApp" class="headline">{{ selectedApp.process.name }}</span>
 					<v-btn class="background" absolute dark small fab right v-on:click="close_dialog()">
 						<v-icon> close </v-icon>
@@ -54,26 +84,19 @@
 
 				<!--Tabs-->
 				<v-tabs v-model="active_tab" show arrows grow>
-					<v-tab class="primary white--text" v-for="tab of tabs" :key="tab.id" active-class="white black--text">{{ tab.name }}</v-tab>
-
-					<!--Global Settings Tab-->
-					<v-tab-item>
-						<v-container>
-							<v-text-field v-model="selectedApp.process.name" label="Name" required></v-text-field>
-							<v-select label="Location" :items="nodeOptions" item-text="name" v-model="selectedApp.node"></v-select>
-							<v-card-actions class="justify-end">
-								<v-btn class="primary" @click="saveSettings()">Save</v-btn>
-							</v-card-actions>
-
-							<v-card-actions class="justify-end">
-								<v-btn class="primary" @click="confirmDelete = true">Uninstall <v-icon>delete</v-icon></v-btn>
-								<v-btn class="primary" @click="close_dialog()">Update <v-icon>play_for_work</v-icon></v-btn>
-							</v-card-actions>
-						</v-container>
-					</v-tab-item>
+					<v-tab class="primary white--text" key="0" active-class="white black--text">Settings</v-tab>
 
 					<!--Settings Tab-->
-					<v-tab-item v-if="selectedApp !== null">
+					<v-tab-item v-if="selectedApp !== null" style="overflow-y: scroll;" :style="{'max-height': ($vuetify.breakpoint.lgAndUp) ? '400px' : ''}">
+						<v-container>
+							<v-layout class="justify-end font-italic">App: {{selectedApp.service.name}}</v-layout>
+							<v-text-field v-model="selectedApp.process.name" label="Name" required></v-text-field>
+							<v-select label="Location" :items="nodeOptions" item-text="name" v-model="selectedApp.node"></v-select>
+						</v-container>
+
+
+						<v-divider></v-divider>
+
 						<v-container v-for="(param) in selectedApp.service.parameters" :key="param.id">
 							{{param.name}}
 							<v-text-field v-model="param.default" :type="settingsForms[param.type]"></v-text-field>
@@ -85,6 +108,7 @@
 					</v-tab-item>
 
 					<!--Notifications Tab-->
+					<v-tab class="primary white--text" key="1" active-class="white black--text">Notifications</v-tab>
 					<v-tab-item>
 						<v-card-text>
 							<v-data-table :headers="notification_headers" :items="selectedApp.notifications" class="elevation-1" hide-actions>
@@ -103,38 +127,24 @@
 							<v-btn color="primary" @click="close_dialog()">Ok</v-btn>
 						</v-card-actions>
 					</v-tab-item>
+
+					<!--Manage Tab-->
+					<v-tab class="primary white--text" key="2" active-class="white black--text">Manage</v-tab>
+					<v-tab-item>
+						<v-layout class="wrap">
+							<v-flex class="xs6 pa-4">Current version 0.1</v-flex>
+							<v-flex class="xs6">
+								<v-layout class="justify-end pa-2"><v-btn class="primary">Update <v-icon>play_for_work</v-icon></v-btn></v-layout>
+							</v-flex>
+						</v-layout>
+						<v-divider></v-divider>
+						<v-layout class="justify-center">
+							<v-btn class="red white--text" @click="confirmDelete = true">Uninstall <v-icon>delete</v-icon></v-btn>
+						</v-layout>
+					</v-tab-item>
 				</v-tabs>
 			</v-card>
 		</v-dialog>
-
-		<!--App Table-->
-		<v-container class="fluid pa-0">
-			<v-data-table :headers="($vuetify.breakpoint.mdAndUp) ? headers : headers_mobile" :items="apps" class="elevation-1" hide-actions>
-				<template slot="items" slot-scope="props">
-					<td class="pa-4">
-						<v-avatar v-if="props.item.service.iconURL != null" class="primary lighten-3" v-bind:style="{backgroundImage: 'url(' + props.item.service.iconURL + ')', backgroundSize: 'contain', backgroundPosition: 'center'}"></v-avatar>
-						<v-avatar v-else class="primary lighten-3 font-weight-bold">{{ getInitials(props.item.service.name) }}</v-avatar>
-					</td>
-					<td class="subheading pa-4">{{ $minifyName(props.item.process.name) }}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ $minifyName(props.item.process.serviceId) }}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ $minifyName(props.item.node.name) }}</td>
-					<td class="pa-4" v-if="$vuetify.breakpoint.mdAndUp">{{ $minifyName(props.item.process.state) }}</td>
-					<td><v-icon @click="open_dialog(props.item)">edit</v-icon></td>
-				</template>
-			</v-data-table>
-		</v-container>
-
-		<!-- Load bar -->
-		<div class="text-xs-center">
-			<v-dialog v-model="loading" hide-overlay persistent width="300">
-				<v-card class="primary" dark >
-					<v-card-text>
-						Loading widgets..
-						<v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
-					</v-card-text>
-				</v-card>
-			</v-dialog>
-		</div>
 
 		<v-layout row justify-center>
 			<v-dialog v-model="confirmDelete" persistent max-width="340">
@@ -223,7 +233,7 @@
 				confirmDelete: false,
 				appUpdated: false,
 				active_tab: 0,
-				tabs: [{ id: 1, name: "Global Settings"},{ id: 2, name: "Settings"}, {id:3, name: "Notifications"}],
+				tabs: ["Settings", "Global Settings", "Notifications", "Manage"],
 				api_config: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.GET),
 				api_delete: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.DELETE),
 				selectedApp: null,
