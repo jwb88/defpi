@@ -32,7 +32,7 @@
 									It seems you do not have any apps with widgets installed yet!
 									You can install apps using the button below.
 									<v-divider class="mt-4"></v-divider>
-									<v-btn class="primary" to="/appstore">Appstore</v-btn>
+									<v-btn class="primary" to="/appstore"><v-icon>shop</v-icon> App store</v-btn>
 								</v-card-text>
 							</v-card>
 						</v-layout>
@@ -126,10 +126,6 @@
 			},
 			getWidgets: function (processes) {
 				API.send(new Config(PORT.GATEWAY, CONTENT_TYPE.NONE, METHOD.GET), "/getWidgets", {}, response => {
-					// Object.keys(response).forEach(function(id) {
-					// 	processes[id]["iframe_id"] = id;
-					// }, this);
-
 					// Create a new object to store processes with their services based on processId
 					let processList = {};
 					let tempWidgetsFullscreen = [];
@@ -144,9 +140,6 @@
 						};
 					});
 
-					console.log('---------------------');
-					console.log(tempWidgets);
-					console.log('---------------------');
 					response.forEach(function(value,key) {
 						// Add the correct process and service to widget
 						value.process = processList[value.processId];
@@ -170,32 +163,13 @@
 						}
 					});
 
-					console.log('---------------------');
-					console.log(tempWidgets);
-					console.log('---------------------');
-
-
-					console.log('---------------------');
-					console.log(Object.keys(tempWidgets));
-					console.log('---------------------');
 					Object.keys(tempWidgets).forEach(function(value,key) {
-						/*if(!tempWidgetsFullscreen.findIndex(value))
-							_tempWidgets.push(value);*/
 						if(tempWidgets[value])
 							_tempWidgets.push(tempWidgets[value]);
 					});
-					console.log('---------------------');
-					console.log(_tempWidgets);
-					console.log('---------------------');
+
 					this.widgets = _tempWidgets;
 					this.widgetsFullscreen = tempWidgetsFullscreen;
-					/*let widgets = [];
-					processes.forEach(function(value, i) {
-						value["iframe_id"] = i;
-						widgets.push(value);
-					});
-					this.widgets = processes;
-					console.log(this.widgets);*/
 					this.widgetLoading = false;
 				}, null);
 			},

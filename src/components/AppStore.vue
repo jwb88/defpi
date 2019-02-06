@@ -52,14 +52,13 @@
 										<v-card-actions style="height:50px;">
 											<v-flex xs12>
 												<v-label v-if="installCounter[app.id]">
-													Deze app is al <b>{{installCounter[app.id]}}</b>x geïnstalleerd!
+													This app has been installed <b>{{installCounter[app.id]}}</b> time(s)!
 												</v-label>
 											</v-flex>
 											<v-btn class="primary mb-4 mr-1"
 												   style="left:0%;top:10px;"
 												   v-on:click="openAppModal(app.id)"
-												   dark fab small
-											>
+												   dark fab small >
 												<v-icon>add</v-icon>
 											</v-btn>
 										</v-card-actions>
@@ -116,7 +115,7 @@
 									<v-card-actions>
 										<v-list style="width:300px;">
 											<v-list-tile>
-												<v-btn :loading="isInstalling" block class="primary" v-on:click="installApp()" :disabled="canInstall()">Install</v-btn>
+												<v-text-field :rules="[rules.required, rules.allowedName, rules.uniqueName]" v-model="appNickName" placeholder="Enter a name..."> </v-text-field>
 											</v-list-tile>
 											<v-list-tile>
 												<v-select
@@ -130,7 +129,7 @@
 												></v-select>
 											</v-list-tile>
 											<v-list-tile>
-												<v-text-field :rules="[rules.required, rules.allowedName, rules.uniqueName]" v-model="appNickName" placeholder="Enter a name..."> </v-text-field>
+												<v-btn :loading="isInstalling" block class="primary" v-on:click="installApp()" :disabled="canInstall()">Install</v-btn>
 											</v-list-tile>
 										</v-list>
 									</v-card-actions>
@@ -205,15 +204,16 @@
 				},
 				categories: [
 					{ name: "All" },
-					{ name: "Huishoudelijke apparaten" },
-					{ name: "Slimme meters" },
-					{ name: "Elektrische autos" }
+					{ name: "Household devices" },
+					{ name: "Smart meters" },
+					{ name: "Electric vehicles" }
 				],
 				getRequestConfig: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.NONE, METHOD.GET),
 				postRequestConfig: new Config(PORT.ORCHESTRATOR, CONTENT_TYPE.JSON, METHOD.POST),
 				rules: {
 					required: value => !!value || 'Required.',
 					allowedName: value => {
+						// Only allows words, spaces and dashes.
 						const pattern = /^[\w -]+$/;
 						return pattern.test(value) || 'Invalid name';
 					},
@@ -224,17 +224,31 @@
 			};
 		},
 		methods: {
+			/**
+			 * Calculates the amount of pages for the paginator
+			 * @returns {number} The number of pages
+			 */
 			pGetPages: function() {
 				return Math.ceil( this.pagination.totalItems / this.pagination.perPage );
 			},
+			/**
+			 * Slices the app list based on pagination and filters
+			 * @returns {*[]} List of apps to display
+			 */
 			getDisplayableApps: function() {
 				let startIndex = (this.pagination.currentPage -1 ) * this.pagination.perPage;
 				let endIndex = startIndex + this.pagination.perPage;
 				return this.displayableApps.slice(startIndex, endIndex)
 			},
+			/**
+			 * Updates the list of apps
+			 */
 			updateAppList: function () {
 				API.send(this.getRequestConfig, "/service", null, response => { this.appList = response; this.updateFilteredList(); this.modalLoading = false; },null);
 			},
+			/**
+			 * Updates the list of apps to display based on filters
+			 */
 			updateFilteredList: function() {
 				let tempAppList = [];
 				let searchTerm = this.searchFilter.toLowerCase();
@@ -258,10 +272,16 @@
 					this.pagination.currentPage = 1;
 				this.displayableApps = tempAppList;
 			},
+			/**
+			 * Updates the list of private nodes and node pools
+			 */
 			fetchNodes: function() {
 				API.send(this.getRequestConfig, "/privatenode"+ '?_filters={"userId":"' + window.localStorage.getItem('defpi_userId') + '"}', null, response => { this.privateNodes = response; },null);
 				API.send(this.getRequestConfig, "/nodepool", null, response => { this.nodePools = response; },null);
 			},
+			/**
+			 * Add the list of private nodes and node pools to location picker
+			 */
 			createNodeList: function() {
 				let tempLocationPicker = [];
 				if( this.nodePools.length > 0 ) {
@@ -278,6 +298,10 @@
 				}
 				this.locationPicker = tempLocationPicker;
 			},
+			/**
+			 * Opens the dialog for the requested app
+			 * @param appId Id of the app to display
+			 */
 			openAppModal: function(appId) {
 				this.appNickName = '';
 
@@ -285,6 +309,11 @@
 				if(this.appDetails)
 					this.appModal = true;
 			},
+			/**
+			 * Retrieves the app object
+			 * @param appId Id of the app to find
+			 * @returns {*} The app object
+			 */
 			getAppByID: function(appId) {
 				if(!this.appList)
 					return null;
@@ -300,15 +329,25 @@
 				console.log(this.app);
 				return app;
 			},
+			/**
+			 * Closes the app dialog and resets all used variables
+			 */
 			closeAppModal: function() {
 				this.appNickName = '';
 				this.appModal = false;
 				this.selectedLocation = '';
 				this.appDetails = null;
 			},
+			/**
+			 * Verifies whether the install button can be activated or not
+			 * @returns {boolean}
+			 */
 			canInstall: function() {
 				return this.selectedLocation == null || this.selectedLocation === '' || this.appNickName == null || this.appNickName === '' || this.processNameList.includes(this.appNickName.toLowerCase());
 			},
+			/**
+			 * 'Installs' an app
+			 */
 			installApp: function() {
 				if ( this.selectedLocation !== null &&
 					this.selectedLocation !== '' &&
@@ -317,8 +356,6 @@
 					window.localStorage.getItem('defpi_username') !== '' &&
 					this.appNickName !== null &&
 					this.appNickName !== '' ) {
-
-					this.updateInstalledCounter();
 
 					this.isInstalling = true;
 
@@ -342,6 +379,7 @@
 					payLoad.userId = window.localStorage.getItem('defpi_userId');
 
 					API.send(this.postRequestConfig, "/process", JSON.stringify(payLoad), response => {
+						this.updateInstalledCounter();
 						if(this.installCounter[this.appDetails.id] == null)
 							this.installCounter[this.appDetails.id] = 1;
 						else
@@ -355,6 +393,11 @@
 					},null);
 				}
 			},
+			/**
+			 * Retrieves a set of initials based on app name
+			 * @param name Name of the app
+			 * @returns {string} Initials
+			 */
 			getInitials: function(name) {
 				if(name !== "") {
 					let result = "";
@@ -367,9 +410,17 @@
 					return result;
 				} else { return ""; }
 			},
+			/**
+			 * Shortens text to a maximum of 220 characters
+			 * @param text Text to shorten
+			 * @returns {*} Shortened text
+			 */
 			shortenText: function(text) {
 				return text.replace(/(.{220})..+/, "$1…");
 			},
+			/**
+			 * Updates the counter for installed apps
+			 */
 			updateInstalledCounter: function() {
 				let tempCounter = {};
 				let tempNames = [];
@@ -391,6 +442,8 @@
 			this.updateInstalledCounter();
 			this.updateAppList();
 			this.fetchNodes();
+
+			// Set-up updaters for our lists
 			setInterval(function () {
 				this.updateAppList();
 			}.bind(this), 10000);
